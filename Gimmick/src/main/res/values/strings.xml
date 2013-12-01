@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Main activity -->
+    <string name="app_name">Gamr</string>
+    <string name="action_add">Add</string>
+    <string name="action_settings">Settings</string>
+    <string name="search_for_games">Search for games</string>
+
+    <!-- Search results -->
+    <string name="activity_search_results">Search Results</string>
+    <string name="no_results">No results</string>
+    <string name="powered_by_giant_bomb">powered by giantbomb.com</string>
+
+    <!-- Generic strings -->
+    <string name="offline">No network connectivity. Try again later.</string>
+
+    <!-- Image content descriptions -->
+    <string name="description_poster">Poster</string>
+    <string name="description_add_game">Add game</string>
+
+</resources>
