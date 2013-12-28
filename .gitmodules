@@ -1,6 +1,3 @@
 [submodule "glide"]
 	path = glide
-	url = https://github.com/bumptech/glide
-[submodule "glide/library/volley"]
-	path = glide/library/volley
-	url = https://android.googlesource.com/platform/frameworks/volley
+	url = https://github.com/bumptech/glide.git

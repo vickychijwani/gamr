@@ -3,8 +3,7 @@ package io.github.vickychijwani.gimmick.view;
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
-
-import com.bumptech.glide.util.Log;
+import android.util.Log;
 
 import org.jetbrains.annotations.NotNull;
 
