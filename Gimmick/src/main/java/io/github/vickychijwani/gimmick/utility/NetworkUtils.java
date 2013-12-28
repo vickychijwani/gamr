@@ -8,6 +8,7 @@ import android.util.Log;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -20,6 +21,7 @@ public class NetworkUtils {
 
     private static final String TAG = "NetworkUtils";
 
+    @NotNull
     public static JSONObject getJsonFromUrl(String url) {
         Log.d(TAG, "getJsonFromUrl(" + url + ")");
         DefaultHttpClient client = new DefaultHttpClient();
@@ -43,14 +45,12 @@ public class NetworkUtils {
             e.printStackTrace();
         }
 
-        JSONObject jsonObject = null;
         try {
-            jsonObject = new JSONObject(builder.toString());
+            return new JSONObject(builder.toString());
         } catch (JSONException e) {
             Log.e(TAG, "Error parsing JSON = " + builder);
+            return new JSONObject();
         }
-
-        return jsonObject;
     }
 
     /**

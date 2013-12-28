@@ -4,6 +4,9 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Gimmick.iml" filepath="$PROJECT_DIR$/Gimmick.iml" />
       <module fileurl="file://$PROJECT_DIR$/Gimmick/Gimmick-Gimmick.iml" filepath="$PROJECT_DIR$/Gimmick/Gimmick-Gimmick.iml" />
+      <module fileurl="file://$PROJECT_DIR$/glide/glide.iml" filepath="$PROJECT_DIR$/glide/glide.iml" />
+      <module fileurl="file://$PROJECT_DIR$/glide/library/library.iml" filepath="$PROJECT_DIR$/glide/library/library.iml" />
+      <module fileurl="file://$PROJECT_DIR$/glide/library/volley/volley.iml" filepath="$PROJECT_DIR$/glide/library/volley/volley.iml" />
     </modules>
   </component>
 </project>

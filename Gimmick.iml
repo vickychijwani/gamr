@@ -8,8 +8,13 @@
       <excludeFolder url="file://$MODULE_DIR$/.gradle" />
       <excludeFolder url="file://$MODULE_DIR$/build" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="Android API 19 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="library" exported="" />
+    <orderEntry type="library" exported="" name="support-v4-19.0.0" level="project" />
+    <orderEntry type="library" exported="" name="annotations" level="project" />
+    <orderEntry type="module" module-name="volley" exported="" />
+    <orderEntry type="library" exported="" name="disklrucache-2.0.2" level="project" />
   </component>
 </module>
 

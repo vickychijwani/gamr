@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/default_padding"
-    android:paddingTop="@dimen/default_padding"
+    android:paddingBottom="@dimen/padding_default"
+    android:paddingTop="@dimen/padding_default"
     android:scaleType="fitXY"
-    android:src="@drawable/divider" />
+    android:src="@drawable/divider"
+    tools:ignore="ContentDescription"/>

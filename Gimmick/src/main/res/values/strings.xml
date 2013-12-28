@@ -11,6 +11,12 @@
     <string name="activity_search_results">Search Results</string>
     <string name="no_results">No results</string>
     <string name="powered_by_giant_bomb">powered by giantbomb.com</string>
+    <string name="search_failed">Searching failed, try again later.</string>
+    <string name="add_started">"%1$s" will be added to your collection shortly.</string>
+    <string name="add_multiple">All games will be added to your collection shortly.</string>
+    <string name="add_success">"%1$s" added successfully.</string>
+    <string name="add_already_exists">"%1$s" is already in your collection.</string>
+    <string name="add_unknown_error">Could not add "%1$s."</string>
 
     <!-- Generic strings -->
     <string name="offline">No network connectivity. Try again later.</string>
