@@ -1,8 +1,8 @@
 package io.github.vickychijwani.gimmick.view;
 
 import android.app.ActionBar;
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 
@@ -10,23 +10,29 @@ import org.jetbrains.annotations.NotNull;
 
 import io.github.vickychijwani.gimmick.R;
 
-public abstract class BaseActivity extends Activity {
+public abstract class BaseActivity extends FragmentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         ActionBar actionBar = getActionBar();
-        if (actionBar != null) {
-            actionBar.setIcon(R.drawable.ic_logo);
-            setupActionBar(actionBar);
-        }
+        actionBar.setIcon(R.drawable.ic_logo);
+        setupActionBar(actionBar);
     }
 
     /**
      * Setup the action bar for this activity. Called at the beginning of {@link #onCreate}.
      */
     protected abstract void setupActionBar(@NotNull ActionBar actionBar);
+
+    @NotNull
+    @Override
+    public ActionBar getActionBar() {
+        ActionBar actionBar = super.getActionBar();
+        assert actionBar != null;
+        return actionBar;
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

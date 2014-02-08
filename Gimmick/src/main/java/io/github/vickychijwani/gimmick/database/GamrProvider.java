@@ -1,22 +1,36 @@
 package io.github.vickychijwani.gimmick.database;
 
 import android.content.ContentProvider;
+import android.content.ContentProviderOperation;
+import android.content.ContentProviderResult;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.OperationApplicationException;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.util.Log;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import io.github.vickychijwani.gimmick.database.DatabaseContract.GameListTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.GameTable;
+import io.github.vickychijwani.gimmick.database.DatabaseContract.GamePlatformMappingTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.PlatformTable;
+import io.github.vickychijwani.gimmick.item.Platform;
+import io.github.vickychijwani.gimmick.item.SearchResult;
 
 public class GamrProvider extends ContentProvider {
 
     private static final String TAG = "GamrProvider";
 
+    private static GamrProvider sInstance;
     private static UriMatcher sUriMatcher;
 
     private static final int GAMES = 100;
@@ -29,21 +43,53 @@ public class GamrProvider extends ContentProvider {
     private static final int PLATFORMS = 300;
     private static final int PLATFORMS_ID = 301;
 
+    private static final int GAME_PLATFORM_MAPPINGS = 400;
+
     @Override
     public boolean onCreate() {
         final Context context = getContext();
         sUriMatcher = buildUriMatcher(context);
         DBHelper.createInstance(context);
+        sInstance = this;
         return true;
+    }
+
+    /**
+     * Performs the work provided in a single transaction
+     */
+    @Nullable
+    @Override
+    public ContentProviderResult[] applyBatch(@NotNull final ArrayList<ContentProviderOperation> operations) {
+        try {
+            return DBHelper.executeTransaction(new DBHelper.Transaction<ContentProviderResult[]>() {
+                @Override
+                public ContentProviderResult[] run(@NotNull SQLiteDatabase db) throws OperationApplicationException {
+                    int i = 0;
+                    ContentProviderResult[] result = new ContentProviderResult[operations.size()];
+                    for (ContentProviderOperation operation : operations) {
+                        // Chain the result for back references
+                        result[i++] = operation.apply(GamrProvider.this, result, i);
+                    }
+                    return result;
+                }
+            });
+        } catch (Exception e) {
+            Log.d(TAG, "batch operation failed: " + e.getMessage());
+            return null;
+        }
     }
 
     /** {@inheritDoc} */
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        Log.i(TAG, "ContentProvider query uri: " + uri);
+        Log.i(TAG, "[query ] uri: " + uri);
         final int match = sUriMatcher.match(uri);
         Cursor cursor;
+
         switch (match) {
+            case GAMES_ID:
+                cursor = DBHelper.getGame(ContentUris.parseId(uri));
+                break;
             case LISTS_GAMES:
                 cursor = DBHelper.getGamesInList(ContentUris.parseId(uri));
                 break;
@@ -55,12 +101,48 @@ public class GamrProvider extends ContentProvider {
         assert getContext() != null;
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
 
+        Log.i(TAG, "[query ] returning " + cursor.getCount() + " result(s)");
+
         return cursor;
     }
 
     @Override
-    public Uri insert(Uri uri, ContentValues values) {
-        return null;
+    public Uri insert(@NotNull Uri uri, @NotNull ContentValues values) {
+        Log.i(TAG, "[insert] uri: " + uri);
+        final int match = sUriMatcher.match(uri);
+        Uri insertedUri = null;
+        long insertedId = -1;
+        assert getContext() != null;
+
+        switch (match) {
+            case GAMES:
+                insertedId = DBHelper.addGame(values);
+                if (insertedId >= 0) {
+                    insertedUri = ContentUris.withAppendedId(GameTable.CONTENT_URI_LIST, insertedId);
+                }
+                break;
+            case PLATFORMS:
+                insertedId = DBHelper.addPlatform(values);
+                if (insertedId < 0) {
+                    insertedId = DBHelper.getPlatformId(values);
+                }
+                insertedUri = ContentUris.withAppendedId(PlatformTable.CONTENT_URI_LIST, insertedId);
+                break;
+            case GAME_PLATFORM_MAPPINGS:
+                insertedId = DBHelper.addGamePlatformMapping(values);
+                if (insertedId >= 0) {
+                    insertedUri = ContentUris.withAppendedId(GamePlatformMappingTable.CONTENT_URI_LIST, insertedId);
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown uri: " + uri);
+        }
+
+        if (insertedId >= 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+
+        return insertedUri;
     }
 
     @Override
@@ -71,6 +153,29 @@ public class GamrProvider extends ContentProvider {
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         return 0;
+    }
+
+    public static boolean addGame(SearchResult game) {
+        ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
+        ops.add(ContentProviderOperation.newInsert(GameTable.CONTENT_URI_INSERT)
+                .withValues(GameTable.contentValuesFor(game))
+                .build());
+
+        Iterator<Platform> platforms = game.getPlatforms();
+        while (platforms.hasNext()) {
+            Platform platform = platforms.next();
+            ops.add(ContentProviderOperation.newInsert(PlatformTable.CONTENT_URI_INSERT)
+                    .withValues(PlatformTable.contentValuesFor(platform))
+                    .build());
+
+            ops.add(ContentProviderOperation.newInsert(GamePlatformMappingTable.CONTENT_URI_INSERT)
+                    .withValueBackReferences(GamePlatformMappingTable.contentValuesFor(0, ops.size() - 1))
+                    .build());
+        }
+
+        ContentProviderResult[] result = sInstance.applyBatch(ops);
+
+        return result != null;
     }
 
     @Override
@@ -91,6 +196,8 @@ public class GamrProvider extends ContentProvider {
                 return PlatformTable.CONTENT_TYPE;
             case PLATFORMS_ID:
                 return PlatformTable.CONTENT_ITEM_TYPE;
+            case GAME_PLATFORM_MAPPINGS:
+                return GamePlatformMappingTable.CONTENT_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -116,6 +223,9 @@ public class GamrProvider extends ContentProvider {
         // Platforms
         matcher.addURI(authority, PlatformTable.TABLE_NAME, PLATFORMS);
         matcher.addURI(authority, PlatformTable.TABLE_NAME + "/#", PLATFORMS_ID );
+
+        // Game <=> platform mappings
+        matcher.addURI(authority, GamePlatformMappingTable.TABLE_NAME, GAME_PLATFORM_MAPPINGS);
 
         return matcher;
     }

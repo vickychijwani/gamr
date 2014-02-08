@@ -2,14 +2,28 @@
 
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <ListView
-        android:id="@android:id/list"
+    <com.meetme.android.multistateview.MultiStateView
+        android:id="@+id/list_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ListView
+            android:id="@android:id/list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:listSelector="@null"
+            android:paddingLeft="@dimen/padding_default"
+            android:paddingRight="@dimen/padding_default"
+            android:fastScrollEnabled="true"
+            android:scrollbarStyle="outsideOverlay"/>
+
+    </com.meetme.android.multistateview.MultiStateView>
+
+    <TextView
+        android:id="@android:id/empty"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:listSelector="@null"
-        android:paddingLeft="@dimen/padding_default"
-        android:paddingRight="@dimen/padding_default"
-        android:fastScrollEnabled="true"/>
+        android:text="@string/no_results"/>
 
 </merge>

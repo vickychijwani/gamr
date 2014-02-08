@@ -94,4 +94,37 @@
         <item name="android:textSize">@dimen/text_size_hyperlarge</item>
     </style>
 
+    <!-- easy layouting -->
+    <style name="DefaultPadding">
+        <item name="android:paddingTop">@dimen/padding_default</item>
+        <item name="android:paddingBottom">@dimen/padding_default</item>
+        <item name="android:paddingLeft">@dimen/padding_default</item>
+        <item name="android:paddingRight">@dimen/padding_default</item>
+    </style>
+
+    <style name="DefaultPadding.Blocks">
+        <item name="android:paddingLeft">@dimen/padding_default</item>
+        <item name="android:paddingRight">@dimen/padding_default</item>
+    </style>
+
+    <style name="DefaultPadding.Blocks.WithTopMargin">
+        <item name="android:layout_marginTop">@dimen/padding_inline</item>
+    </style>
+
+    <style name="DefaultPadding.Blocks.WithBottomMargin">
+        <item name="android:layout_marginBottom">@dimen/padding_default</item>
+    </style>
+
+    <style name="DefaultPadding.Blocks.WithBottomMargin.FlowText">
+        <item name="android:lineSpacingMultiplier">1.2</item>
+    </style>
+
+    <!-- tabs -->
+    <style name="TabStrip">
+        <item name="android:textColor">?attr/colorTabStripText</item>
+        <item name="pstsDividerColor">?attr/colorDivider</item>
+        <item name="pstsIndicatorColor">?attr/colorAccent</item>
+        <item name="pstsUnderlineColor">?attr/colorAccent</item>
+    </style>
+
 </resources>

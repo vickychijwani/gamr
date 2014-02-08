@@ -1,17 +1,35 @@
 package io.github.vickychijwani.gimmick.view;
 
 import android.app.ActionBar;
-import android.app.FragmentTransaction;
+import android.content.ContentUris;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
+
+import com.astuetz.PagerSlidingTabStrip;
 
 import org.jetbrains.annotations.NotNull;
 
 import io.github.vickychijwani.gimmick.R;
+import io.github.vickychijwani.gimmick.database.DatabaseContract;
 
-public class GameDetailsActivity extends BaseActivity {
+public class GameDetailsActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String TAG = "GameDetailsActivity";
+    private static final int LAYOUT = R.layout.activity_game_details;
+    private static final int LOADER_ID = LAYOUT;
+
+    private int mGiantBombId;
+    private Cursor mCursor;
+
+    private DataFragment[] mFragments;
 
     public interface IntentFields {
         String GAME_GIANT_BOMB_ID = "game_giant_bomb_id";
@@ -22,40 +40,89 @@ public class GameDetailsActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_details);
 
-        int gameId = getIntent().getIntExtra(IntentFields.GAME_GIANT_BOMB_ID, -1);
-        if (gameId == -1) {
+        mGiantBombId = getIntent().getIntExtra(IntentFields.GAME_GIANT_BOMB_ID, -1);
+        if (mGiantBombId == -1) {
             finish();
             return;
         }
 
-        Log.d(TAG, "Displaying details for game ID = " + gameId);
+        Log.i(TAG, "Displaying details for game ID = " + mGiantBombId);
+
+        // initialize fragments
+        GameOverviewFragment gameOverviewFragment = new GameOverviewFragment();
+        mFragments = new DataFragment[] {
+                gameOverviewFragment
+        };
+
+        // setup tabs
+        ViewPager pager = (ViewPager) findViewById(R.id.pager);
+        pager.setAdapter(new DetailFragmentsAdapter(getSupportFragmentManager()));
+
+        // bind tabs to viewpager
+        PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+        tabs.setViewPager(pager);
+
+        getSupportLoaderManager().initLoader(LOADER_ID, null, this);
     }
 
     @Override
     protected void setupActionBar(@NotNull ActionBar actionBar) {
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+    }
 
-        ActionBar.TabListener tabListener = new ActionBar.TabListener() {
-            @Override
-            public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new CursorLoader(this,
+                ContentUris.withAppendedId(DatabaseContract.GameTable.CONTENT_URI_LIST, mGiantBombId),
+                null, null, null, null);
+    }
 
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        // close the old cursor
+        if (mCursor != null) {
+            mCursor.close();
+        }
+
+        cursor.moveToFirst();
+        String gameName = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable.COL_NAME));
+        getActionBar().setTitle(gameName);
+
+        for (DataFragment dataFragment : mFragments) {
+            dataFragment.onDataLoaded(cursor);
+        }
+
+        mCursor = cursor;
+    }
+
+    @Override
+    public void onLoaderReset(Loader loader) {
+
+    }
+
+    private class DetailFragmentsAdapter extends FragmentPagerAdapter {
+        public DetailFragmentsAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return mFragments[position];
+        }
+
+        @Override
+        public int getCount() {
+            return mFragments.length;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            Fragment fragment = getItem(position);
+            if (fragment instanceof GameOverviewFragment) {
+                return getString(R.string.overview);
             }
-
-            @Override
-            public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
-
-            }
-
-            @Override
-            public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
-
-            }
-        };
-
-        actionBar.addTab(actionBar.newTab().setText("Overview").setTabListener(tabListener));
-        actionBar.addTab(actionBar.newTab().setText("Images").setTabListener(tabListener));
-        actionBar.addTab(actionBar.newTab().setText("Videos").setTabListener(tabListener));
+            return "";
+        }
     }
 
 }

@@ -1,65 +1,67 @@
 package io.github.vickychijwani.gimmick.view;
 
 import android.app.ActionBar;
+import android.app.LoaderManager;
 import android.app.SearchManager;
+import android.content.ContentUris;
 import android.content.Context;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.meetme.android.multistateview.MultiStateView;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import io.github.vickychijwani.gimmick.R;
-import io.github.vickychijwani.gimmick.database.DBHelper;
 import io.github.vickychijwani.gimmick.database.DatabaseContract;
+import io.github.vickychijwani.gimmick.database.DatabaseContract.GameListTable;
+import io.github.vickychijwani.gimmick.database.DatabaseContract.GameTable;
+import io.github.vickychijwani.gimmick.item.ReleaseDate;
 import io.github.vickychijwani.gimmick.item.SearchResult;
-import io.github.vickychijwani.gimmick.viewholder.SearchResultViewHolder;
+import io.github.vickychijwani.gimmick.utility.NetworkUtils;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    private static final int LAYOUT = R.layout.activity_main;
+    private static final int LOADER_ID = LAYOUT;
+
+    private MultiStateView mGameListContainer;
     private ListView mGameList;
     private GameListAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        DBHelper.createInstance(this);
-
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(LAYOUT);
 
-        // TODO use a Loader to load results in the background! Also make sure they update automatically!
-        mAdapter = new GameListAdapter(this, R.layout.game_basic,
-                new ArrayList<SearchResult>(), mDetailsButtonListener);
-        mGameList = (ListView) findViewById(android.R.id.list);
+        mGameListContainer = (MultiStateView) findViewById(R.id.list_container);
+        mGameListContainer.setState(MultiStateView.ContentState.LOADING);
+        mGameList = (ListView) mGameListContainer.getContentView();
+
+        mAdapter = new GameListAdapter(this, null, 0, mItemClickListener);
         mGameList.setAdapter(mAdapter);
+        mGameList.setEmptyView(findViewById(android.R.id.empty));
+
+        getLoaderManager().initLoader(LOADER_ID, null, this);
     }
 
     @Override
     protected void setupActionBar(@NotNull ActionBar actionBar) {
         actionBar.setDisplayHomeAsUpEnabled(false);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        List<SearchResult> gameList = DBHelper.getGames(DatabaseContract.GameListTable.TO_PLAY);
-        Collections.sort(gameList, new SearchResult.LatestFirstComparator());
-        setGameList(gameList);
     }
 
     @Override
@@ -78,82 +80,91 @@ public class MainActivity extends BaseActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
-    private void setGameList(List<SearchResult> gameList) {
-        mAdapter.setNotifyOnChange(false);
-        mAdapter.clear();
-        mAdapter.addAll(gameList);
-        mAdapter.notifyDataSetChanged();
-    }
-
-    private View.OnClickListener mDetailsButtonListener = new View.OnClickListener() {
+    private View.OnClickListener mItemClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             int position = mGameList.getPositionForView(v);
-            SearchResult game = mAdapter.getItem(position);
+            Cursor cursor = (Cursor) mAdapter.getItem(position);
+            assert cursor != null;
+            int giantBomdId = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable._ID));
 
             Intent intent = new Intent(MainActivity.this, GameDetailsActivity.class);
-            intent.putExtra(GameDetailsActivity.IntentFields.GAME_GIANT_BOMB_ID, game.giantBombId);
+            intent.putExtra(GameDetailsActivity.IntentFields.GAME_GIANT_BOMB_ID, giantBomdId);
             startActivity(intent);
         }
     };
 
-    private class GameListAdapter extends ArrayAdapter<SearchResult> {
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new CursorLoader(this,
+                ContentUris.withAppendedId(GameListTable.CONTENT_URI_LIST_GAMES, GameListTable.TO_PLAY_ID),
+                null, null, null, null);
+    }
 
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        mGameListContainer.setState(MultiStateView.ContentState.CONTENT);
+
+        // Swap the new cursor in (the loader will take care of closing the old one)
+        mAdapter.swapCursor(cursor);
+    }
+
+    @Override
+    public void onLoaderReset(Loader loader) {
+        mGameListContainer.setState(MultiStateView.ContentState.CONTENT);
+        mAdapter.swapCursor(null);
+    }
+
+    private class GameListAdapter extends CursorAdapter {
+
+        private static final int LAYOUT = R.layout.game_basic;
         private LayoutInflater mLayoutInflater;
-        private int mLayout;
-        private View.OnClickListener mDetailsButtonListener;
+        private View.OnClickListener mClickListener;
 
-        public GameListAdapter(Context context, int layout, List<SearchResult> objects,
-                          View.OnClickListener detailsButtonListener) {
-            super(context, layout, objects);
+        public GameListAdapter(Context context, Cursor cursor, int flags,
+                          View.OnClickListener clickListener) {
+            super(context, cursor, flags);
             mLayoutInflater = (LayoutInflater) context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            mLayout = layout;
-            mDetailsButtonListener = detailsButtonListener;
+            mClickListener = clickListener;
         }
 
         @NotNull
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            SearchResultViewHolder viewHolder;
+        public View newView(Context context, Cursor cursor, ViewGroup parent) {
+            View view = mLayoutInflater.inflate(LAYOUT, null);
+            assert view != null;
 
-            if (convertView == null) {
-                convertView = mLayoutInflater.inflate(mLayout, null);
-                assert convertView != null;
+            View detailsView = view.findViewById(R.id.details);
 
-                viewHolder = new SearchResultViewHolder();
-                viewHolder.poster = (ImageView) convertView.findViewById(R.id.poster);
-                viewHolder.title = (TextView) convertView.findViewById(R.id.title);
-                viewHolder.releaseDate = (TextView) convertView.findViewById(R.id.release_date);
-                viewHolder.details = convertView.findViewById(R.id.details);
-                viewHolder.platforms = (TextView) convertView.findViewById(R.id.platforms);
+            view.setTag(R.id.poster, view.findViewById(R.id.poster));
+            view.setTag(R.id.title, view.findViewById(R.id.title));
+            view.setTag(R.id.release_date, view.findViewById(R.id.release_date));
+            view.setTag(R.id.details, detailsView);
+            view.setTag(R.id.platforms, view.findViewById(R.id.platforms));
 
-                // add button listeners
-                viewHolder.details.setOnClickListener(mDetailsButtonListener);
+            detailsView.setOnClickListener(mClickListener);
 
-                convertView.setTag(viewHolder);
-            } else {
-                viewHolder = (SearchResultViewHolder) convertView.getTag();
-            }
+            return view;
+        }
 
-            final SearchResult item = getItem(position);
+        @Override
+        public void bindView(View view, Context context, Cursor cursor) {
+            ImageView poster = (ImageView) view.getTag(R.id.poster);
+            TextView title = (TextView) view.getTag(R.id.title);
+            TextView releaseDate = (TextView) view.getTag(R.id.release_date);
+            TextView platforms = (TextView) view.getTag(R.id.platforms);
 
-            if (item.posterUrl != null) {
-                viewHolder.poster.setVisibility(View.VISIBLE);
-                Glide.load(item.posterUrl)
-                        .fitCenter()
-                        .animate(android.R.anim.fade_in)
-                        .into(viewHolder.poster);
-            } else {
-                viewHolder.poster.setVisibility(View.GONE);
-            }
-            viewHolder.title.setText(item.name);
-            viewHolder.releaseDate.setText(item.releaseDate.toString());
-            viewHolder.platforms.setText(item.getPlatformsDisplayString());
+            assert poster != null && title != null && releaseDate != null && platforms != null;
+            SearchResult game = new SearchResult(cursor);
 
-            return convertView;
+            NetworkUtils.loadImage(game.posterUrl, poster);
+            title.setText(game.name);
+            releaseDate.setText(game.releaseDate.toString());
+            platforms.setText(game.getPlatformsDisplayString());
         }
 
     }
+
 
 }

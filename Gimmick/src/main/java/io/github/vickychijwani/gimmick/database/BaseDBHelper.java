@@ -10,12 +10,20 @@ import android.text.TextUtils;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 abstract class BaseDBHelper extends SQLiteOpenHelper {
 
     protected static BaseDBHelper sInstance = null;
 
     protected BaseDBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
+    }
+
+    public static BaseDBHelper getInstance() {
+        assert sInstance != null;
+        return sInstance;
     }
 
     @NotNull
@@ -46,6 +54,14 @@ abstract class BaseDBHelper extends SQLiteOpenHelper {
         private String mProjection;
         private String mTableName;
         private String mSelection;
+        private String mGrouping;
+        private List<JoinClause> mJoinClauses = new ArrayList<JoinClause>();
+
+        private class JoinClause {
+            public String type;
+            public String tableName;
+            public SQL.Condition onCondition;
+        }
 
         public BaseSelectStatement(@NotNull String projection) {
             mProjection = projection;
@@ -58,26 +74,40 @@ abstract class BaseDBHelper extends SQLiteOpenHelper {
         }
 
         @NotNull
-        public BaseSelectStatement whereEquals(@NotNull String colName, @NotNull String value) {
-            mSelection = (mSelection == null) ? "" : (mSelection + " AND ");
-            mSelection += colName + " = '" + value + "'";
+        public BaseSelectStatement innerJoin(@NotNull String tableName, @NotNull SQL.Condition onCondition) {
+            return join("INNER JOIN", tableName, onCondition);
+        }
+
+        @NotNull
+        public BaseSelectStatement leftOuterJoin(@NotNull String tableName, @NotNull SQL.Condition onCondition) {
+            return join("LEFT OUTER JOIN", tableName, onCondition);
+        }
+
+        @NotNull
+        public BaseSelectStatement rightOuterJoin(@NotNull String tableName, @NotNull SQL.Condition onCondition) {
+            return join("RIGHT OUTER JOIN", tableName, onCondition);
+        }
+
+        @NotNull
+        private BaseSelectStatement join(@NotNull String joinType, @NotNull String tableName, @NotNull SQL.Condition onCondition) {
+            JoinClause joinClause = new JoinClause();
+            joinClause.type = joinType;
+            joinClause.tableName = tableName;
+            joinClause.onCondition = onCondition;
+            mJoinClauses.add(joinClause);
             return this;
         }
 
         @NotNull
-        public BaseSelectStatement whereEquals(@NotNull String colName, @NotNull Integer value) {
-            return whereEquals(colName, Double.valueOf(value));
-        }
-
-        @NotNull
-        public BaseSelectStatement whereEquals(@NotNull String colName, @NotNull Long value) {
-            return whereEquals(colName, Double.valueOf(value));
-        }
-
-        @NotNull
-        public BaseSelectStatement whereEquals(@NotNull String colName, @NotNull Double value) {
+        public BaseSelectStatement where(@NotNull SQL.Condition whereCondition) {
             mSelection = (mSelection == null) ? "" : (mSelection + " AND ");
-            mSelection += colName + " = " + value.toString();
+            mSelection += whereCondition.toString();
+            return this;
+        }
+
+        @NotNull
+        public BaseSelectStatement groupBy(@NotNull String colName) {
+            mGrouping = colName;
             return this;
         }
 
@@ -90,9 +120,19 @@ abstract class BaseDBHelper extends SQLiteOpenHelper {
                 throw new IllegalStateException("Query not completely built");
             }
 
-            return " SELECT " + mProjection
-                    + " FROM " + mTableName
-                    + " WHERE " + mSelection;
+            String query = " SELECT " + mProjection
+                    + " FROM " + mTableName;
+
+            for (JoinClause c : mJoinClauses) {
+                query += " " + c.type + " " + c.tableName + " ON " + c.onCondition.toString();
+            }
+
+            query += " WHERE " + mSelection;
+
+            if (mGrouping != null)
+                query += " GROUP BY " + mGrouping;
+
+            return query;
         }
     }
 

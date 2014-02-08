@@ -11,6 +11,7 @@ import java.util.List;
 
 import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.database.DBHelper;
+import io.github.vickychijwani.gimmick.database.GamrProvider;
 import io.github.vickychijwani.gimmick.item.SearchResult;
 import io.github.vickychijwani.gimmick.utility.NetworkUtils;
 
@@ -105,12 +106,12 @@ public class AddGameTask extends android.os.AsyncTask<Void, AddGameTask.Result, 
                 SearchResult game = mAddQueue.removeFirst();
 
                 try {
-                    if (DBHelper.add(game)) {
+                    if (GamrProvider.addGame(game)) {
                         result = new Result(StatusCode.SUCCESS, game.name);
                     } else {
                         result = new Result(StatusCode.ALREADY_EXISTS, game.name);
                     }
-                } catch (SQLException e) {
+                } catch (Exception e) {
                     result = new Result(StatusCode.UNKNOWN_ERROR, game.name);
                 }
 

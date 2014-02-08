@@ -167,15 +167,7 @@ public class SearchResultsActivity extends BaseActivity {
 
             final SearchResult item = getItem(position);
 
-            if (item.posterUrl != null) {
-                viewHolder.poster.setVisibility(View.VISIBLE);
-                Glide.load(item.posterUrl)
-                        .fitCenter()
-                        .animate(android.R.anim.fade_in)
-                        .into(viewHolder.poster);
-            } else {
-                viewHolder.poster.setVisibility(View.GONE);
-            }
+            NetworkUtils.loadImage(item.posterUrl, viewHolder.poster);
             viewHolder.title.setText(item.name);
             viewHolder.releaseDate.setText(item.releaseDate.toString());
             viewHolder.platforms.setText(item.getPlatformsDisplayString());

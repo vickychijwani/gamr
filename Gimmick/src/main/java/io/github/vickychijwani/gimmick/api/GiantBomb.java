@@ -17,6 +17,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import io.github.vickychijwani.gimmick.GamrApplication;
@@ -34,6 +35,7 @@ public class GiantBomb {
     private static final String PLATFORMS = "platforms";
     private static final String IMAGE_URLS = "image";
     private static final String POSTER_URL = "thumb_url";
+    private static final String SMALL_POSTER_URL = "small_url";
     private static final String DECK = "deck";
     private static final String API_DETAIL_URL = "api_detail_url";
     private static final String REVIEW_COUNT = "number_of_user_reviews";
@@ -42,6 +44,7 @@ public class GiantBomb {
     private static final String EXPECTED_RELEASE_QUARTER = "expected_release_quarter";
     private static final String EXPECTED_RELEASE_MONTH = "expected_release_month";
     private static final String EXPECTED_RELEASE_DAY = "expected_release_day";
+    private static final String GENRES = "genres";
 
     private static final String SORT_ORDER_ASC = "asc";
     private static final String SORT_ORDER_DESC = "desc";
@@ -60,7 +63,7 @@ public class GiantBomb {
                 .setSortOrder(SORT_BY_LATEST_RELEASES, SORT_BY_MOST_REVIEWS)
                 .setFieldList(ID, NAME, PLATFORMS, IMAGE_URLS, DECK, API_DETAIL_URL,
                         ORIGINAL_RELEASE_DATE, EXPECTED_RELEASE_YEAR, EXPECTED_RELEASE_QUARTER,
-                        EXPECTED_RELEASE_MONTH, EXPECTED_RELEASE_DAY)
+                        EXPECTED_RELEASE_MONTH, EXPECTED_RELEASE_DAY, GENRES)
                 .toString();
 
         JsonObjectRequest req = new JsonObjectRequest(url, null, successHandler, errorHandler);
@@ -83,11 +86,14 @@ public class GiantBomb {
             try {
                 SearchResult result = new SearchResult();
                 JSONObject resultJson = resultsArray.getJSONObject(i);
-                JSONArray platformsJson = resultJson.getJSONArray(PLATFORMS);
-                for (int j = 0; j < platformsJson.length(); ++j) {
-                    String platformName = platformsJson.getJSONObject(j).getString(NAME);
+                JSONArrayNameIterator nameIterator;
+
+                // platforms
+                nameIterator = new JSONArrayNameIterator(resultJson.getJSONArray(PLATFORMS));
+                while (nameIterator.hasNext()) {
+                    String platformName = nameIterator.next();
                     try {
-                        result.addPlatform(Platform.fromString(platformName));
+                        result.addPlatform(Platform.fromName(platformName));
                     } catch (IllegalArgumentException e) {
                         Log.d(TAG, "Ignoring '" + platformName + "' platform");
                     }
@@ -96,12 +102,22 @@ public class GiantBomb {
                 if (result.platforms.size() == 0)
                     continue;
 
+                // essentials
                 result.giantBombId = resultJson.getInt(ID);
                 result.name = resultJson.getString(NAME);
                 result.giantBombUrl = resultJson.getString(API_DETAIL_URL);
                 result.posterUrl = resultJson.getJSONObject(IMAGE_URLS).getString(POSTER_URL);
+                result.smallPosterUrl = resultJson.getJSONObject(IMAGE_URLS).getString(SMALL_POSTER_URL);
                 result.blurb = resultJson.getString(DECK);
                 result.releaseDate = parseReleaseDateFromJson(resultJson);
+
+                // genres
+//                if (resultJson.has(GENRES)) {
+                    nameIterator = new JSONArrayNameIterator(resultJson.getJSONArray(GENRES));
+                    while (nameIterator.hasNext()) {
+                        result.addGenre(nameIterator.next());
+                    }
+//                }
 
                 searchResults.add(result);
             } catch (JSONException e) {
@@ -134,6 +150,41 @@ public class GiantBomb {
             }
         }
         return releaseDate;
+    }
+
+    /**
+     * Utility class to iterate over a JSONArray of objects with a "name" field
+     */
+    private static class JSONArrayNameIterator implements Iterator<String> {
+        private JSONArray mJsonArray;
+        private int mPosition = 0;
+
+        public JSONArrayNameIterator(JSONArray jsonArray) throws JSONException, IllegalArgumentException {
+            if (jsonArray.length() > 0 && ! jsonArray.getJSONObject(0).has(NAME)) {
+                throw new IllegalArgumentException("objects in JSONArray must have \"name\" field for iteration");
+            }
+            mJsonArray = jsonArray;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return mPosition < mJsonArray.length();
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException("iterator is read-only");
+        }
+
+        @Override
+        public String next() {
+            try {
+                return mJsonArray.getJSONObject(mPosition++).getString(NAME);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
     }
 
     private static class URLBuilder {

@@ -1,6 +1,10 @@
 package io.github.vickychijwani.gimmick.item;
 
 import android.database.Cursor;
+import android.text.Html;
+import android.text.TextUtils;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;
 import java.util.Iterator;
@@ -15,9 +19,11 @@ public class SearchResult {
     public int giantBombId = -1;
     public String giantBombUrl = "";
     public String posterUrl = "";
+    public String smallPosterUrl = "";
     public String blurb = "";
-    public Set<Platform> platforms = new TreeSet<Platform>();
     public ReleaseDate releaseDate = null;
+    public Set<Platform> platforms = new TreeSet<Platform>();
+    public Set<String> genres = new TreeSet<String>();
 
     public boolean isAdded;
 
@@ -32,32 +38,44 @@ public class SearchResult {
         giantBombId = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable._ID));
         name = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable.COL_NAME));
         posterUrl = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable.COL_POSTER_URL));
-        blurb = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable.COL_BLURB));
-        short day = cursor.getShort(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable.COL_RELEASE_DAY));
-        short month = cursor.getShort(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable.COL_RELEASE_MONTH));
-        short quarter = cursor.getShort(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable.COL_RELEASE_QUARTER));
-        short year = cursor.getShort(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable.COL_RELEASE_YEAR));
-        releaseDate = new ReleaseDate((byte) day, (byte) month, (byte) quarter, year);
+        releaseDate = new ReleaseDate(cursor);
+
+        String platformsCsv = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable.COL_PSEUDO_PLATFORMS));
+        assert platformsCsv != null;
+        platforms = Platform.fromCsv(platformsCsv);
+
+        try {
+            blurb = Html.fromHtml(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable.COL_BLURB))).toString();
+        } catch (IllegalArgumentException ignored) { }
+
+        try {
+            smallPosterUrl = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable.COL_SMALL_POSTER_URL));
+        } catch (IllegalArgumentException ignored) { }
+
+        try {
+            String genresCsv = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable.COL_GENRES));
+            assert genresCsv != null;
+        } catch (IllegalArgumentException ignored) { }
     }
 
     public void addPlatform(Platform platform) {
         platforms.add(platform);
     }
 
+    public void addGenre(@NotNull String genre) {
+        genres.add(genre);
+    }
+
     public Iterator<Platform> getPlatforms() {
         return platforms.iterator();
     }
 
-    public CharSequence getPlatformsDisplayString() {
-        StringBuilder builder = new StringBuilder();
-        Iterator<Platform> it = platforms.iterator();
-        while (it.hasNext()) {
-            Platform platform = it.next();
-            builder.append(platform.getShortName());
-            if (it.hasNext())
-                builder.append("  ");
-        }
-        return builder;
+    public String getPlatformsDisplayString() {
+        return TextUtils.join("  ", platforms);
+    }
+
+    public String getGenresDisplayString() {
+        return TextUtils.join(", ", genres);
     }
 
     @Override

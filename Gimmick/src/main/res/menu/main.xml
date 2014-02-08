@@ -5,13 +5,13 @@
     tools:context=".MainActivity">
 
     <item android:id="@+id/action_add"
-        android:title="@string/action_add"
+        android:title="@string/add"
         android:showAsAction="ifRoom|collapseActionView"
         android:icon="@drawable/ic_action_new"
         android:actionViewClass="android.widget.SearchView" />
 
     <item android:id="@+id/action_settings"
-        android:title="@string/action_settings"
+        android:title="@string/settings"
         android:showAsAction="never" />
 
 </menu>

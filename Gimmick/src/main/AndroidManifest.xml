@@ -51,6 +51,15 @@
             <meta-data android:name="android.support.PARENT_ACTIVITY"
                        android:value=".view.MainActivity" />
         </activity>
+        
+        
+        
+        <provider
+            android:authorities="io.github.vickychijwani.gimmick.provider"
+            android:name=".database.GamrProvider"
+            android:exported="false">
+        </provider>
+
     </application>
 
 </manifest>

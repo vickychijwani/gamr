@@ -14,7 +14,7 @@ repositories {
 
 android {
     compileSdkVersion 19
-    buildToolsVersion '19.0.0'
+    buildToolsVersion '19.0.1'
 
     defaultConfig {
         minSdkVersion 14
@@ -35,7 +35,9 @@ android {
 
 dependencies {
     compile 'com.android.support:support-v4:19.0.+'
+    compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
     compile files('../libs/annotations.jar')
     compile project(':glide:library')
     compile project(':glide:library:volley')
+    compile project(':Android-MultiStateView')
 }

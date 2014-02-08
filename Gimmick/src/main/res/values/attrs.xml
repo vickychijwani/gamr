@@ -3,4 +3,9 @@
 
     <attr name="clickable_item_background" format="reference" />
 
+    <!-- colors -->
+    <attr name="colorAccent" format="reference|color" />
+    <attr name="colorDivider" format="reference|color" />
+    <attr name="colorTabStripText" format="reference|color" />
+
 </resources>

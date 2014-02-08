@@ -21,6 +21,7 @@
         android:layout_marginRight="@dimen/padding_default"
         android:contentDescription="@string/description_poster"
         android:scaleType="fitCenter"
+        android:visibility="invisible"
         android:src="@drawable/appwidget_bg" />
 
     <TextView

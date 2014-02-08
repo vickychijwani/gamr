@@ -1,29 +1,24 @@
 package io.github.vickychijwani.gimmick.database;
 
+import android.annotation.TargetApi;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
+import android.os.Build;
 
 import org.jetbrains.annotations.NotNull;
-
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 import io.github.vickychijwani.gimmick.database.DatabaseContract.GameListTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.GamePlatformMappingTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.GameTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.PlatformTable;
-import io.github.vickychijwani.gimmick.item.Platform;
-import io.github.vickychijwani.gimmick.item.SearchResult;
+import io.github.vickychijwani.gimmick.utility.DeviceUtils;
 
 public class DBHelper extends BaseDBHelper {
 
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "gamr.db";
-    private static final String TAG = "DBHelper";
 
     public static void createInstance(Context context) {
         // Use the application context, which will ensure that you
@@ -42,13 +37,20 @@ public class DBHelper extends BaseDBHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    @Override
+    public void onConfigure(SQLiteDatabase db) {
+        if (DeviceUtils.isJellyBeanOrHigher()) {
+            db.setForeignKeyConstraintsEnabled(true);
+        }
+    }
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(GameListTable.createTable());
         db.execSQL(GameTable.createTable());
         db.execSQL(PlatformTable.createTable());
         db.execSQL(GamePlatformMappingTable.createTable());
-        validateInitialState(db);
     }
 
     @Override
@@ -56,110 +58,120 @@ public class DBHelper extends BaseDBHelper {
         // TODO decide how to handle this!
     }
 
+    @Override
+    public void onOpen(SQLiteDatabase db) {
+        validateInitialState(db);
+    }
+
     /**
      * Add a game to the database.
      *
-     * @param game  the game to be added
-     * @return      true if insertion succeeds, false if the game already exists in the database
-     *
-     * @throws SQLException
+     * @return      id of the newly-inserted game if successful, else -1
      */
-    public static boolean add(SearchResult game) throws SQLException {
-        SQLiteDatabase db = sInstance.getWritableDatabase();
+    public static long addGame(ContentValues values) {
+        SQLiteDatabase db = getInstance().getWritableDatabase();
+        assert db != null;
+
+        return db.insertWithOnConflict(GameTable.TABLE_NAME, null,
+                values, SQLiteDatabase.CONFLICT_IGNORE);
+    }
+
+    /**
+     * Add a platform to the database.
+     *
+     * @return      id of the newly-inserted platform if successful, else -1
+     */
+    public static long addPlatform(ContentValues values) {
+        SQLiteDatabase db = getInstance().getWritableDatabase();
+        assert db != null;
+
+        return db.insertWithOnConflict(PlatformTable.TABLE_NAME, null,
+                values, SQLiteDatabase.CONFLICT_IGNORE);
+    }
+
+    /**
+     * Add a game-platform mapping to the database.
+     *
+     * @return      id of the newly-inserted mapping if successful, else -1
+     */
+    public static long addGamePlatformMapping(ContentValues values) {
+        SQLiteDatabase db = getInstance().getWritableDatabase();
+        assert db != null;
+
+        return db.insertWithOnConflict(GamePlatformMappingTable.TABLE_NAME, null,
+                values, SQLiteDatabase.CONFLICT_IGNORE);
+    }
+
+    @NotNull
+    public static Cursor getGame(long gameId) {
+        return getGames(GameTable.allColumns(),
+                new SQL.Eq(GameTable.qualify(GameTable._ID), gameId));
+    }
+
+    @NotNull
+    public static Cursor getGamesInList(long listId) {
+        return getGames(GameTable.essentialColumns(),
+                new SQL.Eq(GameTable.COL_GAME_LIST_ID, listId));
+    }
+
+    @NotNull
+    private static Cursor getGames(@NotNull String[] cols, @NotNull SQL.Condition whereCondition) {
+        return (Cursor) select(cols)
+                .from(GameTable.TABLE_NAME)
+                .innerJoin(GamePlatformMappingTable.TABLE_NAME,
+                        new SQL.Eq(GamePlatformMappingTable.COL_GAME_ID, GameTable.qualify(GameTable._ID)))
+                .leftOuterJoin(PlatformTable.TABLE_NAME,
+                        new SQL.Eq(GamePlatformMappingTable.COL_PLATFORM_ID, PlatformTable.qualify(PlatformTable._ID)))
+                .where(whereCondition)
+                .groupBy(GameTable.qualify(GameTable._ID))
+                .execute();
+    }
+
+    public static long getPlatformId(ContentValues values) {
+        return (Long) selectId()
+                .from(PlatformTable.TABLE_NAME)
+                .where(new SQL.Eq(PlatformTable.COL_NAME, "'" + values.getAsString(PlatformTable.COL_NAME) + "'"))
+                .execute();
+    }
+
+    /**
+     * Execute a transaction on the database.
+     *
+     * @param transaction   the transaction to run
+     * @return              the result of the transaction
+     */
+    public static <T> T executeTransaction(@NotNull Transaction<T> transaction)
+            throws Exception {
+        SQLiteDatabase db = getInstance().getWritableDatabase();
         assert db != null;
         db.beginTransaction();
 
         try {
-            long gameId = db.insertWithOnConflict(GameTable.TABLE_NAME, null,
-                    GameTable.contentValuesFor(game), SQLiteDatabase.CONFLICT_IGNORE);
-
-            if (gameId == -1)
-                return false;
-
-            Iterator<Platform> platforms = game.getPlatforms();
-            while (platforms.hasNext()) {
-                Platform platform = platforms.next();
-
-                db.insertWithOnConflict(PlatformTable.TABLE_NAME, null,
-                        PlatformTable.contentValuesFor(platform), SQLiteDatabase.CONFLICT_IGNORE);
-
-                // TODO get rid of this ugly code once Platform data is dynamic!
-                long platformId = (Long) selectId()
-                        .from(PlatformTable.TABLE_NAME)
-                        .whereEquals(PlatformTable.COL_NAME, platform.getShortName())
-                        .execute();
-
-                Log.d(TAG, "Game ID = " + gameId + ", platform ID = " + platformId);
-                db.insertOrThrow(GamePlatformMappingTable.TABLE_NAME, null,
-                        GamePlatformMappingTable.contentValuesFor(gameId, platformId));
-            }
-
+            T ret = transaction.run(db);
             db.setTransactionSuccessful();
-            return true;
+            return ret;
         } finally {
             db.endTransaction();
-            db.close();
-        }
-    }
-
-    /**
-     * Fetch all games belonging to the given game list.
-     *
-     * @param listName  the game list which is to be fetched
-     * @return          the list of all games belonging to {@code listName}
-     */
-    @NotNull
-    public static List<SearchResult> getGames(@NotNull String listName) {
-        SQLiteDatabase db = sInstance.getReadableDatabase();
-        assert db != null;
-        Cursor cursor, cursor2;
-
-        try {
-            long listId = (Long) selectId()
-                    .from(GameListTable.TABLE_NAME)
-                    .whereEquals(GameListTable.COL_NAME, listName)
-                    .execute();
-
-            cursor = (Cursor) selectAll()
-                    .from(GameTable.TABLE_NAME)
-                    .whereEquals(GameTable.COL_GAME_LIST_ID, listId)
-                    .execute();
-            List<SearchResult> gameList = new ArrayList<SearchResult>(cursor.getCount());
-
-            while (cursor.moveToNext()) {
-                SearchResult game = new SearchResult(cursor);
-
-                cursor2 = (Cursor) select(GamePlatformMappingTable.COL_PLATFORM_ID)
-                        .from(GamePlatformMappingTable.TABLE_NAME)
-                        .whereEquals(GamePlatformMappingTable.COL_GAME_ID, game.giantBombId)
-                        .execute();
-                while (cursor2.moveToNext()) {
-                    long platformId = cursor2.getLong(cursor2.getColumnIndexOrThrow(GamePlatformMappingTable.COL_PLATFORM_ID));
-                    String platformName = (String) selectString(PlatformTable.COL_NAME)
-                            .from(PlatformTable.TABLE_NAME)
-                            .whereEquals(PlatformTable._ID, platformId)
-                            .execute();
-                    game.addPlatform(Platform.fromString(platformName));
-                }
-                cursor2.close();
-
-                gameList.add(game);
-            }
-            cursor.close();
-
-            return gameList;
-        } finally {
-            db.close();
         }
     }
 
     private void validateInitialState(SQLiteDatabase db) {
+        assert ! db.isReadOnly();
         ensureDefaultGameListExists(db);
     }
 
     private void ensureDefaultGameListExists(SQLiteDatabase db) {
-        db.insertOrThrow(GameListTable.TABLE_NAME, null,
-                GameListTable.contentValuesForToPlayList());
+        db.insertWithOnConflict(GameListTable.TABLE_NAME, null,
+                GameListTable.contentValuesForToPlayList(), SQLiteDatabase.CONFLICT_IGNORE);
+    }
+
+    public interface Transaction<T> {
+        /**
+         * Run the transaction.
+         *
+         * @param db    a writable instance of the SQLite database
+         */
+        public T run(@NotNull SQLiteDatabase db) throws Exception;
     }
 
 }

@@ -1,11 +1,15 @@
 package io.github.vickychijwani.gimmick.item;
 
+import android.database.Cursor;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+
+import io.github.vickychijwani.gimmick.database.DatabaseContract;
 
 public class ReleaseDate implements Comparable<ReleaseDate> {
 
@@ -77,6 +81,13 @@ public class ReleaseDate implements Comparable<ReleaseDate> {
         mMonth = (byte) (calendar.get(Calendar.MONTH) + 1);
         mYear = (short) calendar.get(Calendar.YEAR);
         mQuarter = QUARTER_INVALID;
+    }
+
+    public ReleaseDate(Cursor cursor) {
+        this((byte) cursor.getShort(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable.COL_RELEASE_DAY)),
+                (byte) cursor.getShort(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable.COL_RELEASE_MONTH)),
+                (byte) cursor.getShort(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable.COL_RELEASE_QUARTER)),
+                cursor.getShort(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable.COL_RELEASE_YEAR)));
     }
 
     private ReleaseDate() {

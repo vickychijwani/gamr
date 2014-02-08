@@ -3,8 +3,6 @@
 
     <!-- Main activity -->
     <string name="app_name">Gamr</string>
-    <string name="action_add">Add</string>
-    <string name="action_settings">Settings</string>
     <string name="search_for_games">Search for games</string>
 
     <!-- Search results -->
@@ -18,8 +16,14 @@
     <string name="add_already_exists">"%1$s" is already in your collection.</string>
     <string name="add_unknown_error">Could not add "%1$s."</string>
 
+    <!-- Game details -->
+    <string name="genres">Genres</string>
+
     <!-- Generic strings -->
     <string name="offline">No network connectivity. Try again later.</string>
+    <string name="add">Add</string>
+    <string name="overview">Overview</string>
+    <string name="settings">Settings</string>
 
     <!-- Image content descriptions -->
     <string name="description_poster">Poster</string>
