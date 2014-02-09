@@ -9,16 +9,18 @@ import java.util.TreeSet;
 // TODO make this data dynamic!
 public enum Platform {
 
-    PC("PC", "PC"),
-    PS3("PS3", "PlayStation 3", "PlayStation Network (PS3)"),
-    XBOX_360("X360", "Xbox 360", "Xbox 360 Games Store"),
-    PS4("PS4", "PlayStation 4", "PS4", "Orbis"),
-    XBOX_ONE("X1", "Xbox One", "Xbox Durango", "XONE", "XBONE", "Xbox 1");
+    PC(3, "PC", "PC"),
+    PS3(1, "PS3", "PlayStation 3", "PlayStation Network (PS3)"),
+    XBOX_360(2, "X360", "Xbox 360", "Xbox 360 Games Store"),
+    PS4(72496, "PS4", "PlayStation 4", "PS4", "Orbis"),
+    XBOX_ONE(80000, "X1", "Xbox One", "Xbox Durango", "XONE", "XBONE", "Xbox 1");
 
+    private int mMetacriticId;
     private String mShortName;
     private HashSet<String> mAliases;
 
-    Platform(@NotNull String shortName, String... aliases) {
+    Platform(int metacriticId, @NotNull String shortName, String... aliases) {
+        mMetacriticId = metacriticId;
         mShortName = shortName;
         mAliases = new HashSet<String>(Arrays.asList(aliases));
     }
@@ -40,11 +42,17 @@ public enum Platform {
         return platformSet;
     }
 
+    public int getMetacriticId() {
+        return mMetacriticId;
+    }
+
     public String getShortName() {
         return mShortName;
     }
 
     @Override
-    public String toString() { return mShortName; }
+    public String toString() {
+        return mShortName;
+    }
 
 }

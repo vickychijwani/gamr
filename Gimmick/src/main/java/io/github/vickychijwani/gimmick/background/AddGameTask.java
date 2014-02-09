@@ -5,12 +5,12 @@ import android.content.res.Resources;
 import android.util.Log;
 import android.widget.Toast;
 
-import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
 import io.github.vickychijwani.gimmick.R;
-import io.github.vickychijwani.gimmick.database.DBHelper;
+import io.github.vickychijwani.gimmick.api.GiantBomb;
+import io.github.vickychijwani.gimmick.api.Metacritic;
 import io.github.vickychijwani.gimmick.database.GamrProvider;
 import io.github.vickychijwani.gimmick.item.SearchResult;
 import io.github.vickychijwani.gimmick.utility.NetworkUtils;
@@ -77,7 +77,7 @@ public class AddGameTask extends android.os.AsyncTask<Void, AddGameTask.Result, 
                 return null;
             }
 
-            if (!NetworkUtils.isNetworkConnected(mContext)) {
+            if (! NetworkUtils.isNetworkConnected(mContext)) {
                 Log.d(TAG, "Finished. No internet connection.");
                 publishProgress(new Result(StatusCode.OFFLINE));
                 return null;
@@ -104,15 +104,22 @@ public class AddGameTask extends android.os.AsyncTask<Void, AddGameTask.Result, 
                 }
 
                 SearchResult game = mAddQueue.removeFirst();
+                SearchResult fullGame = GiantBomb.fetchGame(game.giantBombUrl);
 
-                try {
-                    if (GamrProvider.addGame(game)) {
-                        result = new Result(StatusCode.SUCCESS, game.name);
-                    } else {
-                        result = new Result(StatusCode.ALREADY_EXISTS, game.name);
-                    }
-                } catch (Exception e) {
+                if (fullGame == null) {
                     result = new Result(StatusCode.UNKNOWN_ERROR, game.name);
+                }
+                else {
+                    Metacritic.fetchRating(fullGame);
+                    try {
+                        if (GamrProvider.addGame(fullGame)) {
+                            result = new Result(StatusCode.SUCCESS, game.name);
+                        } else {
+                            result = new Result(StatusCode.ALREADY_EXISTS, game.name);
+                        }
+                    } catch (Exception e) {
+                        result = new Result(StatusCode.UNKNOWN_ERROR, game.name);
+                    }
                 }
 
                 publishProgress(result);
@@ -149,7 +156,7 @@ public class AddGameTask extends android.os.AsyncTask<Void, AddGameTask.Result, 
             case OFFLINE:
                 Toast.makeText(mContext,
                         R.string.offline,
-                        Toast.LENGTH_SHORT).show();
+                        Toast.LENGTH_LONG).show();
                 break;
         }
     }

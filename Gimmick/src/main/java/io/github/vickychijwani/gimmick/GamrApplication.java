@@ -12,6 +12,8 @@ import com.android.volley.toolbox.Volley;
 
 import org.jetbrains.annotations.NotNull;
 
+import io.github.vickychijwani.gimmick.api.GiantBomb;
+import io.github.vickychijwani.gimmick.api.Metacritic;
 import io.github.vickychijwani.gimmick.utility.DeviceUtils;
 
 public class GamrApplication extends Application {
@@ -42,6 +44,10 @@ public class GamrApplication extends Application {
 
         // Set content provider authority
         CONTENT_AUTHORITY = "io.github.vickychijwani.gimmick.provider";
+
+        // Set API keys
+        GiantBomb.setApiKey(getString(R.string.giantbomb_api_key));
+        Metacritic.setApiKey(getString(R.string.mashape_api_key));
 
         enableStrictMode();
     }

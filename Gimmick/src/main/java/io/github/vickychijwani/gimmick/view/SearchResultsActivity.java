@@ -186,7 +186,7 @@ public class SearchResultsActivity extends BaseActivity {
 
     }
 
-    public static class SearchResultViewHolder {
+    private static class SearchResultViewHolder {
         public ImageView poster;
         public TextView title;
         public TextView releaseDate;

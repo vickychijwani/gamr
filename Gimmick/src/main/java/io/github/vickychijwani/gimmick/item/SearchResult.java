@@ -6,6 +6,7 @@ import android.text.TextUtils;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Set;
@@ -23,7 +24,10 @@ public class SearchResult {
     public String blurb = "";
     public ReleaseDate releaseDate = null;
     public Set<Platform> platforms = new TreeSet<Platform>();
+
+    public short metacriticRating = -1;
     public Set<String> genres = new TreeSet<String>();
+    public Set<String> franchises = new TreeSet<String>();
 
     public boolean isAdded;
 
@@ -53,8 +57,19 @@ public class SearchResult {
         } catch (IllegalArgumentException ignored) { }
 
         try {
+            metacriticRating = cursor.getShort(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable.COL_METACRITIC_RATING));
+        } catch (IllegalArgumentException ignored) { }
+
+        try {
             String genresCsv = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable.COL_GENRES));
             assert genresCsv != null;
+            genres = new TreeSet<String>(Arrays.asList(genresCsv.split(", ")));
+        } catch (IllegalArgumentException ignored) { }
+
+        try {
+            String franchisesCsv = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable.COL_FRANCHISES));
+            assert franchisesCsv != null;
+            franchises = new TreeSet<String>(Arrays.asList(franchisesCsv.split(", ")));
         } catch (IllegalArgumentException ignored) { }
     }
 
@@ -64,6 +79,10 @@ public class SearchResult {
 
     public void addGenre(@NotNull String genre) {
         genres.add(genre);
+    }
+
+    public void addFranchise(@NotNull String franchise) {
+        franchises.add(franchise);
     }
 
     public Iterator<Platform> getPlatforms() {
@@ -76,6 +95,10 @@ public class SearchResult {
 
     public String getGenresDisplayString() {
         return TextUtils.join(", ", genres);
+    }
+
+    public String getFranchisesDisplayString() {
+        return TextUtils.join(", ", franchises);
     }
 
     @Override

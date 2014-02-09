@@ -1,6 +1,5 @@
 package io.github.vickychijwani.gimmick.view;
 
-import android.database.Cursor;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,9 +14,9 @@ import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.item.SearchResult;
 import io.github.vickychijwani.gimmick.utility.NetworkUtils;
 
-public class GameOverviewFragment extends DataFragment {
+public class GameOverviewFragment extends DataFragment<SearchResult> {
 
-    private Cursor mCursor;
+    private SearchResult mGame;
 
     @Nullable
     @Override
@@ -26,35 +25,52 @@ public class GameOverviewFragment extends DataFragment {
 
         View view = inflater.inflate(R.layout.fragment_game_overview, container, false);
 
-        if (mCursor != null) {
-            bindDataToView(mCursor, view);
+        if (mGame != null) {
+            bindDataToView(mGame, view);
         }
 
         return view;
     }
 
     @Override
-    void onDataLoaded(Cursor cursor) {
-        mCursor = cursor;
+    void onDataLoaded(SearchResult game) {
+        mGame = game;
         if (getView() != null) {
-            bindDataToView(cursor, getView());
+            bindDataToView(game, getView());
         }
     }
 
-    private void bindDataToView(Cursor cursor, View view) {
-        assert cursor != null;
+    private void bindDataToView(SearchResult game, View view) {
+        assert game != null;
         assert view != null;
+
         ImageView poster = (ImageView) view.findViewById(R.id.poster);
         TextView releaseDate = (TextView) view.findViewById(R.id.release_date);
         TextView platforms = (TextView) view.findViewById(R.id.platforms);
         TextView blurb = (TextView) view.findViewById(R.id.blurb);
-
-        SearchResult game = new SearchResult(cursor);
+        TextView metacriticRating = (TextView) view.findViewById(R.id.rating_metacritic_value);
+        TextView genres = (TextView) view.findViewById(R.id.genres);
+        TextView franchises = (TextView) view.findViewById(R.id.franchises);
 
         NetworkUtils.loadImage(game.smallPosterUrl, poster);
         releaseDate.setText(game.releaseDate.toString());
         platforms.setText(game.getPlatformsDisplayString());
         blurb.setText(game.blurb);
+
+        if (game.metacriticRating > 0) {
+            metacriticRating.setText(String.valueOf(game.metacriticRating));
+        }
+        bindTextOrHide(game.getGenresDisplayString(), genres, view.findViewById(R.id.genres_header));
+        bindTextOrHide(game.getFranchisesDisplayString(), franchises, view.findViewById(R.id.franchises_header));
+    }
+
+    private void bindTextOrHide(String text, TextView textView, View headerView) {
+        if ("".equals(text)) {
+            textView.setVisibility(View.GONE);
+            headerView.setVisibility(View.GONE);
+        } else {
+            textView.setText(text);
+        }
     }
 
 }

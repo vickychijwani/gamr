@@ -19,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 
 import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.database.DatabaseContract;
+import io.github.vickychijwani.gimmick.item.SearchResult;
 
 public class GameDetailsActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -78,6 +79,7 @@ public class GameDetailsActivity extends BaseActivity implements LoaderManager.L
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         // close the old cursor
         if (mCursor != null) {
@@ -88,8 +90,10 @@ public class GameDetailsActivity extends BaseActivity implements LoaderManager.L
         String gameName = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable.COL_NAME));
         getActionBar().setTitle(gameName);
 
-        for (DataFragment dataFragment : mFragments) {
-            dataFragment.onDataLoaded(cursor);
+        SearchResult game = new SearchResult(cursor);
+
+        for (DataFragment<SearchResult> dataFragment : mFragments) {
+            dataFragment.onDataLoaded(game);
         }
 
         mCursor = cursor;

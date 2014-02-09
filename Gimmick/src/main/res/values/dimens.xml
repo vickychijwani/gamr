@@ -3,6 +3,7 @@
     <!-- padding -->
     <dimen name="padding_inline">4dp</dimen>
     <dimen name="padding_default">8dp</dimen>
+    <dimen name="padding_large">16dp</dimen>
 
     <!-- text sizes -->
     <dimen name="text_size_xsmall">12sp</dimen>

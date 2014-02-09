@@ -6,7 +6,7 @@
     android:layout_height="wrap_content">
 
     <LinearLayout
-        style="@style/DefaultPadding"
+        style="@style/DefaultPadding.Page"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -38,7 +38,6 @@
                 android:layout_marginLeft="@dimen/padding_default"
                 android:layout_marginTop="@dimen/padding_inline"
                 android:layout_toRightOf="@id/poster_container"
-                android:textAllCaps="true"
                 android:textAppearance="@style/TextAppearance.Medium.Light"
                 android:textIsSelectable="true"
                 tools:text="1/1/2014" />
@@ -51,9 +50,58 @@
                 android:layout_marginLeft="@dimen/padding_default"
                 android:layout_marginTop="@dimen/padding_default"
                 android:layout_toRightOf="@id/poster_container"
-                android:textAppearance="@style/TextAppearance.Medium.Light"
+                android:textAppearance="@style/TextAppearance.Small.Label"
                 android:textIsSelectable="true"
                 tools:text="PC XBOX PS3" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rating_bar"
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/padding_default"
+            android:layout_marginLeft="@dimen/padding_default"
+            android:layout_marginRight="@dimen/padding_default"
+            android:background="?attr/clickable_item_background">
+
+            <ImageView
+                android:id="@+id/rating_star"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="@dimen/padding_inline"
+                android:padding="4dp"
+                android:src="@drawable/ic_action_important"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:id="@+id/rating_metacritic_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/padding_large"
+                android:layout_toRightOf="@+id/rating_star"
+                android:text="@string/no_rating"
+                android:textAppearance="@style/TextAppearance.Large.Light"
+                android:textSize="26sp" />
+
+            <TextView
+                android:id="@+id/rating_metacritic_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/rating_metacritic_value"
+                android:text="@string/metacritic"
+                android:textAppearance="@style/TextAppearance.Small.Dim" />
+
+            <TextView
+                android:id="@+id/rating_metacritic_range"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/rating_metacritic_label"
+                android:layout_toRightOf="@id/rating_metacritic_value"
+                android:text="@string/metacritic_range"
+                android:textAppearance="@style/TextAppearance.Small.Dim" />
 
         </RelativeLayout>
 
@@ -68,6 +116,7 @@
             tools:text="Short blurb of text describing how awesome this game really is!" />
 
         <TextView
+            android:id="@+id/genres_header"
             style="@style/DefaultPadding.Blocks.WithTopMargin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -83,6 +132,24 @@
             android:textAppearance="@style/TextAppearance.Light"
             android:textIsSelectable="true"
             tools:text="Action, Sci-fi, Fantasy" />
+
+        <TextView
+            android:id="@+id/franchises_header"
+            style="@style/DefaultPadding.Blocks.WithTopMargin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="true"
+            android:text="@string/franchises"
+            android:textAppearance="@style/TextAppearance.Small.Label" />
+
+        <TextView
+            android:id="@+id/franchises"
+            style="@style/DefaultPadding.Blocks.WithBottomMargin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.Light"
+            android:textIsSelectable="true"
+            tools:text="Mass Effect" />
 
     </LinearLayout>
 

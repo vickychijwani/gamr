@@ -1,12 +1,16 @@
 package io.github.vickychijwani.gimmick.api;
 
+import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.android.volley.Response;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.RequestFuture;
+import com.meetme.android.multistateview.R;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,15 +23,18 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import io.github.vickychijwani.gimmick.GamrApplication;
 import io.github.vickychijwani.gimmick.item.Platform;
 import io.github.vickychijwani.gimmick.item.ReleaseDate;
 import io.github.vickychijwani.gimmick.item.SearchResult;
 
-//import org.jetbrains.annotations.NotNull;
-
 public class GiantBomb {
+
+    private static final String TAG = "GiantBomb";
+    private static final String BASE_URL = "http://www.giantbomb.com/api/";
+    private static String API_KEY = null;
 
     private static final String RESULTS = "results";
     private static final String ID = "id";
@@ -44,18 +51,18 @@ public class GiantBomb {
     private static final String EXPECTED_RELEASE_QUARTER = "expected_release_quarter";
     private static final String EXPECTED_RELEASE_MONTH = "expected_release_month";
     private static final String EXPECTED_RELEASE_DAY = "expected_release_day";
+
     private static final String GENRES = "genres";
+    private static final String FRANCHISES = "franchises";
 
     private static final String SORT_ORDER_ASC = "asc";
     private static final String SORT_ORDER_DESC = "desc";
     private static final SortOption SORT_BY_MOST_REVIEWS = new SortOption(REVIEW_COUNT, SORT_ORDER_DESC);
     private static final SortOption SORT_BY_LATEST_RELEASES = new SortOption(ORIGINAL_RELEASE_DATE, SORT_ORDER_DESC);
 
-    private static final String TAG = "GiantBomb";
-
-    public static void searchGames(String query, Response.Listener<JSONObject> successHandler,
+    public static void searchGames(@NotNull String query, Response.Listener<JSONObject> successHandler,
                                    Response.ErrorListener errorHandler) {
-        Log.d(TAG, "Searching for \"" + query+ "\"...");
+        Log.i(TAG, "Searching for \"" + query + "\"...");
 
         String url = new URLBuilder()
                 .setResource("games")
@@ -63,11 +70,62 @@ public class GiantBomb {
                 .setSortOrder(SORT_BY_LATEST_RELEASES, SORT_BY_MOST_REVIEWS)
                 .setFieldList(ID, NAME, PLATFORMS, IMAGE_URLS, DECK, API_DETAIL_URL,
                         ORIGINAL_RELEASE_DATE, EXPECTED_RELEASE_YEAR, EXPECTED_RELEASE_QUARTER,
-                        EXPECTED_RELEASE_MONTH, EXPECTED_RELEASE_DAY, GENRES)
+                        EXPECTED_RELEASE_MONTH, EXPECTED_RELEASE_DAY)
                 .toString();
 
         JsonObjectRequest req = new JsonObjectRequest(url, null, successHandler, errorHandler);
         GamrApplication.getInstance().addToRequestQueue(req);
+    }
+
+    @Nullable
+    public static SearchResult fetchGame(@NotNull String giantBombUrl) {
+        Log.i(TAG, "Fetching game info from " + giantBombUrl);
+
+        String url = new URLBuilder(giantBombUrl)
+                .setFieldList(ID, NAME, PLATFORMS, IMAGE_URLS, DECK, API_DETAIL_URL,
+                        ORIGINAL_RELEASE_DATE, EXPECTED_RELEASE_YEAR, EXPECTED_RELEASE_QUARTER,
+                        EXPECTED_RELEASE_MONTH, EXPECTED_RELEASE_DAY,
+                        GENRES, FRANCHISES)
+                .toString();
+
+        RequestFuture<JSONObject> future = RequestFuture.newFuture();
+        JsonObjectRequest req = new JsonObjectRequest(url, null, future, future);
+        GamrApplication.getInstance().addToRequestQueue(req);
+
+        try {
+            JSONObject resultJson = future.get().getJSONObject(RESULTS);
+            SearchResult result = new SearchResult();
+            JSONArrayNameIterator nameIterator;
+
+            if (! parseEssentialGameInfoFromJson(resultJson, result)) {
+                return null;
+            }
+
+            // genres
+            if (! resultJson.isNull(GENRES)) {
+                nameIterator = new JSONArrayNameIterator(resultJson.getJSONArray(GENRES));
+                while (nameIterator.hasNext()) {
+                    result.addGenre(nameIterator.next());
+                }
+            }
+
+            // franchises
+            if (! resultJson.isNull(FRANCHISES)) {
+                nameIterator = new JSONArrayNameIterator(resultJson.getJSONArray(FRANCHISES));
+                while (nameIterator.hasNext()) {
+                    result.addFranchise(nameIterator.next());
+                }
+            }
+
+            return result;
+        } catch (InterruptedException e) {
+            Log.e(TAG, Log.getStackTraceString(e));
+        } catch (ExecutionException e) {
+            Log.e(TAG, Log.getStackTraceString(e));
+        } catch (JSONException e) {
+            Log.e(TAG, Log.getStackTraceString(e));
+        }
+        return null;
     }
 
     @NotNull
@@ -76,7 +134,7 @@ public class GiantBomb {
         try {
             resultsArray = resultsJson.getJSONArray(RESULTS);
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.e(TAG, Log.getStackTraceString(e));
             return new ArrayList<SearchResult>();
         }
         Log.d(TAG, "Got " + resultsArray.length() + " search results");
@@ -86,47 +144,48 @@ public class GiantBomb {
             try {
                 SearchResult result = new SearchResult();
                 JSONObject resultJson = resultsArray.getJSONObject(i);
-                JSONArrayNameIterator nameIterator;
 
-                // platforms
-                nameIterator = new JSONArrayNameIterator(resultJson.getJSONArray(PLATFORMS));
-                while (nameIterator.hasNext()) {
-                    String platformName = nameIterator.next();
-                    try {
-                        result.addPlatform(Platform.fromName(platformName));
-                    } catch (IllegalArgumentException e) {
-                        Log.d(TAG, "Ignoring '" + platformName + "' platform");
-                    }
-                }
-
-                if (result.platforms.size() == 0)
+                if (! parseEssentialGameInfoFromJson(resultJson, result)) {
                     continue;
-
-                // essentials
-                result.giantBombId = resultJson.getInt(ID);
-                result.name = resultJson.getString(NAME);
-                result.giantBombUrl = resultJson.getString(API_DETAIL_URL);
-                result.posterUrl = resultJson.getJSONObject(IMAGE_URLS).getString(POSTER_URL);
-                result.smallPosterUrl = resultJson.getJSONObject(IMAGE_URLS).getString(SMALL_POSTER_URL);
-                result.blurb = resultJson.getString(DECK);
-                result.releaseDate = parseReleaseDateFromJson(resultJson);
-
-                // genres
-//                if (resultJson.has(GENRES)) {
-                    nameIterator = new JSONArrayNameIterator(resultJson.getJSONArray(GENRES));
-                    while (nameIterator.hasNext()) {
-                        result.addGenre(nameIterator.next());
-                    }
-//                }
+                }
 
                 searchResults.add(result);
             } catch (JSONException e) {
-                e.printStackTrace();
+                Log.e(TAG, Log.getStackTraceString(e));
             }
         }
 
         Log.d(TAG, searchResults.size() + " results parsed: " + searchResults);
         return searchResults;
+    }
+
+    private static boolean parseEssentialGameInfoFromJson(JSONObject resultJson, SearchResult result)
+            throws JSONException {
+        JSONArrayNameIterator nameIterator;
+
+        // platforms
+        nameIterator = new JSONArrayNameIterator(resultJson.getJSONArray(PLATFORMS));
+        while (nameIterator.hasNext()) {
+            String platformName = nameIterator.next();
+            try {
+                result.addPlatform(Platform.fromName(platformName));
+            } catch (IllegalArgumentException e) {
+                Log.d(TAG, "Ignoring '" + platformName + "' platform");
+            }
+        }
+
+        if (result.platforms.size() == 0)
+            return false;
+
+        // essentials
+        result.giantBombId = resultJson.getInt(ID);
+        result.name = resultJson.getString(NAME);
+        result.giantBombUrl = resultJson.getString(API_DETAIL_URL);
+        result.posterUrl = resultJson.getJSONObject(IMAGE_URLS).getString(POSTER_URL);
+        result.smallPosterUrl = resultJson.getJSONObject(IMAGE_URLS).getString(SMALL_POSTER_URL);
+        result.blurb = resultJson.getString(DECK);
+        result.releaseDate = parseReleaseDateFromJson(resultJson);
+        return true;
     }
 
     private static ReleaseDate parseReleaseDateFromJson(JSONObject resultJson) {
@@ -137,7 +196,7 @@ public class GiantBomb {
             try {
                 releaseDate = new ReleaseDate(originalReleaseDate);
             } catch (ParseException e) {
-                e.printStackTrace();
+                Log.e(TAG, Log.getStackTraceString(e));
             }
         } else if (expectedReleaseYear != ReleaseDate.YEAR_INVALID) {
             byte expectedReleaseQuarter = (byte) resultJson.optInt(EXPECTED_RELEASE_QUARTER, ReleaseDate.QUARTER_INVALID);
@@ -146,10 +205,14 @@ public class GiantBomb {
             try {
                 releaseDate = new ReleaseDate(expectedReleaseDay, expectedReleaseMonth, expectedReleaseQuarter, expectedReleaseYear);
             } catch (IllegalArgumentException e) {
-                e.printStackTrace();
+                Log.e(TAG, Log.getStackTraceString(e));
             }
         }
         return releaseDate;
+    }
+
+    public static void setApiKey(@NotNull String apiKey) {
+        API_KEY = apiKey;
     }
 
     /**
@@ -181,7 +244,7 @@ public class GiantBomb {
             try {
                 return mJsonArray.getJSONObject(mPosition++).getString(NAME);
             } catch (JSONException e) {
-                e.printStackTrace();
+                Log.e(TAG, Log.getStackTraceString(e));
             }
             return null;
         }
@@ -189,17 +252,29 @@ public class GiantBomb {
 
     private static class URLBuilder {
 
-        private static final String BASE_URL = "http://www.giantbomb.com/api/";
-        private static final String API_KEY = "f389a37a2ab8f1820572098a113ca89ba95de6ef";
+        private StringBuilder mBuilder;
 
-        private StringBuilder mBuilder = new StringBuilder(BASE_URL);
+        public URLBuilder() {
+            assert API_KEY != null;
+            mBuilder = new StringBuilder(BASE_URL);
+        }
+
+        public URLBuilder(String url) {
+            assert API_KEY != null;
+            mBuilder = new StringBuilder(url);
+            appendEssentialParams();
+        }
 
         public URLBuilder setResource(String resource) {
             mBuilder.append(resource);
-            mBuilder.append("?api_key=");
-            mBuilder.append(API_KEY);
-            mBuilder.append("&format=json");
+            appendEssentialParams();
             return this;
+        }
+
+        private void appendEssentialParams() {
+            mBuilder.append("?api_key=")
+                    .append(API_KEY)
+                    .append("&format=json");
         }
 
         public URLBuilder setFieldList(String... fieldList) {
@@ -221,7 +296,7 @@ public class GiantBomb {
                 mBuilder.append("=");
                 mBuilder.append(URLEncoder.encode(value, "UTF-8"));
             } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
+                Log.e(TAG, Log.getStackTraceString(e));
             }
             return this;
         }

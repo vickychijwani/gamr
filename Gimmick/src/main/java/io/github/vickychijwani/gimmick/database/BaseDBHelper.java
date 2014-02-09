@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 import android.text.TextUtils;
+import android.util.Log;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -14,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 abstract class BaseDBHelper extends SQLiteOpenHelper {
+
+    private static final String TAG = "BaseDBHelper";
 
     protected static BaseDBHelper sInstance = null;
 
@@ -131,6 +134,8 @@ abstract class BaseDBHelper extends SQLiteOpenHelper {
 
             if (mGrouping != null)
                 query += " GROUP BY " + mGrouping;
+
+            Log.i(TAG, "SQL query: " + query);
 
             return query;
         }

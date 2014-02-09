@@ -95,7 +95,9 @@
     </style>
 
     <!-- easy layouting -->
-    <style name="DefaultPadding">
+    <style name="DefaultPadding" />
+
+    <style name="DefaultPadding.Page">
         <item name="android:paddingTop">@dimen/padding_default</item>
         <item name="android:paddingBottom">@dimen/padding_default</item>
         <item name="android:paddingLeft">@dimen/padding_default</item>
