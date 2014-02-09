@@ -19,7 +19,6 @@ import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.bumptech.glide.Glide;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
@@ -32,7 +31,6 @@ import io.github.vickychijwani.gimmick.api.GiantBomb;
 import io.github.vickychijwani.gimmick.background.TaskManager;
 import io.github.vickychijwani.gimmick.item.SearchResult;
 import io.github.vickychijwani.gimmick.utility.NetworkUtils;
-import io.github.vickychijwani.gimmick.viewholder.SearchResultViewHolder;
 
 public class SearchResultsActivity extends BaseActivity {
 
@@ -186,6 +184,15 @@ public class SearchResultsActivity extends BaseActivity {
             return convertView;
         }
 
+    }
+
+    public static class SearchResultViewHolder {
+        public ImageView poster;
+        public TextView title;
+        public TextView releaseDate;
+        public TextView platforms;
+        public View details;
+        public View addbutton;
     }
 
 }
