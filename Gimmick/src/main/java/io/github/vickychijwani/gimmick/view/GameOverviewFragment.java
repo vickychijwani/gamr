@@ -21,13 +21,13 @@ public class GameOverviewFragment extends DataFragment<SearchResult> {
 
     private SearchResult mGame;
 
-    @InjectView(R.id.poster)                    ImageView mPosterView;
-    @InjectView(R.id.release_date)              TextView mReleaseDateView;
-    @InjectView(R.id.platforms)                 TextView mPlatformsView;
-    @InjectView(R.id.blurb)                     TextView mBlurbView;
-    @InjectView(R.id.rating_metacritic_value)   TextView mMetacriticRatingView;
-    @InjectView(R.id.genres)                    TextView mGenresView;
-    @InjectView(R.id.franchises)                TextView mFranchisesView;
+    @InjectView(R.id.poster)            ImageView mPosterView;
+    @InjectView(R.id.release_date)      TextView mReleaseDateView;
+    @InjectView(R.id.platforms)         TextView mPlatformsView;
+    @InjectView(R.id.blurb)             TextView mBlurbView;
+    @InjectView(R.id.metascore_value)   TextView mMetascoreView;
+    @InjectView(R.id.genres)            TextView mGenresView;
+    @InjectView(R.id.franchises)        TextView mFranchisesView;
 
     @Nullable
     @Override
@@ -60,8 +60,8 @@ public class GameOverviewFragment extends DataFragment<SearchResult> {
         mPlatformsView.setText(game.getPlatformsDisplayString());
         mBlurbView.setText(game.blurb);
 
-        if (game.metacriticRating > 0) {
-            mMetacriticRatingView.setText(String.valueOf(game.metacriticRating));
+        if (game.metascore > 0) {
+            mMetascoreView.setText(String.valueOf(game.metascore));
         }
         bindTextOrHide(game.getGenresDisplayString(), mGenresView, view.findViewById(R.id.genres_header));
         bindTextOrHide(game.getFranchisesDisplayString(), mFranchisesView, view.findViewById(R.id.franchises_header));

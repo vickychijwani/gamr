@@ -28,8 +28,8 @@ public class Metacritic {
     private static final String RESULT = "result";
     private static final String SCORE = "score";
 
-    public static void fetchRating(@NotNull SearchResult game) {
-        Log.i(TAG, "Fetching Metacritic rating for \"" + game.name + "\"");
+    public static void fetchMetascore(@NotNull SearchResult game) {
+        Log.i(TAG, "Fetching Metascore for \"" + game.name + "\"");
 
         String url = BASE_URL;
         Platform platform = game.getPlatforms().next();
@@ -52,7 +52,7 @@ public class Metacritic {
 
         try {
             JSONObject resultJson = future.get().getJSONObject(RESULT);
-            game.metacriticRating = Short.parseShort(resultJson.getString(SCORE));
+            game.metascore = Short.parseShort(resultJson.getString(SCORE));
         } catch (InterruptedException e) {
             Log.e(TAG, Log.getStackTraceString(e));
         } catch (ExecutionException e) {

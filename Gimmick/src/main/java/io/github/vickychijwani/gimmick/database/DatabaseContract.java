@@ -106,7 +106,7 @@ public final class DatabaseContract {
 
 
         /** Metacritic rating for the game */
-        public static final String COL_METACRITIC_RATING = "metacritic_rating";
+        public static final String COL_METASCORE = "metacritic_rating";
 
         /** CSV of all genres this game belongs to */
         public static final String COL_GENRES = "genres";
@@ -126,7 +126,7 @@ public final class DatabaseContract {
                     SQL.DEF_COL(COL_RELEASE_YEAR, SQL.Type.INTEGER, SQL.Constraint.NOT_NULL),
                     SQL.DEF_COL(COL_BLURB, SQL.Type.TEXT, SQL.Constraint.DEFAULT("\"\"")),
                     SQL.DEF_FOREIGN_KEY_NOT_NULL(COL_GAME_LIST_ID, GameListTable.TABLE_NAME, GameListTable._ID),
-                    SQL.DEF_COL(COL_METACRITIC_RATING, SQL.Type.INTEGER, SQL.Constraint.NOT_NULL, SQL.Constraint.DEFAULT(-1)),
+                    SQL.DEF_COL(COL_METASCORE, SQL.Type.INTEGER, SQL.Constraint.NOT_NULL, SQL.Constraint.DEFAULT(-1)),
                     SQL.DEF_COL(COL_GENRES, SQL.Type.TEXT, SQL.Constraint.DEFAULT("\"\"")),
                     SQL.DEF_COL(COL_FRANCHISES, SQL.Type.TEXT, SQL.Constraint.DEFAULT("\"\""))
             );
@@ -145,7 +145,7 @@ public final class DatabaseContract {
             values.put(COL_RELEASE_YEAR, game.releaseDate.getYear());
             values.put(COL_BLURB, game.blurb);
             values.put(COL_GAME_LIST_ID, GameListTable.TO_PLAY_ID);
-            values.put(COL_METACRITIC_RATING, game.metacriticRating);
+            values.put(COL_METASCORE, game.metascore);
             values.put(COL_GENRES, game.getGenresDisplayString());
             values.put(COL_FRANCHISES, game.getFranchisesDisplayString());
             return values;
@@ -166,7 +166,7 @@ public final class DatabaseContract {
                     qualify(_ID), qualify(COL_NAME), COL_POSTER_URL, COL_SMALL_POSTER_URL, COL_BLURB,
                     COL_RELEASE_DAY, COL_RELEASE_MONTH, COL_RELEASE_QUARTER, COL_RELEASE_YEAR,
                     SQL.groupConcat(PlatformTable.qualify(PlatformTable.COL_NAME), COL_PSEUDO_PLATFORMS),
-                    COL_METACRITIC_RATING, COL_GENRES, COL_FRANCHISES
+                    COL_METASCORE, COL_GENRES, COL_FRANCHISES
             };
         }
 

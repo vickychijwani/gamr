@@ -110,7 +110,7 @@ public class AddGameTask extends android.os.AsyncTask<Void, AddGameTask.Result, 
                     result = new Result(StatusCode.UNKNOWN_ERROR, game.name);
                 }
                 else {
-                    Metacritic.fetchRating(fullGame);
+                    Metacritic.fetchMetascore(fullGame);
                     try {
                         if (GamrProvider.addGame(fullGame)) {
                             result = new Result(StatusCode.SUCCESS, game.name);

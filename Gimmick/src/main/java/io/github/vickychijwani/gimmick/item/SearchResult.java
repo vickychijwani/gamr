@@ -25,7 +25,7 @@ public class SearchResult {
     public ReleaseDate releaseDate = null;
     public Set<Platform> platforms = new TreeSet<Platform>();
 
-    public short metacriticRating = -1;
+    public short metascore = -1;
     public Set<String> genres = new TreeSet<String>();
     public Set<String> franchises = new TreeSet<String>();
 
@@ -57,7 +57,7 @@ public class SearchResult {
         } catch (IllegalArgumentException ignored) { }
 
         try {
-            metacriticRating = cursor.getShort(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable.COL_METACRITIC_RATING));
+            metascore = cursor.getShort(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable.COL_METASCORE));
         } catch (IllegalArgumentException ignored) { }
 
         try {

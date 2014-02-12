@@ -24,7 +24,7 @@
     <string name="franchises">Franchises</string>
     <string name="metacritic">Metacritic</string>
     <string name="no_rating">n/a</string>
-    <string name="metacritic_range">/100</string>
+    <string name="metascore_range">/100</string>
 
     <!-- Generic strings -->
     <string name="offline">No network connectivity. Try again later.</string>
