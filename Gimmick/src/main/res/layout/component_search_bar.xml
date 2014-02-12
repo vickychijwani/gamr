@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/searchbar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/padding_default"
+    android:layout_marginStart="@dimen/padding_large"
+    android:layout_marginEnd="@dimen/padding_large"
+    android:layout_marginTop="@dimen/padding_large">
+
+    <EditText
+        android:id="@+id/searchbox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:hint="@string/search_for_games"
+        android:imeOptions="actionSearch"
+        android:inputType="text" />
+
+    <ImageButton
+        android:id="@+id/clear_button"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="?attr/clickable_item_background"
+        android:contentDescription="@string/clear"
+        android:src="@drawable/ic_action_remove" />
+
+</LinearLayout>
+

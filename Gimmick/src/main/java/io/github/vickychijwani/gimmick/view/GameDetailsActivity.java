@@ -18,6 +18,7 @@ import com.astuetz.PagerSlidingTabStrip;
 import org.jetbrains.annotations.NotNull;
 
 import io.github.vickychijwani.gimmick.R;
+import io.github.vickychijwani.gimmick.adapter.BaseFragmentPagerAdapter;
 import io.github.vickychijwani.gimmick.database.DatabaseContract;
 import io.github.vickychijwani.gimmick.item.SearchResult;
 
@@ -41,6 +42,11 @@ public class GameDetailsActivity extends BaseActivity implements LoaderManager.L
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_details);
 
+        if (getIntent() == null) {
+            finish();
+            return;
+        }
+
         mGiantBombId = getIntent().getIntExtra(IntentFields.GAME_GIANT_BOMB_ID, -1);
         if (mGiantBombId == -1) {
             finish();
@@ -49,19 +55,16 @@ public class GameDetailsActivity extends BaseActivity implements LoaderManager.L
 
         Log.i(TAG, "Displaying details for game ID = " + mGiantBombId);
 
-        // initialize fragments
+        // setup fragments
         GameOverviewFragment gameOverviewFragment = new GameOverviewFragment();
         mFragments = new DataFragment[] {
                 gameOverviewFragment
         };
+        String[] tabTitles = new String[] {
+                getString(R.string.overview)
+        };
 
-        // setup tabs
-        ViewPager pager = (ViewPager) findViewById(R.id.pager);
-        pager.setAdapter(new DetailFragmentsAdapter(getSupportFragmentManager()));
-
-        // bind tabs to viewpager
-        PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
-        tabs.setViewPager(pager);
+        setupTabsAndViewPager(mFragments, tabTitles);
 
         getSupportLoaderManager().initLoader(LOADER_ID, null, this);
     }
@@ -102,31 +105,6 @@ public class GameDetailsActivity extends BaseActivity implements LoaderManager.L
     @Override
     public void onLoaderReset(Loader loader) {
 
-    }
-
-    private class DetailFragmentsAdapter extends FragmentPagerAdapter {
-        public DetailFragmentsAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return mFragments[position];
-        }
-
-        @Override
-        public int getCount() {
-            return mFragments.length;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            Fragment fragment = getItem(position);
-            if (fragment instanceof GameOverviewFragment) {
-                return getString(R.string.overview);
-            }
-            return "";
-        }
     }
 
 }

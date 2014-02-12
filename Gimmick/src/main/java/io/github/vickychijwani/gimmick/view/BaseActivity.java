@@ -2,13 +2,18 @@ package io.github.vickychijwani.gimmick.view;
 
 import android.app.ActionBar;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
+import android.support.v4.view.ViewPager;
 import android.view.MenuItem;
+
+import com.astuetz.PagerSlidingTabStrip;
 
 import org.jetbrains.annotations.NotNull;
 
 import io.github.vickychijwani.gimmick.R;
+import io.github.vickychijwani.gimmick.adapter.BaseFragmentPagerAdapter;
 
 public abstract class BaseActivity extends FragmentActivity {
 
@@ -25,6 +30,16 @@ public abstract class BaseActivity extends FragmentActivity {
      * Setup the action bar for this activity. Called at the beginning of {@link #onCreate}.
      */
     protected abstract void setupActionBar(@NotNull ActionBar actionBar);
+
+    protected void setupTabsAndViewPager(@NotNull Fragment[] fragments, @NotNull String[] tabTitles) {
+        // setup tabs
+        ViewPager pager = (ViewPager) findViewById(R.id.pager);
+        pager.setAdapter(new BaseFragmentPagerAdapter(getSupportFragmentManager(), fragments, tabTitles));
+
+        // bind tabs to viewpager
+        PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+        tabs.setViewPager(pager);
+    }
 
     @NotNull
     @Override

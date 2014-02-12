@@ -2,7 +2,6 @@ package io.github.vickychijwani.gimmick.view;
 
 import android.app.ActionBar;
 import android.app.LoaderManager;
-import android.app.SearchManager;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.CursorLoader;
@@ -18,19 +17,17 @@ import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.SearchView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.meetme.android.multistateview.MultiStateView;
 
 import org.jetbrains.annotations.NotNull;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.database.DatabaseContract;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.GameListTable;
-import io.github.vickychijwani.gimmick.database.DatabaseContract.GameTable;
-import io.github.vickychijwani.gimmick.item.ReleaseDate;
 import io.github.vickychijwani.gimmick.item.SearchResult;
 import io.github.vickychijwani.gimmick.utility.NetworkUtils;
 
@@ -39,16 +36,17 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
     private static final int LAYOUT = R.layout.activity_main;
     private static final int LOADER_ID = LAYOUT;
 
-    private MultiStateView mGameListContainer;
     private ListView mGameList;
     private GameListAdapter mAdapter;
+
+    @InjectView(R.id.list_container) MultiStateView mGameListContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(LAYOUT);
+        ButterKnife.inject(this);
 
-        mGameListContainer = (MultiStateView) findViewById(R.id.list_container);
         mGameListContainer.setState(MultiStateView.ContentState.LOADING);
         mGameList = (ListView) mGameListContainer.getContentView();
 
@@ -67,17 +65,19 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
-
-        MenuItem addItem = menu.findItem(R.id.action_add);
-        assert addItem != null;
-
-        SearchView searchView = (SearchView) addItem.getActionView();
-        assert searchView != null;
-
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_add:
+                Intent addIntent = new Intent(this, AddGamesActivity.class);
+                startActivity(addIntent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private View.OnClickListener mItemClickListener = new View.OnClickListener() {

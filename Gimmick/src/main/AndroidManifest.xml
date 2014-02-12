@@ -28,28 +28,16 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <meta-data android:name="android.app.default_searchable"
-                android:value=".view.SearchResultsActivity" />
         </activity>
 
-        <activity android:name=".view.SearchResultsActivity"
-            android:label="@string/activity_search_results"
+        <activity android:name=".view.AddGamesActivity"
+            android:label="@string/add_games"
             android:parentActivityName=".view.MainActivity"
-            android:launchMode="singleTop"
-            android:icon="@drawable/ic_action_search">
-            <meta-data android:name="android.app.searchable"
-                android:resource="@xml/searchable" />
-            <meta-data android:name="android.support.PARENT_ACTIVITY"
-                android:value=".view.MainActivity" />
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
+            android:icon="@drawable/ic_action_new">
         </activity>
 
         <activity android:name=".view.GameDetailsActivity"
                   android:parentActivityName=".view.MainActivity">
-            <meta-data android:name="android.support.PARENT_ACTIVITY"
-                       android:value=".view.MainActivity" />
         </activity>
         
         

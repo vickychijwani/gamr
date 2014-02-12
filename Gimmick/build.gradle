@@ -36,8 +36,10 @@ android {
 dependencies {
     compile 'com.android.support:support-v4:19.0.+'
     compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
+    compile 'com.jakewharton:butterknife:4.0.1'
     compile files('../libs/annotations.jar')
     compile project(':glide:library')
     compile project(':glide:library:volley')
     compile project(':Android-MultiStateView')
 }
+

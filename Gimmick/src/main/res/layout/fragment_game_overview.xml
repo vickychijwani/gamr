@@ -35,10 +35,10 @@
                 android:id="@+id/release_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/padding_default"
+                android:layout_marginLeft="@dimen/padding_large"
                 android:layout_marginTop="@dimen/padding_inline"
                 android:layout_toRightOf="@id/poster_container"
-                android:textAppearance="@style/TextAppearance.Medium.Light"
+                android:textAppearance="@style/TextAppearance.Large.Light"
                 android:textIsSelectable="true"
                 tools:text="1/1/2014" />
 
@@ -47,10 +47,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/release_date"
-                android:layout_marginLeft="@dimen/padding_default"
+                android:layout_marginLeft="@dimen/padding_large"
                 android:layout_marginTop="@dimen/padding_default"
                 android:layout_toRightOf="@id/poster_container"
-                android:textAppearance="@style/TextAppearance.Small.Label"
+                android:textAppearance="@style/TextAppearance.Medium.Label"
                 android:textIsSelectable="true"
                 tools:text="PC XBOX PS3" />
 

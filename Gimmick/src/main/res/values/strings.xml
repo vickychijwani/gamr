@@ -3,11 +3,12 @@
 
     <!-- Main activity -->
     <string name="app_name">Gamr</string>
-    <string name="add_games">Add games</string>
-    <string name="search_for_games">Search for games</string>
+    <string name="search_for_games">Search for games…</string>
 
-    <!-- Search results -->
-    <string name="activity_search_results">Search Results</string>
+    <!-- Add games -->
+    <string name="add_games">Add games</string>
+    <string name="clear">Clear</string>
+    <string name="search">Search</string>
     <string name="no_results">No results</string>
     <string name="powered_by_giant_bomb">powered by giantbomb.com</string>
     <string name="search_failed">Searching failed, try again later.</string>
@@ -18,6 +19,7 @@
     <string name="add_unknown_error">Could not add "%1$s."</string>
 
     <!-- Game details -->
+    <string name="overview">Overview</string>
     <string name="genres">Genres</string>
     <string name="franchises">Franchises</string>
     <string name="metacritic">Metacritic</string>
@@ -26,7 +28,6 @@
 
     <!-- Generic strings -->
     <string name="offline">No network connectivity. Try again later.</string>
-    <string name="overview">Overview</string>
     <string name="settings">Settings</string>
 
     <!-- Image content descriptions -->
