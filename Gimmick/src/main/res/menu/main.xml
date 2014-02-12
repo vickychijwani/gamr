@@ -5,7 +5,7 @@
     tools:context=".MainActivity">
 
     <item android:id="@+id/action_add"
-        android:title="@string/add"
+        android:title="@string/add_games"
         android:showAsAction="ifRoom|collapseActionView"
         android:icon="@drawable/ic_action_new"
         android:actionViewClass="android.widget.SearchView" />

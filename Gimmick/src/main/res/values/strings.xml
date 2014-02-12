@@ -3,6 +3,7 @@
 
     <!-- Main activity -->
     <string name="app_name">Gamr</string>
+    <string name="add_games">Add games</string>
     <string name="search_for_games">Search for games</string>
 
     <!-- Search results -->
@@ -25,7 +26,6 @@
 
     <!-- Generic strings -->
     <string name="offline">No network connectivity. Try again later.</string>
-    <string name="add">Add</string>
     <string name="overview">Overview</string>
     <string name="settings">Settings</string>
 
