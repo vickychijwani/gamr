@@ -31,9 +31,9 @@ import io.github.vickychijwani.gimmick.database.DatabaseContract.GameListTable;
 import io.github.vickychijwani.gimmick.item.SearchResult;
 import io.github.vickychijwani.gimmick.utility.NetworkUtils;
 
-public class MainActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class LibraryActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final int LAYOUT = R.layout.activity_main;
+    private static final int LAYOUT = R.layout.activity_library;
     private static final int LOADER_ID = LAYOUT;
 
     private ListView mGameList;
@@ -64,7 +64,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.library, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -88,7 +88,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
             assert cursor != null;
             int giantBomdId = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable._ID));
 
-            Intent intent = new Intent(MainActivity.this, GameDetailsActivity.class);
+            Intent intent = new Intent(LibraryActivity.this, GameDetailsActivity.class);
             intent.putExtra(GameDetailsActivity.IntentFields.GAME_GIANT_BOMB_ID, giantBomdId);
             startActivity(intent);
         }

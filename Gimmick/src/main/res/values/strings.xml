@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Main activity -->
+    <!-- Library -->
     <string name="app_name">Gamr</string>
     <string name="search_for_games">Search for games…</string>
 

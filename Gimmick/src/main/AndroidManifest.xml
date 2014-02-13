@@ -22,7 +22,7 @@
         android:label="@string/app_name"
         android:theme="@style/GamrTheme">
 
-        <activity android:name=".view.MainActivity"
+        <activity android:name=".view.LibraryActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,12 +33,12 @@
 
         <activity android:name=".view.AddGamesActivity"
             android:label="@string/add_games"
-            android:parentActivityName=".view.MainActivity"
+            android:parentActivityName=".view.LibraryActivity"
             android:icon="@drawable/ic_action_new">
         </activity>
 
         <activity android:name=".view.GameDetailsActivity"
-                  android:parentActivityName=".view.MainActivity">
+                  android:parentActivityName=".view.LibraryActivity">
         </activity>
         
         
