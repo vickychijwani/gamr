@@ -113,4 +113,11 @@ public class SearchResult {
         }
     }
 
+    public static class EarliestFirstComparator implements Comparator<SearchResult> {
+        @Override
+        public int compare(SearchResult lhs, SearchResult rhs) {
+            return lhs.releaseDate.compareTo(rhs.releaseDate);
+        }
+    }
+
 }

@@ -48,7 +48,7 @@ public class Metacritic {
             }
         };
 
-        GamrApplication.getInstance().addToRequestQueue(req);
+        NetworkRequestQueue.add(req);
 
         try {
             JSONObject resultJson = future.get().getJSONObject(RESULT);

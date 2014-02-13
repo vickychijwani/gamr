@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class AddGamesAdapter extends ArrayAdapter<SearchResult> {
     private View.OnClickListener mDetailsButtonListener;
 
     public AddGamesAdapter(Context context, int layout, List<SearchResult> objects,
-                           View.OnClickListener detailsButtonListener) {
+                           @Nullable View.OnClickListener detailsButtonListener) {
         super(context, layout, objects);
         mLayoutInflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -39,21 +40,22 @@ public class AddGamesAdapter extends ArrayAdapter<SearchResult> {
     public View getView(int position, View convertView, ViewGroup parent) {
         SearchResultViewHolder viewHolder;
 
+        final SearchResult item = getItem(position);
+
         if (convertView == null) {
             convertView = mLayoutInflater.inflate(mLayout, null);
             assert convertView != null;
 
             viewHolder = new SearchResultViewHolder(convertView);
 
-            // add button listeners
-            viewHolder.details.setOnClickListener(mDetailsButtonListener);
+            if (mDetailsButtonListener != null) {
+                viewHolder.details.setOnClickListener(mDetailsButtonListener);
+            }
 
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (SearchResultViewHolder) convertView.getTag();
         }
-
-        final SearchResult item = getItem(position);
 
         NetworkUtils.loadImage(item.posterUrl, viewHolder.poster);
         viewHolder.title.setText(item.name);

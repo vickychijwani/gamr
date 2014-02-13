@@ -45,10 +45,12 @@ public class AddGamesActivity extends BaseActivity {
 
         // setup fragments
         Fragment[] fragments = new Fragment[]{
-                new SearchGamesFragment()
+                new SearchGamesFragment(),
+                new UpcomingGamesFragment()
         };
         String[] tabTitles = new String[] {
-                getString(R.string.search)
+                getString(R.string.search),
+                getString(R.string.upcoming)
         };
 
         setupTabsAndViewPager(fragments, tabTitles);

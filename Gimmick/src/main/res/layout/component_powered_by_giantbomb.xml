@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:background="#bf000000"
+        android:padding="@dimen/padding_default"
+        android:text="@string/powered_by_giant_bomb"
+        android:textAppearance="@style/TextAppearance.XSmall"
+        android:textColor="@color/text_default" />
+
+</merge>

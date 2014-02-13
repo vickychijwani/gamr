@@ -9,9 +9,10 @@
     <string name="add_games">Add games</string>
     <string name="clear">Clear</string>
     <string name="search">Search</string>
+    <string name="upcoming">Upcoming</string>
     <string name="no_results">No results</string>
     <string name="powered_by_giant_bomb">powered by giantbomb.com</string>
-    <string name="search_failed">Searching failed, try again later.</string>
+    <string name="fetching_games_failed">Fetching games failed, try again later.</string>
     <string name="add_success">"%1$s" added successfully.</string>
     <string name="add_already_exists">"%1$s" is already in your library.</string>
     <string name="add_unknown_error">Could not add "%1$s."</string>

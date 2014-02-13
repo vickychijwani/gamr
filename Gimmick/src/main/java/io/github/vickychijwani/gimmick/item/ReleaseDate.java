@@ -2,6 +2,8 @@ package io.github.vickychijwani.gimmick.item;
 
 import android.database.Cursor;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -38,9 +40,12 @@ public class ReleaseDate implements Comparable<ReleaseDate> {
     public static final short YEAR_MIN = 1980;
 
     /**
-     * @param day       Any value in the range [{@value #DAY_MIN}, {@value #DAY_MAX}], inclusive
-     * @param month     Any value in the range [{@value #MONTH_MIN}, {@value #MONTH_MAX}], inclusive
-     * @param quarter   Any value in the range [{@value #QUARTER_MIN}, {@value #QUARTER_MAX}], inclusive
+     * @param day       Any value in the range [{@link #DAY_MIN}, {@link #DAY_MAX}], inclusive,
+     *                  or {@link #DAY_INVALID}
+     * @param month     Any value in the range [{@link #MONTH_MIN}, {@link #MONTH_MAX}], inclusive,
+     *                  or {@link #MONTH_INVALID}
+     * @param quarter   Any value in the range [{@link #QUARTER_MIN}, {@link #QUARTER_MAX}], inclusive,
+     *                  or {@link #QUARTER_INVALID}
      * @param year      Any value >= {@value #YEAR_MIN}
      * @throws IllegalArgumentException
      */
@@ -102,33 +107,76 @@ public class ReleaseDate implements Comparable<ReleaseDate> {
     public byte getQuarter() { return mQuarter; }
     public short getYear() { return mYear; }
 
+    /**
+     * <p>
+     * Compare this {@link ReleaseDate} to another.
+     * </p>
+     *
+     * <p>
+     * <code>
+     *     31st Dec 2014
+     *     < Dec 2014
+     *     < Q4 2014
+     *     < 2014
+     *     < {@link ReleaseDate#INVALID}
+     *     == {@link ReleaseDate#INVALID}
+     * </code>
+     * </p>
+     *
+     * @param another    the {@link ReleaseDate} to compare against
+     * @return  -1, 0, or 1 depending on whether this {@link ReleaseDate} occurs before, with, or after
+     *          {@code another}
+     */
     @Override
-    public int compareTo(ReleaseDate another) {
-        if (this == another)    return 0;
-        if (this == INVALID)    return -1;
-        if (another == INVALID) return 1;
+    public int compareTo(@NotNull ReleaseDate another) {
+        if (this.equals(another))    return 0;
+        if (INVALID.equals(this))    return 1;
+        if (INVALID.equals(another)) return -1;
 
         if (this.mYear < another.mYear) return -1;
         if (this.mYear > another.mYear) return 1;
 
         int comparison;
 
-        comparison = compareMonths(this.mMonth, another.mMonth);
-        if (comparison != 0)    return comparison;
+        if (this.mMonth != MONTH_INVALID && another.mMonth != MONTH_INVALID) {
+            comparison = compareMonths(this.mMonth, another.mMonth);
+            if (comparison != 0)
+                return comparison;
+        }
 
-        comparison = compareQuarters(this.mQuarter, another.mQuarter);
-        if (comparison != 0)    return comparison;
+        if (this.mQuarter != QUARTER_INVALID && another.mQuarter != QUARTER_INVALID) {
+            comparison = compareQuarters(this.mQuarter, another.mQuarter);
+            if (comparison != 0)
+                return comparison;
+        }
 
-        comparison = compareMonthToQuarter(this.mMonth, another.mQuarter);
-        if (comparison != 0)    return comparison;
+        if (this.mMonth != MONTH_INVALID && another.mQuarter != QUARTER_INVALID) {
+            comparison = compareMonthToQuarter(this.mMonth, another.mQuarter);
+            if (comparison != 0)
+                return comparison;
+        }
 
-        comparison = compareQuarterToMonth(this.mQuarter, another.mMonth);
-        if (comparison != 0)    return comparison;
+        if (this.mQuarter != QUARTER_INVALID && another.mMonth != MONTH_INVALID) {
+            comparison = compareQuarterToMonth(this.mQuarter, another.mMonth);
+            if (comparison != 0)
+                return comparison;
+        }
 
         comparison = compareDays(this.mDay, another.mDay);
         if (comparison != 0)    return comparison;
 
         return 0;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (! (o instanceof ReleaseDate))
+            throw new IllegalArgumentException("only ReleaseDate objects can be checked for equality");
+        ReleaseDate other = (ReleaseDate) o;
+        return mDay == other.mDay &&
+                mMonth == other.mMonth &&
+                mQuarter == other.mQuarter &&
+                mYear == other.mYear;
     }
 
     @Override
@@ -142,6 +190,11 @@ public class ReleaseDate implements Comparable<ReleaseDate> {
             Calendar calendar = Calendar.getInstance();
             calendar.set(Calendar.MONTH, mMonth - 1);       // month argument is zero-based!
             builder.append(mDay).append(' ');
+            builder.append(calendar.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.US));
+            builder.append(' ');
+        } else if (mMonth != MONTH_INVALID) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.MONTH, mMonth - 1);       // month argument is zero-based!
             builder.append(calendar.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.US));
             builder.append(' ');
         } else if (mQuarter != QUARTER_INVALID) {
@@ -159,8 +212,8 @@ public class ReleaseDate implements Comparable<ReleaseDate> {
             if (lhs < rhs)  return -1;
             if (lhs > rhs)  return 1;
         }
-        if (lhs == DAY_INVALID)   return -1;
-        if (rhs == DAY_INVALID)   return 1;
+        if (lhs == DAY_INVALID)   return 1;
+        if (rhs == DAY_INVALID)   return -1;
         return 0;
     }
 
@@ -170,8 +223,8 @@ public class ReleaseDate implements Comparable<ReleaseDate> {
             if (lhs < rhs)  return -1;
             if (lhs > rhs)  return 1;
         }
-        if (lhs == MONTH_INVALID)   return -1;
-        if (rhs == MONTH_INVALID)   return 1;
+        if (lhs == MONTH_INVALID)   return 1;
+        if (rhs == MONTH_INVALID)   return -1;
         return 0;
     }
 
@@ -181,8 +234,8 @@ public class ReleaseDate implements Comparable<ReleaseDate> {
             if (lhs < rhs)  return -1;
             if (lhs > rhs)  return 1;
         }
-        if (lhs == QUARTER_INVALID)   return -1;
-        if (rhs == QUARTER_INVALID)   return 1;
+        if (lhs == QUARTER_INVALID)   return 1;
+        if (rhs == QUARTER_INVALID)   return -1;
         return 0;
     }
 

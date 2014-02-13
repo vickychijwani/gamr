@@ -117,7 +117,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
 
     private class GameListAdapter extends CursorAdapter {
 
-        private static final int LAYOUT = R.layout.game_basic;
+        private static final int LAYOUT = R.layout.component_game_item;
         private LayoutInflater mLayoutInflater;
         private View.OnClickListener mClickListener;
 
