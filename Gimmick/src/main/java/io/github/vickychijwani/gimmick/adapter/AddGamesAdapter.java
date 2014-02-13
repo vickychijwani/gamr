@@ -22,9 +22,9 @@ import io.github.vickychijwani.gimmick.utility.NetworkUtils;
 
 public class AddGamesAdapter extends ArrayAdapter<SearchResult> {
 
-    private LayoutInflater mLayoutInflater;
-    private int mLayout;
-    private View.OnClickListener mDetailsButtonListener;
+    private final LayoutInflater mLayoutInflater;
+    private final int mLayout;
+    private final View.OnClickListener mDetailsButtonListener;
 
     public AddGamesAdapter(Context context, int layout, List<SearchResult> objects,
                            @Nullable View.OnClickListener detailsButtonListener) {

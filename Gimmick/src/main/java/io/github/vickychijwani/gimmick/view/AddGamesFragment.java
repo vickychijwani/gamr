@@ -35,6 +35,7 @@ public abstract class AddGamesFragment extends BaseFragment {
         mResultsList.setAdapter(mAdapter);
     }
 
+    @SuppressWarnings("SameReturnValue")
     @Nullable
     protected View.OnClickListener getDetailsButtonListener() {
         return null;
@@ -53,7 +54,7 @@ public abstract class AddGamesFragment extends BaseFragment {
         mAdapter.notifyDataSetChanged();
     }
 
-    private Response.Listener<List<SearchResult>> mResultsHandler = new Response.Listener<List<SearchResult>>() {
+    private final Response.Listener<List<SearchResult>> mResultsHandler = new Response.Listener<List<SearchResult>>() {
         @Override
         public void onResponse(List<SearchResult> results) {
             getActivity().setProgressBarIndeterminateVisibility(false);
@@ -70,7 +71,7 @@ public abstract class AddGamesFragment extends BaseFragment {
         return mResultsHandler;
     }
 
-    private Response.ErrorListener mErrorHandler = new Response.ErrorListener() {
+    private final Response.ErrorListener mErrorHandler = new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError error) {
             Log.e(TAG, "Error: " + error.getMessage());

@@ -7,8 +7,8 @@ import android.support.v4.app.FragmentPagerAdapter;
 import org.jetbrains.annotations.NotNull;
 
 public class BaseFragmentPagerAdapter extends FragmentPagerAdapter {
-    private Fragment[] mFragments;
-    private String[] mTitles;
+    private final Fragment[] mFragments;
+    private final String[] mTitles;
 
     public BaseFragmentPagerAdapter(FragmentManager fm, @NotNull Fragment[] fragments, @NotNull String[] titles) {
         super(fm);

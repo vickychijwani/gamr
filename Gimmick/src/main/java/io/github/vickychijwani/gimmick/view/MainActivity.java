@@ -80,7 +80,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         }
     }
 
-    private View.OnClickListener mItemClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mItemClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             int position = mGameList.getPositionForView(v);
@@ -118,8 +118,8 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
     private class GameListAdapter extends CursorAdapter {
 
         private static final int LAYOUT = R.layout.component_game_item;
-        private LayoutInflater mLayoutInflater;
-        private View.OnClickListener mClickListener;
+        private final LayoutInflater mLayoutInflater;
+        private final View.OnClickListener mClickListener;
 
         public GameListAdapter(Context context, Cursor cursor, int flags,
                           View.OnClickListener clickListener) {

@@ -26,40 +26,6 @@ import io.github.vickychijwani.gimmick.R;
 
 public class NetworkUtils {
 
-    private static final String TAG = "NetworkUtils";
-
-    @NotNull
-    public static JSONObject getJsonFromUrl(String url) {
-        Log.d(TAG, "getJsonFromUrl(" + url + ")");
-        DefaultHttpClient client = new DefaultHttpClient();
-        HttpGet httpGet = new HttpGet(url);
-        StringBuilder builder = new StringBuilder();
-
-        try {
-            HttpResponse response = client.execute(httpGet);
-            int statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode == 200) {
-                InputStream content = response.getEntity().getContent();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(content));
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    builder.append(line);
-                }
-            } else {
-                Log.e(TAG, "Failed to get JSON, status code = " + statusCode);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            return new JSONObject(builder.toString());
-        } catch (JSONException e) {
-            Log.e(TAG, "Error parsing JSON = " + builder);
-            return new JSONObject();
-        }
-    }
-
     public static void loadImage(@Nullable String url, @NotNull ImageView imageView) {
         if (url != null) {
             imageView.setVisibility(View.VISIBLE);
@@ -79,15 +45,6 @@ public class NetworkUtils {
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
-
-    /**
-     * Returns an {@link InputStream} to a remote resource fetched using {@link org.apache.http.client.methods.HttpGet}.
-     */
-    public static InputStream downloadUrl(String url) throws IOException {
-        DefaultHttpClient client = new DefaultHttpClient();
-        HttpResponse response = client.execute(new HttpGet(url));
-        return response.getEntity().getContent();
     }
 
 }

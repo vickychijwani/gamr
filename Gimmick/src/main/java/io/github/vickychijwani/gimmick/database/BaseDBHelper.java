@@ -54,11 +54,11 @@ abstract class BaseDBHelper extends SQLiteOpenHelper {
     }
 
     protected abstract static class BaseSelectStatement {
-        private String mProjection;
+        private final String mProjection;
         private String mTableName;
         private String mSelection;
         private String mGrouping;
-        private List<JoinClause> mJoinClauses = new ArrayList<JoinClause>();
+        private final List<JoinClause> mJoinClauses = new ArrayList<JoinClause>();
 
         private class JoinClause {
             public String type;

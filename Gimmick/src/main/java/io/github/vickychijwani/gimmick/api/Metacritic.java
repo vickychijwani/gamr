@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import io.github.vickychijwani.gimmick.GamrApplication;
 import io.github.vickychijwani.gimmick.item.Platform;
 import io.github.vickychijwani.gimmick.item.SearchResult;
 

@@ -75,10 +75,6 @@ public class SQL {
         public Eq(String leftOperand, long rightOperand) {
             super("=", leftOperand, String.valueOf(rightOperand));
         }
-
-        public Eq(String leftOperand, Double rightOperand) {
-            super("=", leftOperand, String.valueOf(rightOperand));
-        }
     }
 
     /**

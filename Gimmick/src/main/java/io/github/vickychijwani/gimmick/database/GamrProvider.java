@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import io.github.vickychijwani.gimmick.database.DatabaseContract.GameListTable;
-import io.github.vickychijwani.gimmick.database.DatabaseContract.GameTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.GamePlatformMappingTable;
+import io.github.vickychijwani.gimmick.database.DatabaseContract.GameTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.PlatformTable;
 import io.github.vickychijwani.gimmick.item.Platform;
 import io.github.vickychijwani.gimmick.item.SearchResult;
@@ -111,7 +111,7 @@ public class GamrProvider extends ContentProvider {
         Log.i(TAG, "[insert] uri: " + uri);
         final int match = sUriMatcher.match(uri);
         Uri insertedUri = null;
-        long insertedId = -1;
+        long insertedId;
         assert getContext() != null;
 
         switch (match) {

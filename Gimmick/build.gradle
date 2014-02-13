@@ -16,10 +16,6 @@ android {
     compileSdkVersion 19
     buildToolsVersion '19.0.1'
 
-    defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 19
-    }
     buildTypes {
         release {
             runProguard true

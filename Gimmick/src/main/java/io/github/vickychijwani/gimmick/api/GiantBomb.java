@@ -7,7 +7,6 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Response;
 import com.android.volley.toolbox.HttpHeaderParser;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.RequestFuture;
 
@@ -412,7 +411,7 @@ public class GiantBomb {
      */
     private static class GameListJsonRequest extends JsonRequest<List<SearchResult>> {
 
-        private Comparator<SearchResult> mSortComparator;
+        private final Comparator<SearchResult> mSortComparator;
 
         /**
          * @param url               the URL to query

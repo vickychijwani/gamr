@@ -15,9 +15,9 @@ public enum Platform {
     PS4(72496, "PS4", "PlayStation 4", "PS4", "Orbis"),
     XBOX_ONE(80000, "X1", "Xbox One", "Xbox Durango", "XONE", "XBONE", "Xbox 1");
 
-    private int mMetacriticId;
-    private String mShortName;
-    private HashSet<String> mAliases;
+    private final int mMetacriticId;
+    private final String mShortName;
+    private final HashSet<String> mAliases;
 
     Platform(int metacriticId, @NotNull String shortName, String... aliases) {
         mMetacriticId = metacriticId;

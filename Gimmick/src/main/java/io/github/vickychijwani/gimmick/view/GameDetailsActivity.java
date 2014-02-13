@@ -4,21 +4,14 @@ import android.app.ActionBar;
 import android.content.ContentUris;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.view.ViewPager;
 import android.util.Log;
-
-import com.astuetz.PagerSlidingTabStrip;
 
 import org.jetbrains.annotations.NotNull;
 
 import io.github.vickychijwani.gimmick.R;
-import io.github.vickychijwani.gimmick.adapter.BaseFragmentPagerAdapter;
 import io.github.vickychijwani.gimmick.database.DatabaseContract;
 import io.github.vickychijwani.gimmick.item.SearchResult;
 

@@ -3,12 +3,10 @@ package io.github.vickychijwani.gimmick.background;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.item.SearchResult;
 
 /**

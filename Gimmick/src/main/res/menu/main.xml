@@ -6,7 +6,7 @@
 
     <item android:id="@+id/action_add"
         android:title="@string/add_games"
-        android:showAsAction="always"
+        android:showAsAction="ifRoom"
         android:icon="@drawable/ic_action_new" />
 
     <item android:id="@+id/action_settings"
