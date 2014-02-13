@@ -46,19 +46,6 @@ public class TaskManager {
 
     public synchronized void performAddTask(final List<SearchResult> games,
                                             final boolean isSilent) {
-        if (! isSilent) {
-            if (games.size() == 1) {
-                SearchResult game = games.get(0);
-                Toast.makeText(mContext,
-                        mContext.getString(R.string.add_started, game.name),
-                        Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(mContext,
-                        R.string.add_multiple,
-                        Toast.LENGTH_SHORT).show();
-            }
-        }
-
         // add the show(s) to a running add task or create a new one
         boolean isRequiringNewTask;
         if (! isAddTaskRunning()) {
