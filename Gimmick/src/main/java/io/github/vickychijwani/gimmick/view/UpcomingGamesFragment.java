@@ -6,6 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.meetme.android.multistateview.MultiStateView;
+
 import butterknife.ButterKnife;
 import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.api.GiantBomb;
@@ -44,13 +46,14 @@ public class UpcomingGamesFragment extends AddGamesFragment {
             return;
         }
 
-        getActivity().setProgressBarIndeterminateVisibility(true);
+        mGameListContainer.setState(MultiStateView.ContentState.LOADING);
         mRequestTag = GiantBomb.fetchUpcomingGames(getResultsHandler(), getErrorHandler());
     }
 
     @Override
     protected void cancelPendingRequests() {
         if (mRequestTag != null) {
+            mGameListContainer.setState(MultiStateView.ContentState.EMPTY);
             NetworkRequestQueue.cancelPending(mRequestTag);
         }
     }

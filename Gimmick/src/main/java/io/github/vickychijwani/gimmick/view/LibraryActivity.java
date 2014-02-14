@@ -36,9 +36,9 @@ public class LibraryActivity extends BaseActivity implements LoaderManager.Loade
     private static final int LAYOUT = R.layout.activity_library;
     private static final int LOADER_ID = LAYOUT;
 
-    private ListView mGameList;
     private GameListAdapter mAdapter;
 
+    @InjectView(android.R.id.list) ListView mGameList;
     @InjectView(R.id.list_container) MultiStateView mGameListContainer;
 
     @Override
@@ -48,11 +48,9 @@ public class LibraryActivity extends BaseActivity implements LoaderManager.Loade
         ButterKnife.inject(this);
 
         mGameListContainer.setState(MultiStateView.ContentState.LOADING);
-        mGameList = (ListView) mGameListContainer.getContentView();
 
         mAdapter = new GameListAdapter(this, null, 0, mItemClickListener);
         mGameList.setAdapter(mAdapter);
-        mGameList.setEmptyView(findViewById(android.R.id.empty));
 
         getLoaderManager().initLoader(LOADER_ID, null, this);
     }
@@ -103,7 +101,11 @@ public class LibraryActivity extends BaseActivity implements LoaderManager.Loade
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        mGameListContainer.setState(MultiStateView.ContentState.CONTENT);
+        if (cursor.getCount() > 0) {
+            mGameListContainer.setState(MultiStateView.ContentState.CONTENT);
+        } else {
+            mGameListContainer.setState(MultiStateView.ContentState.EMPTY);
+        }
 
         // Swap the new cursor in (the loader will take care of closing the old one)
         mAdapter.swapCursor(cursor);
@@ -111,7 +113,7 @@ public class LibraryActivity extends BaseActivity implements LoaderManager.Loade
 
     @Override
     public void onLoaderReset(Loader loader) {
-        mGameListContainer.setState(MultiStateView.ContentState.CONTENT);
+        mGameListContainer.setState(MultiStateView.ContentState.EMPTY);
         mAdapter.swapCursor(null);
     }
 

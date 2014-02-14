@@ -8,7 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.Toast;
+
+import com.meetme.android.multistateview.MultiStateView;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -33,6 +36,7 @@ public class SearchGamesFragment extends AddGamesFragment {
         View view = inflater.inflate(R.layout.fragment_search_games, container, false);
         ButterKnife.inject(this, view);
 
+        mGameListContainer.setState(MultiStateView.ContentState.EMPTY);
         setupAdapter();
 
         mSearchBox.setOnKeyListener(new View.OnKeyListener() {
@@ -67,7 +71,7 @@ public class SearchGamesFragment extends AddGamesFragment {
             return;
         }
 
-        getActivity().setProgressBarIndeterminateVisibility(true);
+        mGameListContainer.setState(MultiStateView.ContentState.LOADING);
         mRequestTag = GiantBomb.searchGames(query, getResultsHandler(), getErrorHandler());
     }
 
@@ -75,6 +79,7 @@ public class SearchGamesFragment extends AddGamesFragment {
     protected void cancelPendingRequests() {
         if (mRequestTag != null) {
             NetworkRequestQueue.cancelPending(mRequestTag);
+            mGameListContainer.setState(MultiStateView.ContentState.EMPTY);
         }
     }
 

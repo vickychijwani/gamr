@@ -13,13 +13,11 @@ public class AddGamesActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_games);
 
         // setup fragments
-        Fragment[] fragments = new Fragment[]{
+        Fragment[] fragments = new Fragment[] {
                 new SearchGamesFragment(),
                 new UpcomingGamesFragment()
         };

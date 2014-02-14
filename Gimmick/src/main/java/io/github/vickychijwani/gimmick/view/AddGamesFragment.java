@@ -7,6 +7,7 @@ import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.meetme.android.multistateview.MultiStateView;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -23,7 +24,9 @@ public abstract class AddGamesFragment extends BaseFragment {
     private static final String TAG = "AddGamesFragment";
 
     protected AddGamesAdapter mAdapter;
-    @InjectView(android.R.id.list) ListView mResultsList;
+
+    @InjectView(android.R.id.list) ListView mGameList;
+    @InjectView(R.id.list_container) MultiStateView mGameListContainer;
 
     protected abstract void initiateRequest();
 
@@ -32,7 +35,7 @@ public abstract class AddGamesFragment extends BaseFragment {
     protected final void setupAdapter() {
         mAdapter = new AddGamesAdapter(getActivity(), R.layout.component_game_add,
                 new ArrayList<SearchResult>(), getDetailsButtonListener());
-        mResultsList.setAdapter(mAdapter);
+        mGameList.setAdapter(mAdapter);
     }
 
     @SuppressWarnings("SameReturnValue")
@@ -57,12 +60,11 @@ public abstract class AddGamesFragment extends BaseFragment {
     private final Response.Listener<List<SearchResult>> mResultsHandler = new Response.Listener<List<SearchResult>>() {
         @Override
         public void onResponse(List<SearchResult> results) {
-            getActivity().setProgressBarIndeterminateVisibility(false);
-
             if (! results.isEmpty()) {
+                mGameListContainer.setState(MultiStateView.ContentState.CONTENT);
                 setGameList(results);
             } else {
-                Toast.makeText(getActivity(), R.string.fetching_games_failed, Toast.LENGTH_LONG).show();
+                mGameListContainer.setState(MultiStateView.ContentState.EMPTY);
             }
         }
     };
@@ -77,7 +79,7 @@ public abstract class AddGamesFragment extends BaseFragment {
             Log.e(TAG, "Error: " + error.getMessage());
             Log.e(TAG, Log.getStackTraceString(error));
 
-            getActivity().setProgressBarIndeterminateVisibility(false);
+            mGameListContainer.setState(MultiStateView.ContentState.EMPTY);
             setGameList(new ArrayList<SearchResult>());
             Toast.makeText(getActivity(), R.string.fetching_games_failed, Toast.LENGTH_LONG).show();
         }
