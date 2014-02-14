@@ -3,7 +3,6 @@ package io.github.vickychijwani.gimmick.view;
 import android.app.ActionBar;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.view.Window;
 
 import org.jetbrains.annotations.NotNull;
 

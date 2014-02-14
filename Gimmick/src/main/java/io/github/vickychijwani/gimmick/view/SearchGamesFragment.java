@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.meetme.android.multistateview.MultiStateView;
@@ -20,6 +19,7 @@ import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.api.GiantBomb;
 import io.github.vickychijwani.gimmick.api.NetworkRequestQueue;
 import io.github.vickychijwani.gimmick.api.RequestTag;
+import io.github.vickychijwani.gimmick.utility.DeviceUtils;
 import io.github.vickychijwani.gimmick.utility.NetworkUtils;
 
 public class SearchGamesFragment extends AddGamesFragment {
@@ -47,6 +47,7 @@ public class SearchGamesFragment extends AddGamesFragment {
                     return false;
 
                 if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                    DeviceUtils.hideSoftKeyboard(getActivity(), getView().getWindowToken());
                     initiateRequest();
                     return true;
                 } else {
@@ -79,12 +80,15 @@ public class SearchGamesFragment extends AddGamesFragment {
     protected void cancelPendingRequests() {
         if (mRequestTag != null) {
             NetworkRequestQueue.cancelPending(mRequestTag);
+            mRequestTag = null;
             mGameListContainer.setState(MultiStateView.ContentState.EMPTY);
         }
     }
 
     @OnClick(R.id.clear_button) void clearInput() {
         mSearchBox.setText("");
+        mSearchBox.requestFocus();
+        DeviceUtils.showSoftKeyboard(getActivity());
     }
 
 }

@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,8 +36,10 @@ public class LibraryActivity extends BaseActivity implements LoaderManager.Loade
 
     private static final int LAYOUT = R.layout.activity_library;
     private static final int LOADER_ID = LAYOUT;
+    private static final int LOADING_STATE_DELAY = 500;  // time after which to display loading spinner
 
     private GameListAdapter mAdapter;
+    private Handler mHandler;
 
     @InjectView(android.R.id.list) ListView mGameList;
     @InjectView(R.id.list_container) MultiStateView mGameListContainer;
@@ -47,7 +50,14 @@ public class LibraryActivity extends BaseActivity implements LoaderManager.Loade
         setContentView(LAYOUT);
         ButterKnife.inject(this);
 
-        mGameListContainer.setState(MultiStateView.ContentState.LOADING);
+        // show loading spinner after a delay, to avoid flicker if loading time is < {@link #LOADING_STATE_DELAY}
+        mHandler = new Handler(getMainLooper());
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mGameListContainer.setState(MultiStateView.ContentState.LOADING);
+            }
+        }, LOADING_STATE_DELAY);
 
         mAdapter = new GameListAdapter(this, null, 0, mItemClickListener);
         mGameList.setAdapter(mAdapter);
@@ -101,6 +111,8 @@ public class LibraryActivity extends BaseActivity implements LoaderManager.Loade
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        mHandler.removeCallbacksAndMessages(null);
+
         if (cursor.getCount() > 0) {
             mGameListContainer.setState(MultiStateView.ContentState.CONTENT);
         } else {
