@@ -115,8 +115,8 @@ public class GamrProvider extends ContentProvider {
         assert getContext() != null;
 
         switch (match) {
-            case GAMES:
-                insertedId = DBHelper.addGame(values);
+            case LISTS_GAMES:
+                insertedId = DBHelper.addGameAsToPlay(values);
                 if (insertedId >= 0) {
                     insertedUri = ContentUris.withAppendedId(GameTable.CONTENT_URI_LIST, insertedId);
                 }
@@ -157,7 +157,8 @@ public class GamrProvider extends ContentProvider {
 
     public static boolean addGame(SearchResult game) {
         ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
-        ops.add(ContentProviderOperation.newInsert(GameTable.CONTENT_URI_INSERT)
+        Uri toPlayListUri = ContentUris.withAppendedId(GameListTable.CONTENT_URI_LIST_GAMES, GameListTable.TO_PLAY_ID);
+        ops.add(ContentProviderOperation.newInsert(toPlayListUri)
                 .withValues(GameTable.contentValuesFor(game))
                 .build());
 

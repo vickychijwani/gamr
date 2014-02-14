@@ -68,7 +68,7 @@ public class DBHelper extends BaseDBHelper {
      *
      * @return      id of the newly-inserted game if successful, else -1
      */
-    public static long addGame(ContentValues values) {
+    public static long addGameAsToPlay(ContentValues values) {
         SQLiteDatabase db = getInstance().getWritableDatabase();
         assert db != null;
 
