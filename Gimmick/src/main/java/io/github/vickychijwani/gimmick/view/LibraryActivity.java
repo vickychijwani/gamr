@@ -19,6 +19,8 @@ import com.meetme.android.multistateview.MultiStateView;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -114,7 +116,9 @@ public class LibraryActivity extends BaseActivity implements LoaderManager.Loade
         }
 
         // Swap the new data set in (the loader will take care of closing the old cursor)
-        AppUtils.changeAdapterDataSet(mAdapter, SearchResult.listFromCursor(cursor));
+        List<SearchResult> games = SearchResult.listFromCursor(cursor);
+        Collections.sort(games, new SearchResult.LatestFirstComparator());
+        AppUtils.changeAdapterDataSet(mAdapter, games);
     }
 
     @Override
