@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.meetme.android.multistateview.MultiStateView;
+import com.android.volley.VolleyError;
 
 import butterknife.ButterKnife;
 import io.github.vickychijwani.gimmick.R;
@@ -28,16 +28,9 @@ public class UpcomingGamesFragment extends AddGamesFragment {
         ButterKnife.inject(this, view);
 
         setupAdapter();
+        initiateRequest();
 
         return view;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (mRequestTag == null) {
-            initiateRequest();
-        }
     }
 
     @Override
@@ -47,20 +40,27 @@ public class UpcomingGamesFragment extends AddGamesFragment {
             return;
         }
 
-        mGameListContainer.setState(MultiStateView.ContentState.LOADING);
         mRequestTag = GiantBomb.fetchUpcomingGames(getResultsHandler(), getErrorHandler());
+        onRequestInitiated();
     }
 
     @Override
     protected void cancelPendingRequests() {
         if (mRequestTag != null) {
-            mGameListContainer.setState(MultiStateView.ContentState.EMPTY);
             NetworkRequestQueue.cancelPending(mRequestTag);
+            mRequestTag = null; // discard invalid request tag
         }
     }
 
     @Override
-    protected void sortResults(GameList gameList) {
+    protected void onReceivedResults(GameList gameList) {
         gameList.sortByEarliestFirst();
+        mRequestTag = null; // discard invalid request tag
     }
+
+    @Override
+    protected void onReceivedError(VolleyError error) {
+        mRequestTag = null; // discard invalid request tag
+    }
+
 }

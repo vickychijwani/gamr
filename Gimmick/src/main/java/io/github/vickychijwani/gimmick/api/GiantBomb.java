@@ -207,7 +207,7 @@ public class GiantBomb {
             Log.e(TAG, Log.getStackTraceString(e));
             return new GameList();
         }
-        Log.d(TAG, "Got " + resultsArray.length() + " search results");
+        Log.i(TAG, "Got " + resultsArray.length() + " search results");
 
         GameList games = new GameList();
         for (int i = 0; i < resultsArray.length(); ++i) {
@@ -225,7 +225,7 @@ public class GiantBomb {
             }
         }
 
-        Log.d(TAG, games.size() + " results parsed: " + games);
+        Log.i(TAG, games.size() + " results parsed: " + games);
         return games;
     }
 

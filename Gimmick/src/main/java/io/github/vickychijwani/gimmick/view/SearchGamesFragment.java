@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.android.volley.VolleyError;
 import com.meetme.android.multistateview.MultiStateView;
 
 import butterknife.ButterKnife;
@@ -73,22 +74,27 @@ public class SearchGamesFragment extends AddGamesFragment {
             return;
         }
 
-        mGameListContainer.setState(MultiStateView.ContentState.LOADING);
         mRequestTag = GiantBomb.searchGames(query, getResultsHandler(), getErrorHandler());
+        onRequestInitiated();
     }
 
     @Override
     protected void cancelPendingRequests() {
         if (mRequestTag != null) {
             NetworkRequestQueue.cancelPending(mRequestTag);
-            mRequestTag = null;
-            mGameListContainer.setState(MultiStateView.ContentState.EMPTY);
+            mRequestTag = null; // discard invalid request tag
         }
     }
 
     @Override
-    protected void sortResults(GameList gameList) {
+    protected void onReceivedResults(GameList gameList) {
         gameList.sortByLatestFirst();
+        mRequestTag = null; // discard invalid request tag
+    }
+
+    @Override
+    protected void onReceivedError(VolleyError error) {
+        mRequestTag = null; // discard invalid request tag
     }
 
     @OnClick(R.id.clear_button) void clearInput() {

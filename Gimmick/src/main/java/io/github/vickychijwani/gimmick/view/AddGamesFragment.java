@@ -30,7 +30,16 @@ public abstract class AddGamesFragment extends BaseFragment {
 
     protected abstract void cancelPendingRequests();
 
-    protected abstract void sortResults(GameList gameList);
+    protected abstract void onReceivedResults(GameList gameList);
+
+    protected abstract void onReceivedError(VolleyError error);
+
+    /**
+     * Call this at the end of {@link #initiateRequest()}, to update the UI to a loading state, etc.
+     */
+    protected final void onRequestInitiated() {
+        mGameListContainer.setState(MultiStateView.ContentState.LOADING);
+    }
 
     protected final void setupAdapter() {
         mAdapter = new AddGamesAdapter(getActivity(), new GameList(), getDetailsButtonListener());
@@ -44,17 +53,18 @@ public abstract class AddGamesFragment extends BaseFragment {
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onDestroy() {
+        super.onDestroy();
         cancelPendingRequests();
     }
 
     private final Response.Listener<GameList> mResultsHandler = new Response.Listener<GameList>() {
         @Override
         public void onResponse(GameList results) {
+            onReceivedResults(results);
+
             if (! results.isEmpty()) {
                 mGameListContainer.setState(MultiStateView.ContentState.CONTENT);
-                sortResults(results);
                 AppUtils.changeAdapterDataSet(mAdapter, results);
             } else {
                 mGameListContainer.setState(MultiStateView.ContentState.EMPTY);
@@ -71,6 +81,8 @@ public abstract class AddGamesFragment extends BaseFragment {
         public void onErrorResponse(VolleyError error) {
             Log.e(TAG, "Error: " + error.getMessage());
             Log.e(TAG, Log.getStackTraceString(error));
+
+            onReceivedError(error);
 
             mGameListContainer.setState(MultiStateView.ContentState.EMPTY);
             AppUtils.changeAdapterDataSet(mAdapter, new GameList());
