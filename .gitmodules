@@ -1,6 +1,3 @@
-[submodule "glide"]
-	path = glide
-	url = https://github.com/vickychijwani/glide.git
 [submodule "Android-MultiStateView"]
 	path = Android-MultiStateView
 	url = https://github.com/vickychijwani/Android-MultiStateView.git

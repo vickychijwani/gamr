@@ -5,8 +5,6 @@
       <module fileurl="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Android-MultiStateView/Android-MultiStateView.iml" filepath="$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Android-MultiStateView/Android-MultiStateView.iml" />
       <module fileurl="file://$PROJECT_DIR$/Gimmick.iml" filepath="$PROJECT_DIR$/Gimmick.iml" />
       <module fileurl="file://$PROJECT_DIR$/Gimmick/Gimmick-Gimmick.iml" filepath="$PROJECT_DIR$/Gimmick/Gimmick-Gimmick.iml" />
-      <module fileurl="file://$PROJECT_DIR$/glide/library/library.iml" filepath="$PROJECT_DIR$/glide/library/library.iml" />
-      <module fileurl="file://$PROJECT_DIR$/glide/library/volley/volley.iml" filepath="$PROJECT_DIR$/glide/library/volley/volley.iml" />
     </modules>
   </component>
 </project>
