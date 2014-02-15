@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.adapter.BaseFragmentPagerAdapter;
+import io.github.vickychijwani.gimmick.utility.DeviceUtils;
 
 public abstract class BaseActivity extends FragmentActivity {
 
@@ -32,13 +33,25 @@ public abstract class BaseActivity extends FragmentActivity {
     protected abstract void setupActionBar(@NotNull ActionBar actionBar);
 
     protected void setupTabsAndViewPager(@NotNull Fragment[] fragments, @NotNull String[] tabTitles) {
-        // setup tabs
+        // setup viewpager
         ViewPager pager = (ViewPager) findViewById(R.id.pager);
+
+        if (pager == null)
+            return;
+
         pager.setAdapter(new BaseFragmentPagerAdapter(getSupportFragmentManager(), fragments, tabTitles));
 
         // bind tabs to viewpager
-        PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+        final PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
         tabs.setViewPager(pager);
+
+        // hide keyboard on tab change, if it is open
+        tabs.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                DeviceUtils.hideSoftKeyboard(BaseActivity.this, tabs.getWindowToken());
+            }
+        });
     }
 
     @NotNull

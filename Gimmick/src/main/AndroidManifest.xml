@@ -34,7 +34,8 @@
         <activity android:name=".view.AddGamesActivity"
             android:label="@string/add_games"
             android:parentActivityName=".view.LibraryActivity"
-            android:icon="@drawable/ic_action_new">
+            android:icon="@drawable/ic_action_new"
+            android:windowSoftInputMode="stateHidden|adjustResize">
         </activity>
 
         <activity android:name=".view.GameDetailsActivity"
