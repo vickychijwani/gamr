@@ -19,15 +19,14 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import io.github.vickychijwani.gimmick.item.GameList;
 import io.github.vickychijwani.gimmick.item.Platform;
 import io.github.vickychijwani.gimmick.item.ReleaseDate;
 import io.github.vickychijwani.gimmick.item.SearchResult;
@@ -69,8 +68,9 @@ public class GiantBomb {
      * @return                  a tag that can be used to cancel any ongoing search requests by
      *                          calling {@link NetworkRequestQueue#cancelPending(RequestTag)}.
      */
-    public static RequestTag searchGames(@NotNull String query, Response.Listener<List<SearchResult>> successHandler,
-                                   Response.ErrorListener errorHandler) {
+    public static RequestTag searchGames(@NotNull String query,
+                                         Response.Listener<GameList> successHandler,
+                                         Response.ErrorListener errorHandler) {
         Log.i(TAG, "Searching for \"" + query + "\"...");
 
         String url = new URLBuilder()
@@ -82,8 +82,7 @@ public class GiantBomb {
                         EXPECTED_RELEASE_MONTH, EXPECTED_RELEASE_DAY)
                 .toString();
 
-        GameListJsonRequest req = new GameListJsonRequest(url, new SearchResult.LatestFirstComparator(),
-                successHandler, errorHandler);
+        GameListJsonRequest req = new GameListJsonRequest(url, successHandler, errorHandler);
         return NetworkRequestQueue.add(req, RequestTag.GIANTBOMB_SEARCH);
     }
 
@@ -96,7 +95,7 @@ public class GiantBomb {
      * @return                  a tag that can be used to cancel any ongoing "upcoming games"
      *                          requests by calling {@link NetworkRequestQueue#cancelPending(RequestTag)}.
      */
-    public static RequestTag fetchUpcomingGames(final Response.Listener<List<SearchResult>> successHandler,
+    public static RequestTag fetchUpcomingGames(final Response.Listener<GameList> successHandler,
                                           final Response.ErrorListener errorHandler) {
         int currentYear = Calendar.getInstance().get(Calendar.YEAR);
 
@@ -114,9 +113,9 @@ public class GiantBomb {
 
         // The GiantBomb API, when queried for upcoming games in 2014, also returns all those whose
         // release date is unknown! This wrapper gets rid of those spurious results.
-        Response.Listener<List<SearchResult>> successHandlerWrapper = new Response.Listener<List<SearchResult>>() {
+        Response.Listener<GameList> successHandlerWrapper = new Response.Listener<GameList>() {
             @Override
-            public void onResponse(List<SearchResult> games) {
+            public void onResponse(GameList games) {
                 int unfilteredCount = games.size();
                 for (int i = games.size() - 1; i >= 0; --i) {
                     if (ReleaseDate.INVALID.equals(games.get(i).releaseDate)) {
@@ -128,8 +127,7 @@ public class GiantBomb {
             }
         };
 
-        GameListJsonRequest req = new GameListJsonRequest(url, new SearchResult.EarliestFirstComparator(),
-                successHandlerWrapper, errorHandler);
+        GameListJsonRequest req = new GameListJsonRequest(url, successHandlerWrapper, errorHandler);
         return NetworkRequestQueue.add(req, RequestTag.GIANTBOMB_UPCOMING);
     }
 
@@ -201,17 +199,17 @@ public class GiantBomb {
     }
 
     @NotNull
-    private static List<SearchResult> buildGameListFromJson(@NotNull JSONObject resultsJsonWrapper) {
+    private static GameList buildGameListFromJson(@NotNull JSONObject resultsJsonWrapper) {
         JSONArray resultsArray;
         try {
             resultsArray = resultsJsonWrapper.getJSONArray(RESULTS);
         } catch (JSONException e) {
             Log.e(TAG, Log.getStackTraceString(e));
-            return new ArrayList<SearchResult>();
+            return new GameList();
         }
         Log.d(TAG, "Got " + resultsArray.length() + " search results");
 
-        List<SearchResult> games = new ArrayList<SearchResult>();
+        GameList games = new GameList();
         for (int i = 0; i < resultsArray.length(); ++i) {
             try {
                 SearchResult result = new SearchResult();
@@ -409,33 +407,23 @@ public class GiantBomb {
      * A JSON request for retrieving a <code>{@link java.util.List}<{@link SearchResult}></code>
      * from a given URL.
      */
-    private static class GameListJsonRequest extends JsonRequest<List<SearchResult>> {
-
-        private final Comparator<SearchResult> mSortComparator;
+    private static class GameListJsonRequest extends JsonRequest<GameList> {
 
         /**
          * @param url               the URL to query
-         * @param sortComparator    games will be sorted using this {@link Comparator}. If this is
-         *                          {@code null}, no sorting will be performed.
          * @param listener          handler to invoke if request succeeds
          * @param errorListener     handler to invoke if request fails
          */
-        public GameListJsonRequest(String url, @Nullable Comparator<SearchResult> sortComparator,
-                                   Response.Listener<List<SearchResult>> listener,
+        public GameListJsonRequest(String url, Response.Listener<GameList> listener,
                                    Response.ErrorListener errorListener) {
             super(Method.GET, url, null, listener, errorListener);
-            mSortComparator = sortComparator;
         }
 
         @Override
-        protected Response<List<SearchResult>> parseNetworkResponse(NetworkResponse response) {
+        protected Response<GameList> parseNetworkResponse(NetworkResponse response) {
             try {
                 String jsonString = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
-                List<SearchResult> games = buildGameListFromJson(new JSONObject(jsonString));
-
-                if (mSortComparator != null) {
-                    Collections.sort(games, mSortComparator);
-                }
+                GameList games = buildGameListFromJson(new JSONObject(jsonString));
 
                 return Response.success(games, HttpHeaderParser.parseCacheHeaders(response));
             } catch (UnsupportedEncodingException e) {

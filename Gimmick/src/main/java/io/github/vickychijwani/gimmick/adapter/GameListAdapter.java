@@ -9,9 +9,8 @@ import android.widget.ArrayAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-
 import io.github.vickychijwani.gimmick.R;
+import io.github.vickychijwani.gimmick.item.GameList;
 import io.github.vickychijwani.gimmick.item.SearchResult;
 import io.github.vickychijwani.gimmick.utility.NetworkUtils;
 
@@ -23,14 +22,14 @@ public class GameListAdapter extends ArrayAdapter<SearchResult> {
     private final LayoutInflater        mLayoutInflater;
     private final View.OnClickListener  mDetailsButtonListener;
 
-    public GameListAdapter(Context context, List<SearchResult> objects,
+    public GameListAdapter(Context context, GameList gameList,
                            @Nullable View.OnClickListener detailsButtonListener) {
-        this(context, LAYOUT, objects, detailsButtonListener);
+        this(context, LAYOUT, gameList, detailsButtonListener);
     }
 
-    protected GameListAdapter(Context context, int layout, List<SearchResult> objects,
+    protected GameListAdapter(Context context, int layout, GameList gameList,
                               @Nullable View.OnClickListener detailsButtonListener) {
-        super(context, layout, objects);
+        super(context, layout, gameList);
         mLayout = layout;
         mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mDetailsButtonListener = detailsButtonListener;

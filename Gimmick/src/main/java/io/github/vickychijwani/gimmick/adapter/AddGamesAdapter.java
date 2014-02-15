@@ -5,17 +5,16 @@ import android.view.View;
 
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-
 import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.background.TaskManager;
+import io.github.vickychijwani.gimmick.item.GameList;
 import io.github.vickychijwani.gimmick.item.SearchResult;
 
 public class AddGamesAdapter extends GameListAdapter {
 
     private static final int LAYOUT = R.layout.component_game_add;
 
-    public AddGamesAdapter(Context context, List<SearchResult> objects,
+    public AddGamesAdapter(Context context, GameList objects,
                            @Nullable View.OnClickListener detailsButtonListener) {
         super(context, LAYOUT, objects, detailsButtonListener);
     }

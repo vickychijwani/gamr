@@ -13,6 +13,7 @@ import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.api.GiantBomb;
 import io.github.vickychijwani.gimmick.api.NetworkRequestQueue;
 import io.github.vickychijwani.gimmick.api.RequestTag;
+import io.github.vickychijwani.gimmick.item.GameList;
 import io.github.vickychijwani.gimmick.utility.NetworkUtils;
 
 public class UpcomingGamesFragment extends AddGamesFragment {
@@ -58,4 +59,8 @@ public class UpcomingGamesFragment extends AddGamesFragment {
         }
     }
 
+    @Override
+    protected void sortResults(GameList gameList) {
+        gameList.sortByEarliestFirst();
+    }
 }

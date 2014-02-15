@@ -4,9 +4,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import io.github.vickychijwani.gimmick.item.GameList;
 import io.github.vickychijwani.gimmick.item.SearchResult;
 
 /**
@@ -37,12 +35,12 @@ public class TaskManager {
     }
 
     public synchronized void performAddTask(SearchResult show) {
-        List<SearchResult> wrapper = new ArrayList<SearchResult>();
+        GameList wrapper = new GameList();
         wrapper.add(show);
         performAddTask(wrapper, false);
     }
 
-    public synchronized void performAddTask(final List<SearchResult> games,
+    public synchronized void performAddTask(final GameList games,
                                             final boolean isSilent) {
         // add the show(s) to a running add task or create a new one
         boolean isRequiringNewTask;

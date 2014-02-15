@@ -6,12 +6,12 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.util.LinkedList;
-import java.util.List;
 
 import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.api.GiantBomb;
 import io.github.vickychijwani.gimmick.api.Metacritic;
 import io.github.vickychijwani.gimmick.database.GamrProvider;
+import io.github.vickychijwani.gimmick.item.GameList;
 import io.github.vickychijwani.gimmick.item.SearchResult;
 import io.github.vickychijwani.gimmick.utility.NetworkUtils;
 
@@ -45,7 +45,7 @@ public class AddGameTask extends android.os.AsyncTask<Void, AddGameTask.Result, 
 
     private static final String TAG = "AddGameTask";
 
-    public AddGameTask(Context context, List<SearchResult> games) {
+    public AddGameTask(Context context, GameList games) {
         // use an activity-independent context
         mContext = context.getApplicationContext();
         mAddQueue.addAll(games);
@@ -55,7 +55,7 @@ public class AddGameTask extends android.os.AsyncTask<Void, AddGameTask.Result, 
      * Adds shows to the add queue. If this returns false, the shows were not
      * added because the task is finishing up. Create a new one instead.
      */
-    public boolean addGames(List<SearchResult> games) {
+    public boolean addGames(GameList games) {
         Log.d(TAG, "Trying to add games to queue...");
         if (mIsFinishedAddingGames) {
             Log.d(TAG, "FAILED. Already finishing up.");

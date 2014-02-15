@@ -18,15 +18,12 @@ import com.meetme.android.multistateview.MultiStateView;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.adapter.GameListAdapter;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.GameListTable;
+import io.github.vickychijwani.gimmick.item.GameList;
 import io.github.vickychijwani.gimmick.item.SearchResult;
 import io.github.vickychijwani.gimmick.utility.AppUtils;
 
@@ -57,7 +54,7 @@ public class LibraryActivity extends BaseActivity implements LoaderManager.Loade
             }
         }, LOADING_STATE_DELAY);
 
-        mAdapter = new GameListAdapter(this, new ArrayList<SearchResult>(), mItemClickListener);
+        mAdapter = new GameListAdapter(this, new GameList(), mItemClickListener);
         mGameList.setAdapter(mAdapter);
 
         getLoaderManager().initLoader(LOADER_ID, null, this);
@@ -116,8 +113,8 @@ public class LibraryActivity extends BaseActivity implements LoaderManager.Loade
         }
 
         // Swap the new data set in (the loader will take care of closing the old cursor)
-        List<SearchResult> games = SearchResult.listFromCursor(cursor);
-        Collections.sort(games, new SearchResult.LatestFirstComparator());
+        GameList games = new GameList(cursor);
+        games.sortByLatestFirst();
         AppUtils.changeAdapterDataSet(mAdapter, games);
     }
 

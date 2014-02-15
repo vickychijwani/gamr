@@ -11,13 +11,10 @@ import com.meetme.android.multistateview.MultiStateView;
 
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import butterknife.InjectView;
 import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.adapter.AddGamesAdapter;
-import io.github.vickychijwani.gimmick.item.SearchResult;
+import io.github.vickychijwani.gimmick.item.GameList;
 import io.github.vickychijwani.gimmick.utility.AppUtils;
 
 public abstract class AddGamesFragment extends BaseFragment {
@@ -33,8 +30,10 @@ public abstract class AddGamesFragment extends BaseFragment {
 
     protected abstract void cancelPendingRequests();
 
+    protected abstract void sortResults(GameList gameList);
+
     protected final void setupAdapter() {
-        mAdapter = new AddGamesAdapter(getActivity(), new ArrayList<SearchResult>(), getDetailsButtonListener());
+        mAdapter = new AddGamesAdapter(getActivity(), new GameList(), getDetailsButtonListener());
         mGameList.setAdapter(mAdapter);
     }
 
@@ -50,23 +49,20 @@ public abstract class AddGamesFragment extends BaseFragment {
         cancelPendingRequests();
     }
 
-    protected void setGameList(List<SearchResult> games) {
-        AppUtils.changeAdapterDataSet(mAdapter, games);
-    }
-
-    private final Response.Listener<List<SearchResult>> mResultsHandler = new Response.Listener<List<SearchResult>>() {
+    private final Response.Listener<GameList> mResultsHandler = new Response.Listener<GameList>() {
         @Override
-        public void onResponse(List<SearchResult> results) {
+        public void onResponse(GameList results) {
             if (! results.isEmpty()) {
                 mGameListContainer.setState(MultiStateView.ContentState.CONTENT);
-                setGameList(results);
+                sortResults(results);
+                AppUtils.changeAdapterDataSet(mAdapter, results);
             } else {
                 mGameListContainer.setState(MultiStateView.ContentState.EMPTY);
             }
         }
     };
 
-    protected final Response.Listener<List<SearchResult>> getResultsHandler() {
+    protected final Response.Listener<GameList> getResultsHandler() {
         return mResultsHandler;
     }
 
@@ -77,7 +73,7 @@ public abstract class AddGamesFragment extends BaseFragment {
             Log.e(TAG, Log.getStackTraceString(error));
 
             mGameListContainer.setState(MultiStateView.ContentState.EMPTY);
-            setGameList(new ArrayList<SearchResult>());
+            AppUtils.changeAdapterDataSet(mAdapter, new GameList());
             Toast.makeText(getActivity(), R.string.fetching_games_failed, Toast.LENGTH_LONG).show();
         }
     };

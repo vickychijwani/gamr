@@ -19,6 +19,7 @@ import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.api.GiantBomb;
 import io.github.vickychijwani.gimmick.api.NetworkRequestQueue;
 import io.github.vickychijwani.gimmick.api.RequestTag;
+import io.github.vickychijwani.gimmick.item.GameList;
 import io.github.vickychijwani.gimmick.utility.DeviceUtils;
 import io.github.vickychijwani.gimmick.utility.NetworkUtils;
 
@@ -83,6 +84,11 @@ public class SearchGamesFragment extends AddGamesFragment {
             mRequestTag = null;
             mGameListContainer.setState(MultiStateView.ContentState.EMPTY);
         }
+    }
+
+    @Override
+    protected void sortResults(GameList gameList) {
+        gameList.sortByLatestFirst();
     }
 
     @OnClick(R.id.clear_button) void clearInput() {
