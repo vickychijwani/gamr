@@ -18,6 +18,7 @@ import butterknife.InjectView;
 import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.adapter.AddGamesAdapter;
 import io.github.vickychijwani.gimmick.item.SearchResult;
+import io.github.vickychijwani.gimmick.utility.AppUtils;
 
 public abstract class AddGamesFragment extends BaseFragment {
 
@@ -33,8 +34,7 @@ public abstract class AddGamesFragment extends BaseFragment {
     protected abstract void cancelPendingRequests();
 
     protected final void setupAdapter() {
-        mAdapter = new AddGamesAdapter(getActivity(), R.layout.component_game_add,
-                new ArrayList<SearchResult>(), getDetailsButtonListener());
+        mAdapter = new AddGamesAdapter(getActivity(), new ArrayList<SearchResult>(), getDetailsButtonListener());
         mGameList.setAdapter(mAdapter);
     }
 
@@ -51,10 +51,7 @@ public abstract class AddGamesFragment extends BaseFragment {
     }
 
     protected void setGameList(List<SearchResult> games) {
-        mAdapter.setNotifyOnChange(false);
-        mAdapter.clear();
-        mAdapter.addAll(games);
-        mAdapter.notifyDataSetChanged();
+        AppUtils.changeAdapterDataSet(mAdapter, games);
     }
 
     private final Response.Listener<List<SearchResult>> mResultsHandler = new Response.Listener<List<SearchResult>>() {

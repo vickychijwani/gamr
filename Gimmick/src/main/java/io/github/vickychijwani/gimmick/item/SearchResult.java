@@ -6,9 +6,11 @@ import android.text.TextUtils;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -71,6 +73,14 @@ public class SearchResult {
             assert franchisesCsv != null;
             franchises = new TreeSet<String>(Arrays.asList(franchisesCsv.split(", ")));
         } catch (IllegalArgumentException ignored) { }
+    }
+
+    public static List<SearchResult> listFromCursor(Cursor cursor) {
+        List<SearchResult> gameList = new ArrayList<SearchResult>(cursor.getCount());
+        while (cursor.moveToNext()) {
+            gameList.add(new SearchResult(cursor));
+        }
+        return gameList;
     }
 
     public void addPlatform(Platform platform) {
