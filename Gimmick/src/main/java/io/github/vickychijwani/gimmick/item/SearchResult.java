@@ -50,29 +50,36 @@ public class SearchResult {
         assert platformsCsv != null;
         platforms = Platform.fromCsv(platformsCsv);
 
-        try {
-            blurb = Html.fromHtml(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable.COL_BLURB))).toString();
-        } catch (IllegalArgumentException ignored) { }
+        int colIndex;
 
-        try {
-            smallPosterUrl = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable.COL_SMALL_POSTER_URL));
-        } catch (IllegalArgumentException ignored) { }
+        colIndex = cursor.getColumnIndex(DatabaseContract.GameTable.COL_BLURB);
+        if (colIndex >= 0) {
+            blurb = Html.fromHtml(cursor.getString(colIndex)).toString();
+        }
 
-        try {
-            metascore = cursor.getShort(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable.COL_METASCORE));
-        } catch (IllegalArgumentException ignored) { }
+        colIndex = cursor.getColumnIndex(DatabaseContract.GameTable.COL_SMALL_POSTER_URL);
+        if (colIndex >= 0) {
+            smallPosterUrl = cursor.getString(colIndex);
+        }
 
-        try {
-            String genresCsv = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable.COL_GENRES));
+        colIndex = cursor.getColumnIndex(DatabaseContract.GameTable.COL_METASCORE);
+        if (colIndex >= 0) {
+            metascore = cursor.getShort(colIndex);
+        }
+
+        colIndex = cursor.getColumnIndex(DatabaseContract.GameTable.COL_GENRES);
+        if (colIndex >= 0) {
+            String genresCsv = cursor.getString(colIndex);
             assert genresCsv != null;
             genres = new TreeSet<String>(Arrays.asList(genresCsv.split(", ")));
-        } catch (IllegalArgumentException ignored) { }
+        }
 
-        try {
-            String franchisesCsv = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable.COL_FRANCHISES));
+        colIndex = cursor.getColumnIndex(DatabaseContract.GameTable.COL_FRANCHISES);
+        if (colIndex >= 0) {
+            String franchisesCsv = cursor.getString(colIndex);
             assert franchisesCsv != null;
             franchises = new TreeSet<String>(Arrays.asList(franchisesCsv.split(", ")));
-        } catch (IllegalArgumentException ignored) { }
+        }
     }
 
     public static List<SearchResult> listFromCursor(Cursor cursor) {
