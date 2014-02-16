@@ -2,7 +2,7 @@
 <resources>
 
     <style name="GamrTheme" parent="android:Theme.Holo">
-        <item name="clickable_item_background">?android:attr/selectableItemBackground</item>
+        <item name="clickable_item_selector">@drawable/list_selector_holo_dark</item>
         <item name="colorAccent">@color/accent_primary</item>
         <item name="colorDivider">@color/divider</item>
         <item name="colorTabStripText">@color/text_default</item>

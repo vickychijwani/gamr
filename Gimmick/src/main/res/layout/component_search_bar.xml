@@ -22,7 +22,7 @@
         android:id="@+id/clear_button"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:background="?attr/clickable_item_background"
+        android:background="?attr/clickable_item_selector"
         android:contentDescription="@string/clear"
         android:src="@drawable/ic_action_remove" />
 

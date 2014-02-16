@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <attr name="clickable_item_background" format="reference" />
+    <attr name="clickable_item_selector" format="reference" />
 
     <!-- colors -->
     <attr name="colorAccent" format="reference|color" />

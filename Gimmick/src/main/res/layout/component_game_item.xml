@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:layout_weight="1"
     android:clickable="true"
-    android:background="?clickable_item_background"
+    android:background="?attr/clickable_item_selector"
     android:focusable="true"
     android:paddingBottom="@dimen/padding_default"
     android:paddingLeft="@dimen/padding_default"

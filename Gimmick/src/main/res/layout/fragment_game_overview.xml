@@ -20,7 +20,7 @@
                 android:id="@+id/poster_container"
                 android:layout_width="160dp"
                 android:layout_height="200dp"
-                android:foreground="?attr/clickable_item_background">
+                android:foreground="?attr/clickable_item_selector">
 
                 <ImageView
                     android:id="@+id/poster"
@@ -63,8 +63,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/padding_default"
             android:layout_marginLeft="@dimen/padding_default"
-            android:layout_marginRight="@dimen/padding_default"
-            android:background="?attr/clickable_item_background">
+            android:layout_marginRight="@dimen/padding_default">
 
             <ImageView
                 android:id="@+id/rating_star"

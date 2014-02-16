@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:clickable="true"
-        android:background="?clickable_item_background"
+        android:background="?attr/clickable_item_selector"
         android:contentDescription="@string/description_add_game"
         android:focusable="true"
         android:padding="@dimen/padding_default"
