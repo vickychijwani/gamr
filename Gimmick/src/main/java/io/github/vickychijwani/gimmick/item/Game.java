@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
@@ -27,6 +28,7 @@ public class Game {
     public short metascore = -1;
     public Set<String> genres = new TreeSet<String>();
     public Set<String> franchises = new TreeSet<String>();
+    public Set<Video> videos = new HashSet<Video>();
 
     public boolean isAdded;
 
@@ -91,8 +93,17 @@ public class Game {
         franchises.add(franchise);
     }
 
+    public void addVideo(@NotNull Video video) {
+        video.setGameId(giantBombId);
+        videos.add(video);
+    }
+
     public Iterator<Platform> getPlatforms() {
         return platforms.iterator();
+    }
+
+    public Iterator<Video> getVideos() {
+        return videos.iterator();
     }
 
     public String getPlatformsDisplayString() {

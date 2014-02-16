@@ -7,6 +7,7 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Response;
 import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.RequestFuture;
 
@@ -30,6 +31,8 @@ import io.github.vickychijwani.gimmick.item.Game;
 import io.github.vickychijwani.gimmick.item.GameList;
 import io.github.vickychijwani.gimmick.item.Platform;
 import io.github.vickychijwani.gimmick.item.ReleaseDate;
+import io.github.vickychijwani.gimmick.item.Video;
+import io.github.vickychijwani.gimmick.utility.AppUtils;
 
 public class GiantBomb {
 
@@ -44,6 +47,7 @@ public class GiantBomb {
     private static final String IMAGE_URLS = "image";
     private static final String POSTER_URL = "thumb_url";
     private static final String SMALL_POSTER_URL = "small_url";
+    private static final String SCREEN_URL = "screen_url";
     private static final String DECK = "deck";
     private static final String API_DETAIL_URL = "api_detail_url";
     private static final String REVIEW_COUNT = "number_of_user_reviews";
@@ -52,9 +56,19 @@ public class GiantBomb {
     private static final String EXPECTED_RELEASE_QUARTER = "expected_release_quarter";
     private static final String EXPECTED_RELEASE_MONTH = "expected_release_month";
     private static final String EXPECTED_RELEASE_DAY = "expected_release_day";
-
+    private static final String USER = "user";
     private static final String GENRES = "genres";
+
     private static final String FRANCHISES = "franchises";
+    private static final String VIDEOS = "videos";
+    // for videos
+    private static final String LOW_URL = "low_url";
+
+    private static final String HIGH_URL = "high_url";
+    private static final String LENGTH_SECONDS = "length_seconds";
+    private static final String YOUTUBE_ID = "youtube_id";
+    private static final String VIDEO_TYPE = "video_type";
+    private static final String PUBLISH_DATE = "publish_date";
 
     private static final SortParam SORT_BY_MOST_REVIEWS = new SortParam(REVIEW_COUNT, SortParam.DESC);
     private static final SortParam SORT_BY_LATEST_RELEASES = new SortParam(ORIGINAL_RELEASE_DATE, SortParam.DESC);
@@ -136,6 +150,7 @@ public class GiantBomb {
      *
      * NOTE: never call this from the UI thread!
      *
+     * @param giantBombUrl  API URL
      * @return  the requested {@link io.github.vickychijwani.gimmick.item.Game}
      */
     @Nullable
@@ -146,7 +161,7 @@ public class GiantBomb {
                 .setFieldList(ID, NAME, PLATFORMS, IMAGE_URLS, DECK, API_DETAIL_URL,
                         ORIGINAL_RELEASE_DATE, EXPECTED_RELEASE_YEAR, EXPECTED_RELEASE_QUARTER,
                         EXPECTED_RELEASE_MONTH, EXPECTED_RELEASE_DAY,
-                        GENRES, FRANCHISES)
+                        GENRES, FRANCHISES, VIDEOS)
                 .toString();
 
         RequestFuture<Game> future = RequestFuture.newFuture();
@@ -154,7 +169,7 @@ public class GiantBomb {
         NetworkRequestQueue.add(req);
 
         try {
-            return future.get();
+            return future.get();    // block until request completes
         } catch (InterruptedException e) {
             Log.e(TAG, Log.getStackTraceString(e));
         } catch (ExecutionException e) {
@@ -164,12 +179,64 @@ public class GiantBomb {
         return null;
     }
 
+    /**
+     * Fetch a game's videos' details in a <i>synchronous</i> manner.
+     * <p/>
+     * NOTE: never call this from the UI thread!
+     *
+     * @param game the {@link Game} for which to fetch video data. The {@link Game} must have a
+     *             {@link java.util.Set} of {@link Video}s, each of which must return a valid API
+     *             URL on calling {@link Video#getGiantBombUrl()}
+     * @return the {@link Game} that was passed in, augmented with the requested video data
+     */
+    @Nullable
+    public static Game fetchVideosForGame(@NotNull Game game) {
+        Iterator<Video> videoIterator = game.getVideos();
+
+        String videoIds = "";
+        while (videoIterator.hasNext()) {
+            Video video = videoIterator.next();
+            videoIds += video.getGiantBombId();
+            if (videoIterator.hasNext()) {
+                videoIds += "|";
+            }
+        }
+
+        String url = new URLBuilder()
+                .setResource("videos")
+                .addParam("filter", ID + ":" + videoIds)
+                .toString();
+
+        Log.i(TAG, "Fetching videos from " + url);
+
+        RequestFuture<JSONObject> future = RequestFuture.newFuture();
+        JsonObjectRequest req = new JsonObjectRequest(url, null, future, future);
+        NetworkRequestQueue.add(req);
+
+        try {
+            JSONArray videoJsonArray = future.get().getJSONArray(RESULTS);  // block until request completes
+            Log.i(TAG, "Received " + videoJsonArray.length() + " videos");
+            JSONArrayIterator videoJsonIterator = new JSONArrayIterator(videoJsonArray);
+            videoIterator = game.getVideos();
+            while (videoJsonIterator.hasNext() && videoIterator.hasNext()) {
+                parseVideoInfoFromJson(videoJsonIterator.next(), videoIterator.next());
+            }
+        } catch (InterruptedException e) {
+            Log.e(TAG, Log.getStackTraceString(e));
+        } catch (ExecutionException e) {
+            Log.e(TAG, Log.getStackTraceString(e));
+        } catch (JSONException e) {
+            Log.e(TAG, Log.getStackTraceString(e));
+        }
+
+        return game;
+    }
+
     @Nullable
     private static Game buildGameFromJson(@NotNull JSONObject gameJsonWrapper) {
         try {
             JSONObject gameJson = gameJsonWrapper.getJSONObject(RESULTS);
             Game game = new Game();
-            JSONArrayNameIterator nameIterator;
 
             if (! parseEssentialGameInfoFromJson(gameJson, game)) {
                 return null;
@@ -177,7 +244,8 @@ public class GiantBomb {
 
             // genres
             if (! gameJson.isNull(GENRES)) {
-                nameIterator = new JSONArrayNameIterator(gameJson.getJSONArray(GENRES));
+                JSONPropertyIterator<String> nameIterator
+                        = new JSONPropertyIterator<String>(gameJson.getJSONArray(GENRES), NAME);
                 while (nameIterator.hasNext()) {
                     game.addGenre(nameIterator.next());
                 }
@@ -185,9 +253,21 @@ public class GiantBomb {
 
             // franchises
             if (! gameJson.isNull(FRANCHISES)) {
-                nameIterator = new JSONArrayNameIterator(gameJson.getJSONArray(FRANCHISES));
+                JSONPropertyIterator<String> nameIterator
+                        = new JSONPropertyIterator<String>(gameJson.getJSONArray(FRANCHISES), NAME);
                 while (nameIterator.hasNext()) {
                     game.addFranchise(nameIterator.next());
+                }
+            }
+
+            // videos
+            if (! gameJson.isNull(VIDEOS)) {
+                JSONPropertyIterator<Integer> idIterator
+                        = new JSONPropertyIterator<Integer>(gameJson.getJSONArray(VIDEOS), ID);
+                while (idIterator.hasNext()) {
+                    Video video = new Video();
+                    video.setGiantBombId(idIterator.next());
+                    game.addVideo(video);
                 }
             }
 
@@ -231,12 +311,11 @@ public class GiantBomb {
 
     private static boolean parseEssentialGameInfoFromJson(JSONObject gameJson, Game game)
             throws JSONException {
-        JSONArrayNameIterator nameIterator;
-
         // platforms
-        nameIterator = new JSONArrayNameIterator(gameJson.getJSONArray(PLATFORMS));
-        while (nameIterator.hasNext()) {
-            String platformName = nameIterator.next();
+        JSONPropertyIterator<String> platformsIterator
+                = new JSONPropertyIterator<String>(gameJson.getJSONArray(PLATFORMS), NAME);
+        while (platformsIterator.hasNext()) {
+            String platformName = platformsIterator.next();
             try {
                 game.addPlatform(Platform.fromName(platformName));
             } catch (IllegalArgumentException e) {
@@ -256,6 +335,39 @@ public class GiantBomb {
         game.blurb = gameJson.getString(DECK);
         game.releaseDate = parseReleaseDateFromJson(gameJson);
         return true;
+    }
+
+    @NotNull
+    private static Video parseVideoInfoFromJson(JSONObject videoJson, Video video) throws JSONException {
+        // game id is set automatically when calling Game#addVideo()
+
+        video.setName(videoJson.optString(NAME));
+        video.setBlurb(videoJson.optString(DECK));
+        video.setGiantBombId(videoJson.getInt(ID));
+        video.setGiantBombUrl(videoJson.getString(API_DETAIL_URL));
+        video.setLowUrl(videoJson.optString(LOW_URL));
+        video.setHighUrl(videoJson.optString(HIGH_URL));
+        video.setDuration(videoJson.optInt(LENGTH_SECONDS, -1));
+        video.setUser(videoJson.optString(USER));
+        video.setType(videoJson.optString(VIDEO_TYPE));
+        video.setYoutubeId(videoJson.optString(YOUTUBE_ID));
+
+        // publish date
+        try {
+            video.setPublishDate(AppUtils.isoDateStringToDate(videoJson.optString(PUBLISH_DATE, "1990-01-01 00:00")));
+        } catch (ParseException e) {
+            Log.e(TAG, Log.getStackTraceString(e));
+        }
+
+        // thumbnail
+        JSONObject imageUrls = videoJson.optJSONObject(IMAGE_URLS);
+        if (imageUrls != null) {
+            video.setThumbUrl(imageUrls.optString(SCREEN_URL));
+        } else {
+            Log.w(TAG, "No thumbnail found for video id = " + video.getGiantBombId());
+        }
+
+        return video;
     }
 
     private static ReleaseDate parseReleaseDateFromJson(JSONObject gameJson) {
@@ -290,41 +402,6 @@ public class GiantBomb {
 
     public static void setApiKey(@NotNull String apiKey) {
         API_KEY = apiKey;
-    }
-
-    /**
-     * Utility class to iterate over a JSONArray of objects with a "name" field
-     */
-    private static class JSONArrayNameIterator implements Iterator<String> {
-        private JSONArray mJsonArray;
-        private int mPosition = 0;
-
-        public JSONArrayNameIterator(JSONArray jsonArray) throws JSONException, IllegalArgumentException {
-            if (jsonArray.length() > 0 && ! jsonArray.getJSONObject(0).has(NAME)) {
-                throw new IllegalArgumentException("objects in JSONArray must have \"name\" field for iteration");
-            }
-            mJsonArray = jsonArray;
-        }
-
-        @Override
-        public boolean hasNext() {
-            return mPosition < mJsonArray.length();
-        }
-
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException("iterator is read-only");
-        }
-
-        @Override
-        public String next() {
-            try {
-                return mJsonArray.getJSONObject(mPosition++).getString(NAME);
-            } catch (JSONException e) {
-                Log.e(TAG, Log.getStackTraceString(e));
-            }
-            return null;
-        }
     }
 
     private static class URLBuilder {

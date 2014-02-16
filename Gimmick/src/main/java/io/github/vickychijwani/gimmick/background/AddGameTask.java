@@ -111,6 +111,7 @@ public class AddGameTask extends android.os.AsyncTask<Void, AddGameTask.Result, 
                 }
                 else {
                     Metacritic.fetchMetascore(fullGame);
+                    GiantBomb.fetchVideosForGame(fullGame);
                     try {
                         if (GamrProvider.addGame(fullGame)) {
                             result = new Result(StatusCode.SUCCESS, game.name);

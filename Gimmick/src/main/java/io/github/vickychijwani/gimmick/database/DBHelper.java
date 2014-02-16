@@ -13,6 +13,7 @@ import io.github.vickychijwani.gimmick.database.DatabaseContract.GameListTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.GamePlatformMappingTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.GameTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.PlatformTable;
+import io.github.vickychijwani.gimmick.database.DatabaseContract.VideoTable;
 import io.github.vickychijwani.gimmick.utility.DeviceUtils;
 
 public class DBHelper extends BaseDBHelper {
@@ -51,6 +52,7 @@ public class DBHelper extends BaseDBHelper {
         db.execSQL(GameTable.createTable());
         db.execSQL(PlatformTable.createTable());
         db.execSQL(GamePlatformMappingTable.createTable());
+        db.execSQL(VideoTable.createTable());
     }
 
     @Override
@@ -68,12 +70,8 @@ public class DBHelper extends BaseDBHelper {
      *
      * @return      id of the newly-inserted game if successful, else -1
      */
-    public static long addGameAsToPlay(ContentValues values) {
-        SQLiteDatabase db = getInstance().getWritableDatabase();
-        assert db != null;
-
-        return db.insertWithOnConflict(GameTable.TABLE_NAME, null,
-                values, SQLiteDatabase.CONFLICT_IGNORE);
+    public static long addGame(ContentValues values) {
+        return insertOrIgnore(GameTable.TABLE_NAME, values);
     }
 
     /**
@@ -82,11 +80,7 @@ public class DBHelper extends BaseDBHelper {
      * @return      id of the newly-inserted platform if successful, else -1
      */
     public static long addPlatform(ContentValues values) {
-        SQLiteDatabase db = getInstance().getWritableDatabase();
-        assert db != null;
-
-        return db.insertWithOnConflict(PlatformTable.TABLE_NAME, null,
-                values, SQLiteDatabase.CONFLICT_IGNORE);
+        return insertOrIgnore(PlatformTable.TABLE_NAME, values);
     }
 
     /**
@@ -95,11 +89,16 @@ public class DBHelper extends BaseDBHelper {
      * @return      id of the newly-inserted mapping if successful, else -1
      */
     public static long addGamePlatformMapping(ContentValues values) {
-        SQLiteDatabase db = getInstance().getWritableDatabase();
-        assert db != null;
+        return insertOrIgnore(GamePlatformMappingTable.TABLE_NAME, values);
+    }
 
-        return db.insertWithOnConflict(GamePlatformMappingTable.TABLE_NAME, null,
-                values, SQLiteDatabase.CONFLICT_IGNORE);
+    /**
+     * Add a video to the database.
+     *
+     * @return      id of the newly-inserted video if successful, else -1
+     */
+    public static long addVideo(@NotNull ContentValues values) {
+        return insertOrIgnore(VideoTable.TABLE_NAME, values);
     }
 
     @NotNull
@@ -112,6 +111,22 @@ public class DBHelper extends BaseDBHelper {
     public static Cursor getGamesInList(long listId) {
         return getGames(GameTable.essentialColumns(),
                 new SQL.Eq(GameTable.COL_GAME_LIST_ID, listId));
+    }
+
+    @NotNull
+    public static Cursor getVideosForGame(long gameId) {
+        return (Cursor) selectAll()
+                .from(VideoTable.TABLE_NAME)
+                .where(new SQL.Eq(VideoTable.COL_GAME_ID, gameId))
+                .execute();
+    }
+
+    private static long insertOrIgnore(@NotNull String tableName, @NotNull ContentValues values) {
+        SQLiteDatabase db = getInstance().getWritableDatabase();
+        assert db != null;
+
+        return db.insertWithOnConflict(tableName, null,
+                values, SQLiteDatabase.CONFLICT_IGNORE);
     }
 
     @NotNull

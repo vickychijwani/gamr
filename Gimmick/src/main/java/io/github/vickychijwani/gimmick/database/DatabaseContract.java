@@ -9,6 +9,8 @@ import org.jetbrains.annotations.NotNull;
 import io.github.vickychijwani.gimmick.GamrApplication;
 import io.github.vickychijwani.gimmick.item.Game;
 import io.github.vickychijwani.gimmick.item.Platform;
+import io.github.vickychijwani.gimmick.item.Video;
+import io.github.vickychijwani.gimmick.utility.AppUtils;
 
 public final class DatabaseContract {
 
@@ -74,7 +76,7 @@ public final class DatabaseContract {
 
         /** Content URI for listing all games in the database */
         public static final Uri CONTENT_URI_LIST = CONTENT_URI_BASE.buildUpon()
-                .appendPath(GameTable.TABLE_NAME)
+                .appendPath(TABLE_NAME)
                 .build();
 
         /** Content URI for inserting a new game */
@@ -186,7 +188,7 @@ public final class DatabaseContract {
 
         /** Content URI for listing all platforms */
         public static final Uri CONTENT_URI_LIST = CONTENT_URI_BASE.buildUpon()
-                .appendPath(PlatformTable.TABLE_NAME)
+                .appendPath(TABLE_NAME)
                 .build();
 
         /** Content URI for inserting a new platform */
@@ -224,7 +226,7 @@ public final class DatabaseContract {
 
         /** Content URI for inserting a new mapping */
         public static final Uri CONTENT_URI_INSERT = CONTENT_URI_BASE.buildUpon()
-                .appendPath(GamePlatformMappingTable.TABLE_NAME)
+                .appendPath(TABLE_NAME)
                 .build();
 
         /** Content URI for listing all mappings */
@@ -250,6 +252,96 @@ public final class DatabaseContract {
             values.put(COL_PLATFORM_ID, platformId);
             return values;
         }
+    }
+
+    // Videos
+    public static abstract class VideoTable implements BaseColumns {
+        public static final String TABLE_NAME = "video";
+
+        /** Use if multiple items get returned */
+        public static final String CONTENT_TYPE = CONTENT_TYPE_BASE + TABLE_NAME;
+
+        /** Use if a single item is returned */
+        public static final String CONTENT_ITEM_TYPE = CONTENT_ITEM_TYPE_BASE + TABLE_NAME;
+
+        /** Content URI for listing all platforms */
+        public static final Uri CONTENT_URI_LIST = CONTENT_URI_BASE.buildUpon()
+                .appendPath(TABLE_NAME)
+                .build();
+
+        /** Content URI for inserting a new platform */
+        public static final Uri CONTENT_URI_INSERT = CONTENT_URI_LIST;
+
+        /** Video name */
+        public static final String COL_NAME = "name";
+
+        /** Game this video is for */
+        public static final String COL_GAME_ID = "game_id";
+
+        /** Short description of the video */
+        public static final String COL_BLURB = "blurb";
+
+        /** URL of low-quality version of the video */
+        public static final String COL_LOW_URL = "low_url";
+
+        /** URL of high-quality version of the video */
+        public static final String COL_HIGH_URL = "high_url";
+
+        /** duration in seconds */
+        public static final String COL_DURATION = "duration";
+
+        /** URL of video thumbnail */
+        public static final String COL_THUMB_URL = "thumb_url";
+
+        /** video uploader */
+        public static final String COL_USER = "user";
+
+        /** video type */
+        public static final String COL_TYPE = "type";
+
+        /** YouTube id of video */
+        public static final String COL_YOUTUBE_ID = "youtube_id";
+
+        /** Date of publishing */
+        public static final String COL_PUBLISH_DATE = "publish_date";
+
+        public static String createTable() {
+            return SQL.CREATE_TABLE(TABLE_NAME,
+                    SQL.DEF_PRIMARY_KEY(_ID, SQL.Type.INTEGER),
+                    SQL.DEF_COL(COL_NAME, SQL.Type.TEXT, SQL.Constraint.NOT_NULL, SQL.Constraint.DEFAULT("\"\"")),
+                    SQL.DEF_FOREIGN_KEY_NOT_NULL(COL_GAME_ID, GameTable.TABLE_NAME, GameTable._ID),
+                    SQL.DEF_COL(COL_BLURB, SQL.Type.TEXT, SQL.Constraint.DEFAULT("\"\"")),
+                    SQL.DEF_COL(COL_LOW_URL, SQL.Type.TEXT, SQL.Constraint.DEFAULT("\"\"")),
+                    SQL.DEF_COL(COL_HIGH_URL, SQL.Type.TEXT, SQL.Constraint.DEFAULT("\"\"")),
+                    SQL.DEF_COL(COL_DURATION, SQL.Type.INTEGER, SQL.Constraint.NOT_NULL, SQL.Constraint.DEFAULT(-1)),
+                    SQL.DEF_COL(COL_THUMB_URL, SQL.Type.TEXT, SQL.Constraint.DEFAULT("\"\"")),
+                    SQL.DEF_COL(COL_USER, SQL.Type.TEXT, SQL.Constraint.NOT_NULL, SQL.Constraint.DEFAULT("\"\"")),
+                    SQL.DEF_COL(COL_TYPE, SQL.Type.TEXT, SQL.Constraint.NOT_NULL, SQL.Constraint.DEFAULT("\"\"")),
+                    SQL.DEF_COL(COL_YOUTUBE_ID, SQL.Type.TEXT, SQL.Constraint.NOT_NULL, SQL.Constraint.DEFAULT("\"\"")),
+                    SQL.DEF_COL(COL_PUBLISH_DATE, SQL.Type.TEXT, SQL.Constraint.NOT_NULL, SQL.Constraint.DEFAULT("\"1990-01-01 00:00:00\""))
+            );
+        }
+
+        @NotNull
+        public static ContentValues contentValuesFor(Video video) {
+            ContentValues values = new ContentValues();
+            values.put(_ID, video.getGiantBombId());
+            values.put(COL_NAME, video.getName());
+            values.put(COL_GAME_ID, video.getGameId());
+            values.put(COL_BLURB, video.getBlurb());
+            values.put(COL_LOW_URL, video.getLowUrl());
+            values.put(COL_HIGH_URL, video.getHighUrl());
+            values.put(COL_DURATION, video.getDuration());
+            values.put(COL_THUMB_URL, video.getThumbUrl());
+            values.put(COL_USER, video.getUser());
+            values.put(COL_TYPE, video.getType());
+            values.put(COL_YOUTUBE_ID, video.getYoutubeId());
+            values.put(COL_PUBLISH_DATE, AppUtils.dateToIsoDateString(video.getPublishDate()));
+            return values;
+        }
+
+        @NotNull
+        public static String qualify(@NotNull String colName) { return TABLE_NAME + "." + colName; }
     }
 
 }

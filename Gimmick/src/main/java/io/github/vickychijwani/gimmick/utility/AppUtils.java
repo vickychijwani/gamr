@@ -4,6 +4,9 @@ import android.widget.ArrayAdapter;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class AppUtils {
@@ -24,6 +27,24 @@ public class AppUtils {
             adapter.addAll(list);
         }
         adapter.notifyDataSetChanged();
+    }
+
+    /**
+     * Converts a {@link Date} object to an ISO-formatted {@link String} representation of it.
+     *
+     * @return  a formatted {@link String} of the form "yyyy-MM-dd HH:mm"
+     */
+    public static String dateToIsoDateString(Date date) {
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm").format(date);
+    }
+
+    /**
+     * Converts an ISO-formatted {@link String} representation of a date to a {@link Date} object.
+     *
+     * @return  a {@link Date} object corresponding to given date string
+     */
+    public static Date isoDateStringToDate(String dateString) throws ParseException {
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(dateString);
     }
 
 }

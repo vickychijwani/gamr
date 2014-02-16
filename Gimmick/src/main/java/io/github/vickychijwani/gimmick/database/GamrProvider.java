@@ -23,8 +23,10 @@ import io.github.vickychijwani.gimmick.database.DatabaseContract.GameListTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.GamePlatformMappingTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.GameTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.PlatformTable;
+import io.github.vickychijwani.gimmick.database.DatabaseContract.VideoTable;
 import io.github.vickychijwani.gimmick.item.Game;
 import io.github.vickychijwani.gimmick.item.Platform;
+import io.github.vickychijwani.gimmick.item.Video;
 
 public class GamrProvider extends ContentProvider {
 
@@ -35,15 +37,19 @@ public class GamrProvider extends ContentProvider {
 
     private static final int GAMES = 100;
     private static final int GAMES_ID = 101;
+    private static final int GAMES_VIDEOS = 102;
 
     private static final int LISTS = 200;
     private static final int LISTS_METADATA = 201;
-    private static final int LISTS_GAMES = 202;
 
+    private static final int LISTS_GAMES = 202;
     private static final int PLATFORMS = 300;
+
     private static final int PLATFORMS_ID = 301;
 
     private static final int GAME_PLATFORM_MAPPINGS = 400;
+
+    private static final int VIDEOS = 500;
 
     @Override
     public boolean onCreate() {
@@ -90,6 +96,9 @@ public class GamrProvider extends ContentProvider {
             case GAMES_ID:
                 cursor = DBHelper.getGame(ContentUris.parseId(uri));
                 break;
+            case GAMES_VIDEOS:
+                cursor = DBHelper.getVideosForGame(ContentUris.parseId(uri));
+                break;
             case LISTS_GAMES:
                 cursor = DBHelper.getGamesInList(ContentUris.parseId(uri));
                 break;
@@ -106,6 +115,7 @@ public class GamrProvider extends ContentProvider {
         return cursor;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Uri insert(@NotNull Uri uri, @NotNull ContentValues values) {
         Log.i(TAG, "[insert] uri: " + uri);
@@ -116,7 +126,7 @@ public class GamrProvider extends ContentProvider {
 
         switch (match) {
             case LISTS_GAMES:
-                insertedId = DBHelper.addGameAsToPlay(values);
+                insertedId = DBHelper.addGame(values);
                 if (insertedId >= 0) {
                     insertedUri = ContentUris.withAppendedId(GameTable.CONTENT_URI_LIST, insertedId);
                 }
@@ -134,6 +144,12 @@ public class GamrProvider extends ContentProvider {
                     insertedUri = ContentUris.withAppendedId(GamePlatformMappingTable.CONTENT_URI_LIST, insertedId);
                 }
                 break;
+            case VIDEOS:
+                insertedId = DBHelper.addVideo(values);
+                if (insertedId >= 0) {
+                    insertedUri = ContentUris.withAppendedId(VideoTable.CONTENT_URI_LIST, insertedId);
+                }
+                break;
             default:
                 throw new IllegalArgumentException("Unknown uri: " + uri);
         }
@@ -145,11 +161,13 @@ public class GamrProvider extends ContentProvider {
         return insertedUri;
     }
 
+    /** {@inheritDoc} */
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         return 0;
     }
 
+    /** {@inheritDoc} */
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         return 0;
@@ -174,6 +192,13 @@ public class GamrProvider extends ContentProvider {
                     .build());
         }
 
+        Iterator<Video> videos = game.getVideos();
+        while (videos.hasNext()) {
+            ops.add(ContentProviderOperation.newInsert(VideoTable.CONTENT_URI_INSERT)
+                    .withValues(VideoTable.contentValuesFor(videos.next()))
+                    .build());
+        }
+
         ContentProviderResult[] result = sInstance.applyBatch(ops);
 
         return result != null;
@@ -187,6 +212,8 @@ public class GamrProvider extends ContentProvider {
                 return GameTable.CONTENT_TYPE;
             case GAMES_ID:
                 return GameTable.CONTENT_ITEM_TYPE;
+            case GAMES_VIDEOS:
+                return VideoTable.CONTENT_TYPE;
             case LISTS:
                 return GameListTable.CONTENT_TYPE;
             case LISTS_METADATA:
@@ -215,6 +242,7 @@ public class GamrProvider extends ContentProvider {
         // Games
         matcher.addURI(authority, GameTable.TABLE_NAME, GAMES);
         matcher.addURI(authority, GameTable.TABLE_NAME + "/#", GAMES_ID);
+        matcher.addURI(authority, GameTable.TABLE_NAME + "/" + VideoTable.TABLE_NAME + "/#", GAMES_VIDEOS);
 
         // Lists
         matcher.addURI(authority, GameListTable.TABLE_NAME, LISTS);
@@ -227,6 +255,9 @@ public class GamrProvider extends ContentProvider {
 
         // Game <=> platform mappings
         matcher.addURI(authority, GamePlatformMappingTable.TABLE_NAME, GAME_PLATFORM_MAPPINGS);
+
+        // Videos
+        matcher.addURI(authority, VideoTable.TABLE_NAME, VIDEOS);
 
         return matcher;
     }
