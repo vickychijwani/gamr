@@ -1,6 +1,7 @@
 package io.github.vickychijwani.gimmick.view;
 
 import android.app.ActionBar;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -77,6 +78,12 @@ public abstract class BaseActivity extends FragmentActivity {
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(R.anim.shrink_enter, R.anim.shrink_exit);
+    }
+
+    @Override
+    public void startActivity(Intent intent) {
+        super.startActivity(intent);
+        overridePendingTransition(R.anim.blow_up_enter, R.anim.blow_up_exit);
     }
 
 }
