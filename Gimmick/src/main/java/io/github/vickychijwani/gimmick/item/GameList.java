@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class GameList extends ArrayList<SearchResult> {
+public class GameList extends ArrayList<Game> {
 
-    private static Comparator<SearchResult> mLatestFirstComparator = null;
-    private static Comparator<SearchResult> mEarliestFirstComparator = null;
+    private static Comparator<Game> mLatestFirstComparator = null;
+    private static Comparator<Game> mEarliestFirstComparator = null;
 
     /**
      * Construct an empty {@link GameList}.
@@ -20,15 +20,15 @@ public class GameList extends ArrayList<SearchResult> {
 
     /**
      * Construct a {@link GameList} from a {@link Cursor} object. The cursor must contain rows suitable for
-     * constructing individual {@link SearchResult} objects.
+     * constructing individual {@link Game} objects.
      *
      * @param cursor    the cursor from which to construct the list
-     * @see SearchResult#SearchResult(Cursor)
+     * @see Game#Game(Cursor)
      */
     public GameList(Cursor cursor) {
         super(cursor.getCount());
         while (cursor.moveToNext()) {
-            add(new SearchResult(cursor));
+            add(new Game(cursor));
         }
     }
 
@@ -80,11 +80,11 @@ public class GameList extends ArrayList<SearchResult> {
         LATEST_FIRST,
     }
 
-    private Comparator<SearchResult> getLatestFirstComparator() {
+    private Comparator<Game> getLatestFirstComparator() {
         if (mLatestFirstComparator == null) {
-            mLatestFirstComparator = new Comparator<SearchResult>() {
+            mLatestFirstComparator = new Comparator<Game>() {
                 @Override
-                public int compare(SearchResult lhs, SearchResult rhs) {
+                public int compare(Game lhs, Game rhs) {
                     return -lhs.releaseDate.compareTo(rhs.releaseDate);
                 }
             };
@@ -92,11 +92,11 @@ public class GameList extends ArrayList<SearchResult> {
         return mLatestFirstComparator;
     }
 
-    private Comparator<SearchResult> getEarliestFirstComparator() {
+    private Comparator<Game> getEarliestFirstComparator() {
         if (mEarliestFirstComparator == null) {
-            mEarliestFirstComparator = new Comparator<SearchResult>() {
+            mEarliestFirstComparator = new Comparator<Game>() {
                 @Override
-                public int compare(SearchResult lhs, SearchResult rhs) {
+                public int compare(Game lhs, Game rhs) {
                     return lhs.releaseDate.compareTo(rhs.releaseDate);
                 }
             };

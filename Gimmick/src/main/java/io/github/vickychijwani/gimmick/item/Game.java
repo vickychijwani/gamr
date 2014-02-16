@@ -13,7 +13,7 @@ import java.util.TreeSet;
 
 import io.github.vickychijwani.gimmick.database.DatabaseContract;
 
-public class SearchResult {
+public class Game {
 
     public String name = "";
     public int giantBombId = -1;
@@ -30,14 +30,14 @@ public class SearchResult {
 
     public boolean isAdded;
 
-    public SearchResult() {
+    public Game() {
 
     }
 
     /**
      * @param cursor    a database cursor from which to construct this object
      */
-    public SearchResult(Cursor cursor) {
+    public Game(Cursor cursor) {
         giantBombId = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable._ID));
         name = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable.COL_NAME));
         posterUrl = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable.COL_POSTER_URL));

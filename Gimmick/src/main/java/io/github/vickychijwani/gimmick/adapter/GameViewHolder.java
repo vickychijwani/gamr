@@ -9,7 +9,7 @@ import butterknife.InjectView;
 import butterknife.Optional;
 import io.github.vickychijwani.gimmick.R;
 
-class SearchResultViewHolder {
+class GameViewHolder {
     @InjectView(R.id.poster)                ImageView poster;
     @InjectView(R.id.title)                 TextView title;
     @InjectView(R.id.release_date)          TextView releaseDate;
@@ -17,7 +17,7 @@ class SearchResultViewHolder {
     @InjectView(R.id.details)               View details;
     @InjectView(R.id.addbutton) @Optional   View addbutton;
 
-    public SearchResultViewHolder(View view) {
+    public GameViewHolder(View view) {
         ButterKnife.inject(this, view);
     }
 }

@@ -14,8 +14,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+import io.github.vickychijwani.gimmick.item.Game;
 import io.github.vickychijwani.gimmick.item.Platform;
-import io.github.vickychijwani.gimmick.item.SearchResult;
 
 public class Metacritic {
 
@@ -27,7 +27,7 @@ public class Metacritic {
     private static final String RESULT = "result";
     private static final String SCORE = "score";
 
-    public static void fetchMetascore(@NotNull SearchResult game) {
+    public static void fetchMetascore(@NotNull Game game) {
         Log.i(TAG, "Fetching Metascore for \"" + game.name + "\"");
 
         String url = BASE_URL;

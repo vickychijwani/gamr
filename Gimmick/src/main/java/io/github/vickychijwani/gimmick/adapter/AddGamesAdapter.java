@@ -7,8 +7,8 @@ import org.jetbrains.annotations.Nullable;
 
 import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.background.TaskManager;
+import io.github.vickychijwani.gimmick.item.Game;
 import io.github.vickychijwani.gimmick.item.GameList;
-import io.github.vickychijwani.gimmick.item.SearchResult;
 
 public class AddGamesAdapter extends GameListAdapter {
 
@@ -20,7 +20,7 @@ public class AddGamesAdapter extends GameListAdapter {
     }
 
     @Override
-    protected void onGetViewFinished(final SearchResultViewHolder viewHolder, final SearchResult item) {
+    protected void onGetViewFinished(final GameViewHolder viewHolder, final Game item) {
         // hide add button if already added that show
         viewHolder.addbutton.setVisibility(item.isAdded ? View.INVISIBLE : View.VISIBLE);
         viewHolder.addbutton.setOnClickListener(new View.OnClickListener() {

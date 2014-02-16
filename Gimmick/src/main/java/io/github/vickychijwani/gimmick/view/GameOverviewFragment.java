@@ -14,12 +14,12 @@ import org.jetbrains.annotations.Nullable;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import io.github.vickychijwani.gimmick.R;
-import io.github.vickychijwani.gimmick.item.SearchResult;
+import io.github.vickychijwani.gimmick.item.Game;
 import io.github.vickychijwani.gimmick.utility.NetworkUtils;
 
-public class GameOverviewFragment extends DataFragment<SearchResult> {
+public class GameOverviewFragment extends DataFragment<Game> {
 
-    private SearchResult mGame;
+    private Game mGame;
 
     @InjectView(R.id.poster)            ImageView mPosterView;
     @InjectView(R.id.release_date)      TextView mReleaseDateView;
@@ -45,14 +45,14 @@ public class GameOverviewFragment extends DataFragment<SearchResult> {
     }
 
     @Override
-    void onDataLoaded(SearchResult game) {
+    void onDataLoaded(Game game) {
         mGame = game;
         if (getView() != null) {
             bindDataToView(game, getView());
         }
     }
 
-    private void bindDataToView(SearchResult game, View view) {
+    private void bindDataToView(Game game, View view) {
         assert game != null && view != null;
 
         NetworkUtils.loadImage(game.smallPosterUrl, mPosterView);

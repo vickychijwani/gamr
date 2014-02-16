@@ -23,8 +23,8 @@ import butterknife.InjectView;
 import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.adapter.GameListAdapter;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.GameListTable;
+import io.github.vickychijwani.gimmick.item.Game;
 import io.github.vickychijwani.gimmick.item.GameList;
-import io.github.vickychijwani.gimmick.item.SearchResult;
 import io.github.vickychijwani.gimmick.utility.AppUtils;
 
 public class LibraryActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -87,7 +87,7 @@ public class LibraryActivity extends BaseActivity implements LoaderManager.Loade
         @Override
         public void onClick(View v) {
             int position = mGameList.getPositionForView(v);
-            SearchResult game = mAdapter.getItem(position);
+            Game game = mAdapter.getItem(position);
 
             Intent intent = new Intent(LibraryActivity.this, GameDetailsActivity.class);
             intent.putExtra(GameDetailsActivity.IntentFields.GAME_GIANT_BOMB_ID, game.giantBombId);

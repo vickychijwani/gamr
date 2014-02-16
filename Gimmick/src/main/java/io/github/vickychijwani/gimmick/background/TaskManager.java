@@ -4,8 +4,8 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 
+import io.github.vickychijwani.gimmick.item.Game;
 import io.github.vickychijwani.gimmick.item.GameList;
-import io.github.vickychijwani.gimmick.item.SearchResult;
 
 /**
  * Inspired by florianmski's traktoid TraktManager. This class is used to hold running tasks, so it
@@ -34,7 +34,7 @@ public class TaskManager {
         return sInstance;
     }
 
-    public synchronized void performAddTask(SearchResult show) {
+    public synchronized void performAddTask(Game show) {
         GameList wrapper = new GameList();
         wrapper.add(show);
         performAddTask(wrapper, false);

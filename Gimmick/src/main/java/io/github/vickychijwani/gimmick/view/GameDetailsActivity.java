@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.database.DatabaseContract;
-import io.github.vickychijwani.gimmick.item.SearchResult;
+import io.github.vickychijwani.gimmick.item.Game;
 
 public class GameDetailsActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -86,9 +86,9 @@ public class GameDetailsActivity extends BaseActivity implements LoaderManager.L
         String gameName = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable.COL_NAME));
         getActionBar().setTitle(gameName);
 
-        SearchResult game = new SearchResult(cursor);
+        Game game = new Game(cursor);
 
-        for (DataFragment<SearchResult> dataFragment : mFragments) {
+        for (DataFragment<Game> dataFragment : mFragments) {
             dataFragment.onDataLoaded(game);
         }
 

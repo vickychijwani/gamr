@@ -26,10 +26,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import io.github.vickychijwani.gimmick.item.Game;
 import io.github.vickychijwani.gimmick.item.GameList;
 import io.github.vickychijwani.gimmick.item.Platform;
 import io.github.vickychijwani.gimmick.item.ReleaseDate;
-import io.github.vickychijwani.gimmick.item.SearchResult;
 
 public class GiantBomb {
 
@@ -136,10 +136,10 @@ public class GiantBomb {
      *
      * NOTE: never call this from the UI thread!
      *
-     * @return  the requested {@link SearchResult}
+     * @return  the requested {@link io.github.vickychijwani.gimmick.item.Game}
      */
     @Nullable
-    public static SearchResult fetchGame(@NotNull String giantBombUrl) {
+    public static Game fetchGame(@NotNull String giantBombUrl) {
         Log.i(TAG, "Fetching game info from " + giantBombUrl);
 
         String url = new URLBuilder(giantBombUrl)
@@ -149,7 +149,7 @@ public class GiantBomb {
                         GENRES, FRANCHISES)
                 .toString();
 
-        RequestFuture<SearchResult> future = RequestFuture.newFuture();
+        RequestFuture<Game> future = RequestFuture.newFuture();
         GameJsonRequest req = new GameJsonRequest(url, future, future);
         NetworkRequestQueue.add(req);
 
@@ -165,33 +165,33 @@ public class GiantBomb {
     }
 
     @Nullable
-    private static SearchResult buildGameFromJson(@NotNull JSONObject resultJsonWrapper) {
+    private static Game buildGameFromJson(@NotNull JSONObject gameJsonWrapper) {
         try {
-            JSONObject resultJson = resultJsonWrapper.getJSONObject(RESULTS);
-            SearchResult result = new SearchResult();
+            JSONObject gameJson = gameJsonWrapper.getJSONObject(RESULTS);
+            Game game = new Game();
             JSONArrayNameIterator nameIterator;
 
-            if (! parseEssentialGameInfoFromJson(resultJson, result)) {
+            if (! parseEssentialGameInfoFromJson(gameJson, game)) {
                 return null;
             }
 
             // genres
-            if (! resultJson.isNull(GENRES)) {
-                nameIterator = new JSONArrayNameIterator(resultJson.getJSONArray(GENRES));
+            if (! gameJson.isNull(GENRES)) {
+                nameIterator = new JSONArrayNameIterator(gameJson.getJSONArray(GENRES));
                 while (nameIterator.hasNext()) {
-                    result.addGenre(nameIterator.next());
+                    game.addGenre(nameIterator.next());
                 }
             }
 
             // franchises
-            if (! resultJson.isNull(FRANCHISES)) {
-                nameIterator = new JSONArrayNameIterator(resultJson.getJSONArray(FRANCHISES));
+            if (! gameJson.isNull(FRANCHISES)) {
+                nameIterator = new JSONArrayNameIterator(gameJson.getJSONArray(FRANCHISES));
                 while (nameIterator.hasNext()) {
-                    result.addFranchise(nameIterator.next());
+                    game.addFranchise(nameIterator.next());
                 }
             }
 
-            return result;
+            return game;
         } catch (JSONException e) {
             Log.e(TAG, Log.getStackTraceString(e));
         }
@@ -199,42 +199,42 @@ public class GiantBomb {
     }
 
     @NotNull
-    private static GameList buildGameListFromJson(@NotNull JSONObject resultsJsonWrapper) {
-        JSONArray resultsArray;
+    private static GameList buildGameListFromJson(@NotNull JSONObject gamesJsonWrapper) {
+        JSONArray gamesArray;
         try {
-            resultsArray = resultsJsonWrapper.getJSONArray(RESULTS);
+            gamesArray = gamesJsonWrapper.getJSONArray(RESULTS);
         } catch (JSONException e) {
             Log.e(TAG, Log.getStackTraceString(e));
             return new GameList();
         }
-        Log.i(TAG, "Got " + resultsArray.length() + " search results");
+        Log.i(TAG, "Got " + gamesArray.length() + " games");
 
         GameList games = new GameList();
-        for (int i = 0; i < resultsArray.length(); ++i) {
+        for (int i = 0; i < gamesArray.length(); ++i) {
             try {
-                SearchResult result = new SearchResult();
-                JSONObject resultJson = resultsArray.getJSONObject(i);
+                Game game = new Game();
+                JSONObject gameJson = gamesArray.getJSONObject(i);
 
-                if (! parseEssentialGameInfoFromJson(resultJson, result)) {
+                if (! parseEssentialGameInfoFromJson(gameJson, game)) {
                     continue;
                 }
 
-                games.add(result);
+                games.add(game);
             } catch (JSONException e) {
                 Log.e(TAG, Log.getStackTraceString(e));
             }
         }
 
-        Log.i(TAG, games.size() + " results parsed: " + games);
+        Log.i(TAG, games.size() + " games parsed: " + games);
         return games;
     }
 
-    private static boolean parseEssentialGameInfoFromJson(JSONObject resultJson, SearchResult game)
+    private static boolean parseEssentialGameInfoFromJson(JSONObject gameJson, Game game)
             throws JSONException {
         JSONArrayNameIterator nameIterator;
 
         // platforms
-        nameIterator = new JSONArrayNameIterator(resultJson.getJSONArray(PLATFORMS));
+        nameIterator = new JSONArrayNameIterator(gameJson.getJSONArray(PLATFORMS));
         while (nameIterator.hasNext()) {
             String platformName = nameIterator.next();
             try {
@@ -248,20 +248,20 @@ public class GiantBomb {
             return false;
 
         // essentials
-        game.giantBombId = resultJson.getInt(ID);
-        game.name = resultJson.getString(NAME);
-        game.giantBombUrl = resultJson.getString(API_DETAIL_URL);
-        game.posterUrl = resultJson.getJSONObject(IMAGE_URLS).getString(POSTER_URL);
-        game.smallPosterUrl = resultJson.getJSONObject(IMAGE_URLS).getString(SMALL_POSTER_URL);
-        game.blurb = resultJson.getString(DECK);
-        game.releaseDate = parseReleaseDateFromJson(resultJson);
+        game.giantBombId = gameJson.getInt(ID);
+        game.name = gameJson.getString(NAME);
+        game.giantBombUrl = gameJson.getString(API_DETAIL_URL);
+        game.posterUrl = gameJson.getJSONObject(IMAGE_URLS).getString(POSTER_URL);
+        game.smallPosterUrl = gameJson.getJSONObject(IMAGE_URLS).getString(SMALL_POSTER_URL);
+        game.blurb = gameJson.getString(DECK);
+        game.releaseDate = parseReleaseDateFromJson(gameJson);
         return true;
     }
 
-    private static ReleaseDate parseReleaseDateFromJson(JSONObject resultJson) {
+    private static ReleaseDate parseReleaseDateFromJson(JSONObject gameJson) {
         ReleaseDate releaseDate = ReleaseDate.INVALID;
-        String originalReleaseDate = resultJson.optString(ORIGINAL_RELEASE_DATE);
-        short expectedReleaseYear = (short) resultJson.optInt(EXPECTED_RELEASE_YEAR, ReleaseDate.YEAR_INVALID);
+        String originalReleaseDate = gameJson.optString(ORIGINAL_RELEASE_DATE);
+        short expectedReleaseYear = (short) gameJson.optInt(EXPECTED_RELEASE_YEAR, ReleaseDate.YEAR_INVALID);
         if (originalReleaseDate != null && ! TextUtils.isEmpty(originalReleaseDate) && ! TextUtils.equals(originalReleaseDate, "null")) {
             try {
                 releaseDate = new ReleaseDate(originalReleaseDate);
@@ -269,9 +269,9 @@ public class GiantBomb {
                 Log.e(TAG, Log.getStackTraceString(e));
             }
         } else if (expectedReleaseYear != ReleaseDate.YEAR_INVALID) {
-            byte expectedReleaseQuarter = (byte) resultJson.optInt(EXPECTED_RELEASE_QUARTER, ReleaseDate.QUARTER_INVALID);
-            byte expectedReleaseMonth = (byte) resultJson.optInt(EXPECTED_RELEASE_MONTH, ReleaseDate.MONTH_INVALID);
-            byte expectedReleaseDay = (byte) resultJson.optInt(EXPECTED_RELEASE_DAY, ReleaseDate.DAY_INVALID);
+            byte expectedReleaseQuarter = (byte) gameJson.optInt(EXPECTED_RELEASE_QUARTER, ReleaseDate.QUARTER_INVALID);
+            byte expectedReleaseMonth = (byte) gameJson.optInt(EXPECTED_RELEASE_MONTH, ReleaseDate.MONTH_INVALID);
+            byte expectedReleaseDay = (byte) gameJson.optInt(EXPECTED_RELEASE_DAY, ReleaseDate.DAY_INVALID);
 
             // if the expected release date is 1st Jan, it is most likely wrong!
             if (expectedReleaseDay == ReleaseDate.DAY_MIN && expectedReleaseMonth == ReleaseDate.MONTH_MIN) {
@@ -404,7 +404,7 @@ public class GiantBomb {
     }
 
     /**
-     * A JSON request for retrieving a <code>{@link java.util.List}<{@link SearchResult}></code>
+     * A JSON request for retrieving a <code>{@link java.util.List}<{@link io.github.vickychijwani.gimmick.item.Game}></code>
      * from a given URL.
      */
     private static class GameListJsonRequest extends JsonRequest<GameList> {
@@ -436,20 +436,20 @@ public class GiantBomb {
     }
 
     /**
-     * A JSON request for retrieving a {@link SearchResult} from a given URL.
+     * A JSON request for retrieving a {@link io.github.vickychijwani.gimmick.item.Game} from a given URL.
      */
-    private static class GameJsonRequest extends JsonRequest<SearchResult> {
+    private static class GameJsonRequest extends JsonRequest<Game> {
 
-        public GameJsonRequest(String url, Response.Listener<SearchResult> listener,
+        public GameJsonRequest(String url, Response.Listener<Game> listener,
                                    Response.ErrorListener errorListener) {
             super(Method.GET, url, null, listener, errorListener);
         }
 
         @Override
-        protected Response<SearchResult> parseNetworkResponse(NetworkResponse response) {
+        protected Response<Game> parseNetworkResponse(NetworkResponse response) {
             try {
                 String jsonString = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
-                SearchResult game = buildGameFromJson(new JSONObject(jsonString));
+                Game game = buildGameFromJson(new JSONObject(jsonString));
                 return Response.success(game, HttpHeaderParser.parseCacheHeaders(response));
             } catch (UnsupportedEncodingException e) {
                 return Response.error(new ParseError(e));

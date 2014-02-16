@@ -10,11 +10,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import io.github.vickychijwani.gimmick.R;
+import io.github.vickychijwani.gimmick.item.Game;
 import io.github.vickychijwani.gimmick.item.GameList;
-import io.github.vickychijwani.gimmick.item.SearchResult;
 import io.github.vickychijwani.gimmick.utility.NetworkUtils;
 
-public class GameListAdapter extends ArrayAdapter<SearchResult> {
+public class GameListAdapter extends ArrayAdapter<Game> {
 
     private static final int LAYOUT = R.layout.component_game_item;
 
@@ -38,15 +38,15 @@ public class GameListAdapter extends ArrayAdapter<SearchResult> {
     @NotNull
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        SearchResultViewHolder viewHolder;
+        GameViewHolder viewHolder;
 
-        final SearchResult item = getItem(position);
+        final Game item = getItem(position);
 
         if (convertView == null) {
             convertView = mLayoutInflater.inflate(mLayout, null);
             assert convertView != null;
 
-            viewHolder = new SearchResultViewHolder(convertView);
+            viewHolder = new GameViewHolder(convertView);
 
             if (mDetailsButtonListener != null) {
                 viewHolder.details.setOnClickListener(mDetailsButtonListener);
@@ -54,7 +54,7 @@ public class GameListAdapter extends ArrayAdapter<SearchResult> {
 
             convertView.setTag(viewHolder);
         } else {
-            viewHolder = (SearchResultViewHolder) convertView.getTag();
+            viewHolder = (GameViewHolder) convertView.getTag();
         }
 
         NetworkUtils.loadImage(item.posterUrl, viewHolder.poster);
@@ -67,7 +67,7 @@ public class GameListAdapter extends ArrayAdapter<SearchResult> {
         return convertView;
     }
 
-    protected void onGetViewFinished(final SearchResultViewHolder viewHolder, final SearchResult item) {
+    protected void onGetViewFinished(final GameViewHolder viewHolder, final Game item) {
         // nothing to do
     }
 

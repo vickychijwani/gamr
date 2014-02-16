@@ -23,8 +23,8 @@ import io.github.vickychijwani.gimmick.database.DatabaseContract.GameListTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.GamePlatformMappingTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.GameTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.PlatformTable;
+import io.github.vickychijwani.gimmick.item.Game;
 import io.github.vickychijwani.gimmick.item.Platform;
-import io.github.vickychijwani.gimmick.item.SearchResult;
 
 public class GamrProvider extends ContentProvider {
 
@@ -155,7 +155,7 @@ public class GamrProvider extends ContentProvider {
         return 0;
     }
 
-    public static boolean addGame(SearchResult game) {
+    public static boolean addGame(Game game) {
         ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
         Uri toPlayListUri = ContentUris.withAppendedId(GameListTable.CONTENT_URI_LIST_GAMES, GameListTable.TO_PLAY_ID);
         ops.add(ContentProviderOperation.newInsert(toPlayListUri)

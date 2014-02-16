@@ -11,14 +11,14 @@ import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.api.GiantBomb;
 import io.github.vickychijwani.gimmick.api.Metacritic;
 import io.github.vickychijwani.gimmick.database.GamrProvider;
+import io.github.vickychijwani.gimmick.item.Game;
 import io.github.vickychijwani.gimmick.item.GameList;
-import io.github.vickychijwani.gimmick.item.SearchResult;
 import io.github.vickychijwani.gimmick.utility.NetworkUtils;
 
 public class AddGameTask extends android.os.AsyncTask<Void, AddGameTask.Result, Void> {
 
     private final Context mContext;
-    private final LinkedList<SearchResult> mAddQueue = new LinkedList<SearchResult>();
+    private final LinkedList<Game> mAddQueue = new LinkedList<Game>();
 
     private boolean mIsFinishedAddingGames = false;
 
@@ -103,8 +103,8 @@ public class AddGameTask extends android.os.AsyncTask<Void, AddGameTask.Result, 
                     break;
                 }
 
-                SearchResult game = mAddQueue.removeFirst();
-                SearchResult fullGame = GiantBomb.fetchGame(game.giantBombUrl);
+                Game game = mAddQueue.removeFirst();
+                Game fullGame = GiantBomb.fetchGame(game.giantBombUrl);
 
                 if (fullGame == null) {
                     result = new Result(StatusCode.UNKNOWN_ERROR, game.name);

@@ -7,8 +7,8 @@ import android.provider.BaseColumns;
 import org.jetbrains.annotations.NotNull;
 
 import io.github.vickychijwani.gimmick.GamrApplication;
+import io.github.vickychijwani.gimmick.item.Game;
 import io.github.vickychijwani.gimmick.item.Platform;
-import io.github.vickychijwani.gimmick.item.SearchResult;
 
 public final class DatabaseContract {
 
@@ -133,7 +133,7 @@ public final class DatabaseContract {
         }
 
         @NotNull
-        public static ContentValues contentValuesFor(SearchResult game) {
+        public static ContentValues contentValuesFor(Game game) {
             ContentValues values = new ContentValues();
             values.put(_ID, game.giantBombId);
             values.put(COL_NAME, game.name);
