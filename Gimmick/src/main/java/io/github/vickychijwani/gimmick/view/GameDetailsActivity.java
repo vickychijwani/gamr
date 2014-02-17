@@ -22,7 +22,6 @@ public class GameDetailsActivity extends BaseActivity implements LoaderManager.L
     private static final int LOADER_ID = LAYOUT;
 
     private int mGiantBombId;
-    private Cursor mCursor;
 
     private DataFragment[] mFragments;
 
@@ -75,13 +74,8 @@ public class GameDetailsActivity extends BaseActivity implements LoaderManager.L
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        // close the old cursor
-        if (mCursor != null) {
-            mCursor.close();
-        }
-
+        // Swap the new data set in (the loader will take care of closing the old cursor)
         cursor.moveToFirst();
         String gameName = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable.COL_NAME));
         getActionBar().setTitle(gameName);
@@ -91,8 +85,6 @@ public class GameDetailsActivity extends BaseActivity implements LoaderManager.L
         for (DataFragment<Game> dataFragment : mFragments) {
             dataFragment.onDataLoaded(game);
         }
-
-        mCursor = cursor;
     }
 
     @Override
