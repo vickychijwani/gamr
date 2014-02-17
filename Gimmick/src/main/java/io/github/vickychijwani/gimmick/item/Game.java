@@ -6,13 +6,14 @@ import android.text.TextUtils;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import io.github.vickychijwani.gimmick.database.DatabaseContract;
+import io.github.vickychijwani.gimmick.database.DatabaseContract.GameTable;
 
 public class Game {
 
@@ -28,7 +29,7 @@ public class Game {
     public short metascore = -1;
     public Set<String> genres = new TreeSet<String>();
     public Set<String> franchises = new TreeSet<String>();
-    public Set<Video> videos = new HashSet<Video>();
+    public List<Video> videos = new ArrayList<Video>();
 
     public boolean isAdded;
 
@@ -40,40 +41,40 @@ public class Game {
      * @param cursor    a database cursor from which to construct this object
      */
     public Game(Cursor cursor) {
-        giantBombId = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable._ID));
-        name = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable.COL_NAME));
-        posterUrl = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable.COL_POSTER_URL));
+        giantBombId = cursor.getInt(cursor.getColumnIndexOrThrow(GameTable._ID));
+        name = cursor.getString(cursor.getColumnIndexOrThrow(GameTable.COL_NAME));
+        posterUrl = cursor.getString(cursor.getColumnIndexOrThrow(GameTable.COL_POSTER_URL));
         releaseDate = new ReleaseDate(cursor);
 
-        String platformsCsv = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable.COL_PSEUDO_PLATFORMS));
+        String platformsCsv = cursor.getString(cursor.getColumnIndexOrThrow(GameTable.COL_PSEUDO_PLATFORMS));
         assert platformsCsv != null;
         platforms = Platform.fromCsv(platformsCsv);
 
         int colIndex;
 
-        colIndex = cursor.getColumnIndex(DatabaseContract.GameTable.COL_BLURB);
+        colIndex = cursor.getColumnIndex(GameTable.COL_BLURB);
         if (colIndex >= 0) {
             blurb = Html.fromHtml(cursor.getString(colIndex)).toString();
         }
 
-        colIndex = cursor.getColumnIndex(DatabaseContract.GameTable.COL_SMALL_POSTER_URL);
+        colIndex = cursor.getColumnIndex(GameTable.COL_SMALL_POSTER_URL);
         if (colIndex >= 0) {
             smallPosterUrl = cursor.getString(colIndex);
         }
 
-        colIndex = cursor.getColumnIndex(DatabaseContract.GameTable.COL_METASCORE);
+        colIndex = cursor.getColumnIndex(GameTable.COL_METASCORE);
         if (colIndex >= 0) {
             metascore = cursor.getShort(colIndex);
         }
 
-        colIndex = cursor.getColumnIndex(DatabaseContract.GameTable.COL_GENRES);
+        colIndex = cursor.getColumnIndex(GameTable.COL_GENRES);
         if (colIndex >= 0) {
             String genresCsv = cursor.getString(colIndex);
             assert genresCsv != null;
             genres = new TreeSet<String>(Arrays.asList(genresCsv.split(", ")));
         }
 
-        colIndex = cursor.getColumnIndex(DatabaseContract.GameTable.COL_FRANCHISES);
+        colIndex = cursor.getColumnIndex(GameTable.COL_FRANCHISES);
         if (colIndex >= 0) {
             String franchisesCsv = cursor.getString(colIndex);
             assert franchisesCsv != null;

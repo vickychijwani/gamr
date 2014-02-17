@@ -1,8 +1,17 @@
 package io.github.vickychijwani.gimmick.item;
 
+import android.database.Cursor;
+import android.util.Log;
+
+import java.text.ParseException;
 import java.util.Date;
 
+import io.github.vickychijwani.gimmick.database.DatabaseContract.VideoTable;
+import io.github.vickychijwani.gimmick.utility.AppUtils;
+
 public class Video implements Comparable<Video> {
+
+    private static final String TAG = "Video";
 
     private String mName = "";
     private int mGameId = -1;
@@ -18,9 +27,33 @@ public class Video implements Comparable<Video> {
     private String mYoutubeId = "";
     private Date mPublishDate;
 
+    public Video() { }
+
+    public Video(Cursor cursor) {
+        mName = cursor.getString(cursor.getColumnIndexOrThrow(VideoTable.COL_NAME));
+        mGameId = cursor.getInt(cursor.getColumnIndexOrThrow(VideoTable.COL_GAME_ID));
+        mBlurb = cursor.getString(cursor.getColumnIndexOrThrow(VideoTable.COL_BLURB));
+        mGiantBombId = cursor.getInt(cursor.getColumnIndexOrThrow(VideoTable._ID));
+        mLowUrl = cursor.getString(cursor.getColumnIndexOrThrow(VideoTable.COL_LOW_URL));
+        mHighUrl = cursor.getString(cursor.getColumnIndexOrThrow(VideoTable.COL_HIGH_URL));
+        mDuration = cursor.getInt(cursor.getColumnIndexOrThrow(VideoTable.COL_DURATION));
+        mThumbUrl = cursor.getString(cursor.getColumnIndexOrThrow(VideoTable.COL_THUMB_URL));
+        mUser = cursor.getString(cursor.getColumnIndexOrThrow(VideoTable.COL_USER));
+        mType = cursor.getString(cursor.getColumnIndexOrThrow(VideoTable.COL_TYPE));
+        mYoutubeId = cursor.getString(cursor.getColumnIndexOrThrow(VideoTable.COL_YOUTUBE_ID));
+        try {
+            mPublishDate = AppUtils.isoDateStringToDate(cursor.getString(cursor.getColumnIndexOrThrow(VideoTable.COL_PUBLISH_DATE)));
+        } catch (ParseException e) {
+            Log.e(TAG, Log.getStackTraceString(e));
+        }
+    }
+
     @Override
     public int compareTo(Video another) {
-        return this.mPublishDate.compareTo(another.mPublishDate);
+        if (this.mPublishDate != null && another.mPublishDate != null) {
+            return this.mPublishDate.compareTo(another.mPublishDate);
+        }
+        return 0;
     }
 
     // getters / setters

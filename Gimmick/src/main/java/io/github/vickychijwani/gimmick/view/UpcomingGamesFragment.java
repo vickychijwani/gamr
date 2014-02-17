@@ -14,7 +14,7 @@ import io.github.vickychijwani.gimmick.api.GiantBomb;
 import io.github.vickychijwani.gimmick.api.NetworkRequestQueue;
 import io.github.vickychijwani.gimmick.api.RequestTag;
 import io.github.vickychijwani.gimmick.item.GameList;
-import io.github.vickychijwani.gimmick.utility.NetworkUtils;
+import io.github.vickychijwani.gimmick.utility.AppUtils;
 
 public class UpcomingGamesFragment extends AddGamesFragment {
 
@@ -35,8 +35,7 @@ public class UpcomingGamesFragment extends AddGamesFragment {
 
     @Override
     protected void initiateRequest() {
-        if (! NetworkUtils.isNetworkConnected(getActivity())) {
-            Toast.makeText(getActivity(), R.string.offline, Toast.LENGTH_LONG).show();
+        if (AppUtils.showErrorIfOffline(getActivity())) {
             return;
         }
 

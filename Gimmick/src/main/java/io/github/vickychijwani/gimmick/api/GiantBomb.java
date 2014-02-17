@@ -184,9 +184,8 @@ public class GiantBomb {
      * <p/>
      * NOTE: never call this from the UI thread!
      *
-     * @param game the {@link Game} for which to fetch video data. The {@link Game} must have a
-     *             {@link java.util.Set} of {@link Video}s, each of which must return a valid API
-     *             URL on calling {@link Video#getGiantBombUrl()}
+     * @param game the {@link Game} for which to fetch video data. It must have {@link Video}s with
+     *             a valid GiantBomb video ID on each of them.
      * @return the {@link Game} that was passed in, augmented with the requested video data
      */
     @Nullable
@@ -200,6 +199,11 @@ public class GiantBomb {
             if (videoIterator.hasNext()) {
                 videoIds += "|";
             }
+        }
+
+        // no videos to fetch
+        if (TextUtils.isEmpty(videoIds)) {
+            return game;
         }
 
         String url = new URLBuilder()
@@ -220,6 +224,12 @@ public class GiantBomb {
             videoIterator = game.getVideos();
             while (videoJsonIterator.hasNext() && videoIterator.hasNext()) {
                 parseVideoInfoFromJson(videoJsonIterator.next(), videoIterator.next());
+            }
+            // sometimes GB returns fewer videos than were requested (the error is "Object Not Found"
+            // for the missing ones), so we remove those videos
+            while (videoIterator.hasNext()) {
+                videoIterator.next();
+                videoIterator.remove();
             }
         } catch (InterruptedException e) {
             Log.e(TAG, Log.getStackTraceString(e));
@@ -354,7 +364,7 @@ public class GiantBomb {
 
         // publish date
         try {
-            video.setPublishDate(AppUtils.isoDateStringToDate(videoJson.optString(PUBLISH_DATE, "1990-01-01 00:00")));
+            video.setPublishDate(AppUtils.isoDateStringToDate(videoJson.optString(PUBLISH_DATE, AppUtils.getEarliestDateString())));
         } catch (ParseException e) {
             Log.e(TAG, Log.getStackTraceString(e));
         }

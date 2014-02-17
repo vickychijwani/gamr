@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.meetme.android.multistateview.MultiStateView;
@@ -21,8 +20,8 @@ import io.github.vickychijwani.gimmick.api.GiantBomb;
 import io.github.vickychijwani.gimmick.api.NetworkRequestQueue;
 import io.github.vickychijwani.gimmick.api.RequestTag;
 import io.github.vickychijwani.gimmick.item.GameList;
+import io.github.vickychijwani.gimmick.utility.AppUtils;
 import io.github.vickychijwani.gimmick.utility.DeviceUtils;
-import io.github.vickychijwani.gimmick.utility.NetworkUtils;
 
 public class SearchGamesFragment extends AddGamesFragment {
 
@@ -63,8 +62,7 @@ public class SearchGamesFragment extends AddGamesFragment {
 
     @Override
     protected void initiateRequest() {
-        if (! NetworkUtils.isNetworkConnected(getActivity())) {
-            Toast.makeText(getActivity(), R.string.offline, Toast.LENGTH_LONG).show();
+        if (AppUtils.showErrorIfOffline(getActivity())) {
             return;
         }
 

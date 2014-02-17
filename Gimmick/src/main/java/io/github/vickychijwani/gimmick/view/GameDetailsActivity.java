@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.content.ContentUris;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -11,19 +12,23 @@ import android.util.Log;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.github.vickychijwani.gimmick.R;
+import io.github.vickychijwani.gimmick.constants.LoaderId;
 import io.github.vickychijwani.gimmick.database.DatabaseContract;
 import io.github.vickychijwani.gimmick.item.Game;
+import io.github.vickychijwani.gimmick.item.Video;
 
 public class GameDetailsActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String TAG = "GameDetailsActivity";
-    private static final int LAYOUT = R.layout.activity_game_details;
-    private static final int LOADER_ID = LAYOUT;
 
     private int mGiantBombId;
 
-    private DataFragment[] mFragments;
+    private GameOverviewFragment    mGameOverviewFragment;
+    private VideosFragment          mGameVideosFragment;
 
     public interface IntentFields {
         String GAME_GIANT_BOMB_ID = "game_giant_bomb_id";
@@ -48,17 +53,18 @@ public class GameDetailsActivity extends BaseActivity implements LoaderManager.L
         Log.i(TAG, "Displaying details for game ID = " + mGiantBombId);
 
         // setup fragments
-        GameOverviewFragment gameOverviewFragment = new GameOverviewFragment();
-        mFragments = new DataFragment[] {
-                gameOverviewFragment
-        };
-        String[] tabTitles = new String[] {
-                getString(R.string.overview)
-        };
+        mGameOverviewFragment = new GameOverviewFragment();
+        mGameVideosFragment = new VideosFragment();
+        setupTabsAndViewPager(new Fragment[] {
+                mGameOverviewFragment,
+                mGameVideosFragment
+        }, new String[] {
+                getString(R.string.overview),
+                getString(R.string.videos)
+        });
 
-        setupTabsAndViewPager(mFragments, tabTitles);
-
-        getSupportLoaderManager().initLoader(LOADER_ID, null, this);
+        getSupportLoaderManager().initLoader(LoaderId.GAME_OVERVIEW, null, this);
+        getSupportLoaderManager().initLoader(LoaderId.GAME_VIDEOS, null, this);
     }
 
     @Override
@@ -68,28 +74,45 @@ public class GameDetailsActivity extends BaseActivity implements LoaderManager.L
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(this,
-                ContentUris.withAppendedId(DatabaseContract.GameTable.CONTENT_URI_LIST, mGiantBombId),
-                null, null, null, null);
+        switch (id) {
+            case LoaderId.GAME_OVERVIEW:
+                return new CursorLoader(this,
+                        ContentUris.withAppendedId(DatabaseContract.GameTable.CONTENT_URI_LIST, mGiantBombId),
+                        null, null, null, null);
+            case LoaderId.GAME_VIDEOS:
+                return new CursorLoader(this,
+                        ContentUris.withAppendedId(DatabaseContract.GameTable.CONTENT_URI_GAME_VIDEOS, mGiantBombId),
+                        null, null, null, null);
+            default:
+                throw new IllegalArgumentException("Invalid loader id " + id);
+        }
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         // Swap the new data set in (the loader will take care of closing the old cursor)
-        cursor.moveToFirst();
-        String gameName = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseContract.GameTable.COL_NAME));
-        getActionBar().setTitle(gameName);
-
-        Game game = new Game(cursor);
-
-        for (DataFragment<Game> dataFragment : mFragments) {
-            dataFragment.onDataLoaded(game);
+        switch (loader.getId()) {
+            case LoaderId.GAME_OVERVIEW:
+                cursor.moveToFirst();
+                Game game = new Game(cursor);
+                getActionBar().setTitle(game.name);
+                mGameOverviewFragment.onDataLoaded(new Game(cursor));
+                return;
+            case LoaderId.GAME_VIDEOS:
+                List<Video> videoList = new ArrayList<Video>(cursor.getCount());
+                while (cursor.moveToNext()) {
+                    videoList.add(new Video(cursor));
+                }
+                mGameVideosFragment.onDataLoaded(videoList);
+                return;
+            default:
+                throw new IllegalArgumentException("Invalid loader id " + loader.getId());
         }
     }
 
     @Override
     public void onLoaderReset(Loader loader) {
-
+        // this should never happen
     }
 
 }

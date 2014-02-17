@@ -23,14 +23,13 @@ import butterknife.InjectView;
 import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.adapter.GameListAdapter;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.GameListTable;
+import io.github.vickychijwani.gimmick.constants.LoaderId;
 import io.github.vickychijwani.gimmick.item.Game;
 import io.github.vickychijwani.gimmick.item.GameList;
 import io.github.vickychijwani.gimmick.utility.AppUtils;
 
 public class LibraryActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final int LAYOUT = R.layout.activity_library;
-    private static final int LOADER_ID = LAYOUT;
     private static final int LOADING_STATE_DELAY = 500;  // time after which to display loading spinner
 
     private GameListAdapter mAdapter;
@@ -42,7 +41,7 @@ public class LibraryActivity extends BaseActivity implements LoaderManager.Loade
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(LAYOUT);
+        setContentView(R.layout.activity_library);
         ButterKnife.inject(this);
 
         // show loading spinner after a delay, to avoid flicker if loading time is < {@link #LOADING_STATE_DELAY}
@@ -57,7 +56,7 @@ public class LibraryActivity extends BaseActivity implements LoaderManager.Loade
         mAdapter = new GameListAdapter(this, new GameList(), mItemClickListener);
         mGameList.setAdapter(mAdapter);
 
-        getLoaderManager().initLoader(LOADER_ID, null, this);
+        getLoaderManager().initLoader(LoaderId.LIBRARY_GAME_LIST, null, this);
     }
 
     @Override

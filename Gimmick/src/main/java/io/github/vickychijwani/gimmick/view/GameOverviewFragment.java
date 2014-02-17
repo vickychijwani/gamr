@@ -17,7 +17,7 @@ import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.item.Game;
 import io.github.vickychijwani.gimmick.utility.NetworkUtils;
 
-public class GameOverviewFragment extends DataFragment<Game> {
+public class GameOverviewFragment extends DataFragment<Game,View> {
 
     private Game mGame;
 
@@ -37,9 +37,7 @@ public class GameOverviewFragment extends DataFragment<Game> {
         View view = inflater.inflate(R.layout.fragment_game_overview, container, false);
         ButterKnife.inject(this, view);
 
-        if (mGame != null) {
-            bindDataToView(mGame, view);
-        }
+        bindDataToView(mGame, view);
 
         return view;
     }
@@ -47,14 +45,11 @@ public class GameOverviewFragment extends DataFragment<Game> {
     @Override
     void onDataLoaded(Game game) {
         mGame = game;
-        if (getView() != null) {
-            bindDataToView(game, getView());
-        }
+        bindDataToView(mGame, getView());
     }
 
-    private void bindDataToView(Game game, View view) {
-        assert game != null && view != null;
-
+    @Override
+    protected void onBindDataToView(@NotNull Game game, @NotNull View view) {
         NetworkUtils.loadImage(game.smallPosterUrl, mPosterView);
         mReleaseDateView.setText(game.releaseDate.toString());
         mPlatformsView.setText(game.getPlatformsDisplayString());

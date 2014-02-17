@@ -8,4 +8,9 @@
     <attr name="colorDivider" format="reference|color" />
     <attr name="colorTabStripText" format="reference|color" />
 
+    <declare-styleable name="FixedAspectRatioFrameLayout">
+        <attr name="aspect_ratio_width" format="integer" />
+        <attr name="aspect_ratio_height" format="integer" />
+    </declare-styleable>
+
 </resources>

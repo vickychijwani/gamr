@@ -82,6 +82,12 @@ public final class DatabaseContract {
         /** Content URI for inserting a new game */
         public static final Uri CONTENT_URI_INSERT = CONTENT_URI_LIST;
 
+        /** Content URI for listing all videos of a given game */
+        public static final Uri CONTENT_URI_GAME_VIDEOS = CONTENT_URI_BASE.buildUpon()
+                .appendPath(GameTable.TABLE_NAME)
+                .appendPath(VideoTable.TABLE_NAME)
+                .build();
+
         /** Game name */
         public static final String COL_NAME = "name";
 
@@ -318,7 +324,7 @@ public final class DatabaseContract {
                     SQL.DEF_COL(COL_USER, SQL.Type.TEXT, SQL.Constraint.NOT_NULL, SQL.Constraint.DEFAULT("\"\"")),
                     SQL.DEF_COL(COL_TYPE, SQL.Type.TEXT, SQL.Constraint.NOT_NULL, SQL.Constraint.DEFAULT("\"\"")),
                     SQL.DEF_COL(COL_YOUTUBE_ID, SQL.Type.TEXT, SQL.Constraint.NOT_NULL, SQL.Constraint.DEFAULT("\"\"")),
-                    SQL.DEF_COL(COL_PUBLISH_DATE, SQL.Type.TEXT, SQL.Constraint.NOT_NULL, SQL.Constraint.DEFAULT("\"1990-01-01 00:00:00\""))
+                    SQL.DEF_COL(COL_PUBLISH_DATE, SQL.Type.TEXT, SQL.Constraint.NOT_NULL, SQL.Constraint.DEFAULT("\"" + AppUtils.getEarliestDateString() + "\""))
             );
         }
 
@@ -336,7 +342,8 @@ public final class DatabaseContract {
             values.put(COL_USER, video.getUser());
             values.put(COL_TYPE, video.getType());
             values.put(COL_YOUTUBE_ID, video.getYoutubeId());
-            values.put(COL_PUBLISH_DATE, AppUtils.dateToIsoDateString(video.getPublishDate()));
+            values.put(COL_PUBLISH_DATE, AppUtils.dateToIsoDateString(video.getPublishDate(),
+                    AppUtils.DateFallback.EARLIEST));
             return values;
         }
 

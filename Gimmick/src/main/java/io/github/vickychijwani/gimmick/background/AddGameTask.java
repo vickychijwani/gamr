@@ -108,8 +108,7 @@ public class AddGameTask extends android.os.AsyncTask<Void, AddGameTask.Result, 
 
                 if (fullGame == null) {
                     result = new Result(StatusCode.UNKNOWN_ERROR, game.name);
-                }
-                else {
+                } else {
                     Metacritic.fetchMetascore(fullGame);
                     GiantBomb.fetchVideosForGame(fullGame);
                     try {
@@ -119,6 +118,7 @@ public class AddGameTask extends android.os.AsyncTask<Void, AddGameTask.Result, 
                             result = new Result(StatusCode.ALREADY_EXISTS, game.name);
                         }
                     } catch (Exception e) {
+                        Log.e(TAG, Log.getStackTraceString(e));
                         result = new Result(StatusCode.UNKNOWN_ERROR, game.name);
                     }
                 }
