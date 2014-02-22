@@ -1,14 +1,14 @@
 package io.github.vickychijwani.gimmick.view;
 
 import android.app.ActionBar;
-import android.app.LoaderManager;
 import android.content.ContentUris;
-import android.content.CursorLoader;
 import android.content.Intent;
-import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,8 +22,8 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.adapter.GameListAdapter;
-import io.github.vickychijwani.gimmick.database.DatabaseContract.GameListTable;
 import io.github.vickychijwani.gimmick.constants.LoaderId;
+import io.github.vickychijwani.gimmick.database.DatabaseContract.GameListTable;
 import io.github.vickychijwani.gimmick.item.Game;
 import io.github.vickychijwani.gimmick.item.GameList;
 import io.github.vickychijwani.gimmick.utility.AppUtils;
@@ -56,7 +56,7 @@ public class LibraryActivity extends BaseActivity implements LoaderManager.Loade
         mAdapter = new GameListAdapter(this, new GameList(), mItemClickListener);
         mGameList.setAdapter(mAdapter);
 
-        getLoaderManager().initLoader(LoaderId.LIBRARY_GAME_LIST, null, this);
+        getSupportLoaderManager().initLoader(LoaderId.LIBRARY_GAME_LIST, null, this);
     }
 
     @Override
