@@ -10,6 +10,7 @@
     <string name="clear">Clear</string>
     <string name="search">Search</string>
     <string name="upcoming">Upcoming</string>
+    <string name="recent">Recent</string>
     <string name="powered_by_giant_bomb">powered by giantbomb.com</string>
     <string name="fetching_games_failed">Fetching games failed, try again later.</string>
     <string name="add_success">"%1$s" added successfully.</string>

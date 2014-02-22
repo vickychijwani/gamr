@@ -18,10 +18,12 @@ public class AddGamesActivity extends BaseActivity {
         // setup fragments
         Fragment[] fragments = new Fragment[] {
                 new UpcomingGamesFragment(),
+                new RecentGamesFragment(),
                 new SearchGamesFragment()
         };
         String[] tabTitles = new String[] {
                 getString(R.string.upcoming),
+                getString(R.string.recent),
                 getString(R.string.search)
         };
 

@@ -11,4 +11,7 @@ public enum RequestTag {
     /** tag for GiantBomb upcoming releases requests */
     GIANTBOMB_UPCOMING,
 
+    /** tag for GiantBomb recent releases requests */
+    GIANTBOMB_RECENT,
+
 }

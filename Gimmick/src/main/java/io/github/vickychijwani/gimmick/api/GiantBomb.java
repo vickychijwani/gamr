@@ -146,6 +146,52 @@ public class GiantBomb {
     }
 
     /**
+     * Fire an asynchronous request to fetch recently-released games (i.e., games that have been
+     * released in the past 1 year).
+     *
+     * @param successHandler    handler to invoke if request succeeds
+     * @param errorHandler      handler to invoke if request fails
+     * @return                  a tag that can be used to cancel any ongoing "recent games"
+     *                          requests by calling {@link NetworkRequestQueue#cancelPending(RequestTag)}.
+     */
+    public static RequestTag fetchRecentGames(final Response.Listener<GameList> successHandler,
+                                                final Response.ErrorListener errorHandler) {
+        Calendar currentDate = Calendar.getInstance();
+        String now = AppUtils.dateToIsoDateString(currentDate.getTime());
+        currentDate.roll(Calendar.YEAR, false);
+        String oneYearAgo = AppUtils.dateToIsoDateString(currentDate.getTime());
+
+        Log.i(TAG, "Fetching recent games released from " + oneYearAgo + " to " + now + " ...");
+
+        final String url = new URLBuilder()
+                .setResource("games")
+                .addParam("filter", ORIGINAL_RELEASE_DATE + ":" + oneYearAgo + "|" + now)
+                .setFieldList(ID, NAME, PLATFORMS, IMAGE_URLS, DECK, API_DETAIL_URL,
+                        ORIGINAL_RELEASE_DATE)
+                .setSortOrder(SORT_BY_LATEST_RELEASES)
+                .toString();
+
+        // The GiantBomb API, when queried for recent games, also returns all those whose
+        // release date is unknown! This wrapper gets rid of those spurious results.
+        Response.Listener<GameList> successHandlerWrapper = new Response.Listener<GameList>() {
+            @Override
+            public void onResponse(GameList games) {
+                int unfilteredCount = games.size();
+                for (int i = games.size() - 1; i >= 0; --i) {
+                    if (ReleaseDate.INVALID.equals(games.get(i).releaseDate)) {
+                        games.remove(i);
+                    }
+                }
+                Log.i(TAG, "Filtered out " + (unfilteredCount - games.size()) + " spurious results");
+                successHandler.onResponse(games);
+            }
+        };
+
+        GameListJsonRequest req = new GameListJsonRequest(url, successHandlerWrapper, errorHandler);
+        return NetworkRequestQueue.add(req, RequestTag.GIANTBOMB_RECENT);
+    }
+
+    /**
      * Fetch a game's details in a <i>synchronous</i> manner from the given URL.
      *
      * NOTE: never call this from the UI thread!
