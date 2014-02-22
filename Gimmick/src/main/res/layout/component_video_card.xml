@@ -42,7 +42,10 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
                     android:layout_alignParentRight="true"
-                    android:padding="@dimen/padding_default"
+                    android:paddingLeft="@dimen/padding_default"
+                    android:paddingRight="@dimen/padding_default"
+                    android:paddingTop="@dimen/padding_inline"
+                    android:paddingBottom="@dimen/padding_inline"
                     android:background="@color/background_dim"
                     android:textAppearance="@style/TextAppearance.Small"
                     tools:text="3:42"/>
