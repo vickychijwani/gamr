@@ -24,7 +24,7 @@ public class UpcomingGamesFragment extends AddGamesFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        View view = inflater.inflate(R.layout.fragment_upcoming_games, container, false);
+        View view = inflater.inflate(R.layout.component_add_games_list, container, false);
         ButterKnife.inject(this, view);
 
         setupAdapter();

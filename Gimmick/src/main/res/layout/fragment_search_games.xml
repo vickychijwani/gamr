@@ -7,15 +7,6 @@
 
     <include layout="@layout/component_search_bar" />
 
-    <FrameLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <include layout="@layout/component_list_view_multi_state" />
-
-        <include layout="@layout/component_powered_by_giantbomb" />
-
-    </FrameLayout>
+    <include layout="@layout/component_add_games_list" />
 
 </LinearLayout>
