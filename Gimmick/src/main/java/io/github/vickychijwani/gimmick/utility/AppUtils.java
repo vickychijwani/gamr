@@ -86,7 +86,7 @@ public class AppUtils {
      *
      * @param date      the {@link Date} to format. Can be {@code null}.
      * @param fallback  if {@code date} is {@code null}, this parameter decides the return value.
-     * @return  a formatted {@link String} of the form "yyyy-MM-dd HH:mm"
+     * @return          a formatted {@link String} of the form "yyyy-MM-dd HH:mm"
      */
     public static String dateToIsoDateString(@Nullable Date date, DateFallback fallback) {
         if (date != null) {
@@ -95,6 +95,16 @@ public class AppUtils {
             return getEarliestDateString();
         }
         throw new IllegalArgumentException("date is null and fallback parameter is invalid!");
+    }
+
+    /**
+     * Converts a {@link Date} object to an ISO-formatted {@link String} representation of it.
+     *
+     * @param date  the {@link Date} to format. Must not be {@code null}.
+     * @return      a formatted {@link String} of the form "yyyy-MM-dd HH:mm"
+     */
+    public static String dateToIsoDateString(@NotNull Date date) throws IllegalArgumentException {
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm").format(date);
     }
 
     /**
