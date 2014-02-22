@@ -2,7 +2,7 @@ package io.github.vickychijwani.gimmick.view;
 
 import android.util.Log;
 import android.view.View;
-import android.widget.ListView;
+import android.widget.AbsListView;
 import android.widget.Toast;
 
 import com.android.volley.Response;
@@ -27,7 +27,7 @@ public abstract class AddGamesFragment extends BaseFragment {
     private RequestTag mRequestTag = null;
     protected AddGamesAdapter mAdapter;
 
-    @InjectView(android.R.id.list) ListView mGameList;
+    @InjectView(android.R.id.list) AbsListView mGameList;
     @InjectView(R.id.list_container) MultiStateView mGameListContainer;
 
     /**

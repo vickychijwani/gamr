@@ -11,7 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
+import android.widget.AbsListView;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -35,7 +35,7 @@ public class VideosFragment extends DataFragment<List<Video>,VideoListAdapter> {
     private VideoListAdapter mAdapter;
     private List<Video> mVideoList;
 
-    @InjectView(android.R.id.list) ListView mVideoListView;
+    @InjectView(android.R.id.list) AbsListView mVideoListView;
 
     @Nullable
     @Override

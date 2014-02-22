@@ -6,10 +6,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ListView
+    <GridView
         android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:columnWidth="270dp"
+        android:verticalSpacing="@dimen/padding_large"
+        android:horizontalSpacing="@dimen/padding_large"
+        android:numColumns="auto_fit"
         android:gravity="center"
         android:listSelector="@null"
         android:padding="@dimen/padding_large"
@@ -17,7 +21,6 @@
         android:fastScrollEnabled="true"
         android:scrollbarStyle="outsideOverlay"
         android:divider="@null"
-        android:dividerHeight="@dimen/padding_large"
         tools:listitem="@layout/component_video_card"/>
 
 </FrameLayout>

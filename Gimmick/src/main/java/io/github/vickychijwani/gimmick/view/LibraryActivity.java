@@ -12,7 +12,7 @@ import android.support.v4.content.Loader;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ListView;
+import android.widget.AbsListView;
 
 import com.meetme.android.multistateview.MultiStateView;
 
@@ -35,7 +35,7 @@ public class LibraryActivity extends BaseActivity implements LoaderManager.Loade
     private GameListAdapter mAdapter;
     private Handler mHandler;
 
-    @InjectView(android.R.id.list) ListView mGameList;
+    @InjectView(android.R.id.list) AbsListView mGameList;
     @InjectView(R.id.list_container) MultiStateView mGameListContainer;
 
     @Override
