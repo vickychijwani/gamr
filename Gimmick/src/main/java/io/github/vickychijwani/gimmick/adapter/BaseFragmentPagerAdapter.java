@@ -6,11 +6,13 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 public class BaseFragmentPagerAdapter extends FragmentPagerAdapter {
-    private final Fragment[] mFragments;
+    private final List<Fragment> mFragments;
     private final String[] mTitles;
 
-    public BaseFragmentPagerAdapter(FragmentManager fm, @NotNull Fragment[] fragments, @NotNull String[] titles) {
+    public BaseFragmentPagerAdapter(FragmentManager fm, @NotNull List<Fragment> fragments, @NotNull String[] titles) {
         super(fm);
         mFragments = fragments;
         mTitles = titles;
@@ -18,12 +20,12 @@ public class BaseFragmentPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return mFragments[position];
+        return mFragments.get(position);
     }
 
     @Override
     public int getCount() {
-        return mFragments.length;
+        return mFragments.size();
     }
 
     @Override

@@ -13,6 +13,7 @@ import android.util.Log;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import io.github.vickychijwani.gimmick.R;
@@ -53,12 +54,28 @@ public class GameDetailsActivity extends BaseActivity implements LoaderManager.L
         Log.i(TAG, "Displaying details for game ID = " + mGiantBombId);
 
         // setup fragments
-        mGameOverviewFragment = new GameOverviewFragment();
-        mGameVideosFragment = new VideosFragment();
-        setupTabsAndViewPager(new Fragment[] {
-                mGameOverviewFragment,
-                mGameVideosFragment
-        }, new String[] {
+        List<Fragment> fragments;
+        if (savedInstanceState == null) {
+            mGameOverviewFragment = new GameOverviewFragment();
+            mGameVideosFragment = new VideosFragment();
+
+            fragments = Arrays.asList(new Fragment[] {
+                    mGameOverviewFragment,
+                    mGameVideosFragment
+            });
+        } else {
+            /**
+             * Get all active fragments for setting up the tabs + view pager, when the activity is
+             * re-created, e.g., on screen rotation.
+             *
+             * {@link android.support.v4.app.FragmentManager#getFragments()} is hidden from the
+             * SDK docs, and is present only in the support library! I wish there was a better
+             * solution to this!
+             */
+            fragments = getSupportFragmentManager().getFragments();
+        }
+
+        setupTabsAndViewPager(fragments, new String[] {
                 getString(R.string.overview),
                 getString(R.string.videos)
         }, 2);
@@ -70,6 +87,15 @@ public class GameDetailsActivity extends BaseActivity implements LoaderManager.L
     @Override
     protected void setupActionBar(@NotNull ActionBar actionBar) {
         actionBar.setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
+    public void onAttachFragment(Fragment fragment) {
+        if (fragment instanceof GameOverviewFragment) {
+            mGameOverviewFragment = (GameOverviewFragment) fragment;
+        } else if (fragment instanceof VideosFragment) {
+            mGameVideosFragment = (VideosFragment) fragment;
+        }
     }
 
     @Override
@@ -100,6 +126,7 @@ public class GameDetailsActivity extends BaseActivity implements LoaderManager.L
                 return;
             case LoaderId.GAME_VIDEOS:
                 List<Video> videoList = new ArrayList<Video>(cursor.getCount());
+                cursor.moveToPosition(-1);  // move to beginning
                 while (cursor.moveToNext()) {
                     videoList.add(new Video(cursor));
                 }

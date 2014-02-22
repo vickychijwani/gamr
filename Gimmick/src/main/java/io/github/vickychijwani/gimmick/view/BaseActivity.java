@@ -13,6 +13,9 @@ import com.astuetz.PagerSlidingTabStrip;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
+import java.util.List;
+
 import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.adapter.BaseFragmentPagerAdapter;
 import io.github.vickychijwani.gimmick.utility.DeviceUtils;
@@ -41,7 +44,7 @@ public abstract class BaseActivity extends FragmentActivity {
      * @param offscreenLimit the number of tabs whose view hierarchy is to be retained in memory. If
      *                       less than 1, the default value will be used.
      */
-    protected void setupTabsAndViewPager(@NotNull Fragment[] fragments, @NotNull String[] tabTitles, int offscreenLimit) {
+    protected void setupTabsAndViewPager(@NotNull List<Fragment> fragments, @NotNull String[] tabTitles, int offscreenLimit) {
         // setup viewpager
         ViewPager pager = (ViewPager) findViewById(R.id.pager);
 
@@ -65,6 +68,18 @@ public abstract class BaseActivity extends FragmentActivity {
                 DeviceUtils.hideSoftKeyboard(BaseActivity.this, tabs.getWindowToken());
             }
         });
+    }
+
+    /**
+     * Setup a {@link ViewPager} and tabs for this activity.
+     *
+     * @param fragments      the fragments to page through
+     * @param tabTitles      the title for each tab
+     * @param offscreenLimit the number of tabs whose view hierarchy is to be retained in memory. If
+     *                       less than 1, the default value will be used.
+     */
+    protected void setupTabsAndViewPager(@NotNull Fragment[] fragments, @NotNull String[] tabTitles, int offscreenLimit) {
+        setupTabsAndViewPager(Arrays.asList(fragments), tabTitles, offscreenLimit);
     }
 
     @NotNull
