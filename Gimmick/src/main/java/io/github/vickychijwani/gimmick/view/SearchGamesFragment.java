@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
-import com.android.volley.VolleyError;
 import com.meetme.android.multistateview.MultiStateView;
 
 import butterknife.ButterKnife;
@@ -17,15 +16,12 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.api.GiantBomb;
-import io.github.vickychijwani.gimmick.api.NetworkRequestQueue;
 import io.github.vickychijwani.gimmick.api.RequestTag;
 import io.github.vickychijwani.gimmick.item.GameList;
 import io.github.vickychijwani.gimmick.utility.AppUtils;
 import io.github.vickychijwani.gimmick.utility.DeviceUtils;
 
 public class SearchGamesFragment extends AddGamesFragment {
-
-    private RequestTag mRequestTag;
 
     @InjectView(R.id.searchbox) EditText mSearchBox;
     @InjectView(R.id.clear_button) ImageButton mClearButton;
@@ -72,27 +68,13 @@ public class SearchGamesFragment extends AddGamesFragment {
             return;
         }
 
-        mRequestTag = GiantBomb.searchGames(query, getResultsHandler(), getErrorHandler());
+        setRequestTag(GiantBomb.searchGames(query, getResultsHandler(), getErrorHandler()));
         onRequestInitiated();
-    }
-
-    @Override
-    protected void cancelPendingRequests() {
-        if (mRequestTag != null) {
-            NetworkRequestQueue.cancelPending(mRequestTag);
-            mRequestTag = null; // discard invalid request tag
-        }
     }
 
     @Override
     protected void onReceivedResults(GameList gameList) {
         gameList.sortByLatestFirst();
-        mRequestTag = null; // discard invalid request tag
-    }
-
-    @Override
-    protected void onReceivedError(VolleyError error) {
-        mRequestTag = null; // discard invalid request tag
     }
 
     @OnClick(R.id.clear_button) void clearInput() {

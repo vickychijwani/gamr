@@ -9,11 +9,14 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.meetme.android.multistateview.MultiStateView;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import butterknife.InjectView;
 import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.adapter.AddGamesAdapter;
+import io.github.vickychijwani.gimmick.api.NetworkRequestQueue;
+import io.github.vickychijwani.gimmick.api.RequestTag;
 import io.github.vickychijwani.gimmick.item.GameList;
 import io.github.vickychijwani.gimmick.utility.AppUtils;
 
@@ -21,18 +24,34 @@ public abstract class AddGamesFragment extends BaseFragment {
 
     private static final String TAG = "AddGamesFragment";
 
+    private RequestTag mRequestTag = null;
     protected AddGamesAdapter mAdapter;
 
     @InjectView(android.R.id.list) ListView mGameList;
     @InjectView(R.id.list_container) MultiStateView mGameListContainer;
 
+    /**
+     * Initiate a network request to fetch some games.
+     */
     protected abstract void initiateRequest();
 
-    protected abstract void cancelPendingRequests();
+    /**
+     * Override this to be notified when a request completes successfully.
+     *
+     * @param gameList the results received in the response
+     */
+    protected void onReceivedResults(GameList gameList) {
+        // nothing to do
+    }
 
-    protected abstract void onReceivedResults(GameList gameList);
-
-    protected abstract void onReceivedError(VolleyError error);
+    /**
+     * Override this to be notified when a request results in an error.
+     *
+     * @param error the error that occurred
+     */
+    protected void onReceivedError(VolleyError error) {
+        // nothing to do
+    }
 
     /**
      * Call this at the end of {@link #initiateRequest()}, to update the UI to a loading state, etc.
@@ -58,10 +77,28 @@ public abstract class AddGamesFragment extends BaseFragment {
         cancelPendingRequests();
     }
 
+    /**
+     * Call this from within {@link #initiateRequest()}, to allow pre-emptive cancellation of stale
+     * requests.
+     *
+     * @param requestTag a tag identifying the requests initiated
+     */
+    protected final void setRequestTag(@NotNull RequestTag requestTag) {
+        mRequestTag = requestTag;
+    }
+
+    private void cancelPendingRequests() {
+        if (mRequestTag != null) {
+            NetworkRequestQueue.cancelPending(mRequestTag);
+            mRequestTag = null;
+        }
+    }
+
     private final Response.Listener<GameList> mResultsHandler = new Response.Listener<GameList>() {
         @Override
         public void onResponse(GameList results) {
             onReceivedResults(results);
+            mRequestTag = null;
 
             if (! results.isEmpty()) {
                 mGameListContainer.setState(MultiStateView.ContentState.CONTENT);
@@ -83,6 +120,7 @@ public abstract class AddGamesFragment extends BaseFragment {
             Log.e(TAG, Log.getStackTraceString(error));
 
             onReceivedError(error);
+            mRequestTag = null;
 
             mGameListContainer.setState(MultiStateView.ContentState.EMPTY);
             AppUtils.changeAdapterDataSet(mAdapter, new GameList());
