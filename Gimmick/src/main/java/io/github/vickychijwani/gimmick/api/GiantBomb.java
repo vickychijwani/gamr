@@ -321,6 +321,9 @@ public class GiantBomb {
 
     private static boolean parseEssentialGameInfoFromJson(JSONObject gameJson, Game game)
             throws JSONException {
+        if (gameJson.isNull(PLATFORMS))
+            return false;
+
         // platforms
         JSONPropertyIterator<String> platformsIterator
                 = new JSONPropertyIterator<String>(gameJson.getJSONArray(PLATFORMS), NAME);
@@ -340,8 +343,11 @@ public class GiantBomb {
         game.giantBombId = gameJson.getInt(ID);
         game.name = gameJson.getString(NAME);
         game.giantBombUrl = gameJson.getString(API_DETAIL_URL);
-        game.posterUrl = gameJson.getJSONObject(IMAGE_URLS).getString(POSTER_URL);
-        game.smallPosterUrl = gameJson.getJSONObject(IMAGE_URLS).getString(SMALL_POSTER_URL);
+        JSONObject imagesJson = gameJson.optJSONObject(IMAGE_URLS);
+        if (imagesJson != null) {
+            game.posterUrl = imagesJson.getString(POSTER_URL);
+            game.smallPosterUrl = imagesJson.getString(SMALL_POSTER_URL);
+        }
         game.blurb = gameJson.getString(DECK);
         game.releaseDate = parseReleaseDateFromJson(gameJson);
         return true;
