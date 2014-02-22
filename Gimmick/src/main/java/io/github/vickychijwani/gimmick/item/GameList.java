@@ -27,6 +27,7 @@ public class GameList extends ArrayList<Game> {
      */
     public GameList(Cursor cursor) {
         super(cursor.getCount());
+        cursor.moveToPosition(-1);  // move to beginning
         while (cursor.moveToNext()) {
             add(new Game(cursor));
         }
