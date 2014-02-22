@@ -25,7 +25,7 @@ public class AddGamesActivity extends BaseActivity {
                 getString(R.string.search)
         };
 
-        setupTabsAndViewPager(fragments, tabTitles);
+        setupTabsAndViewPager(fragments, tabTitles, 2);
     }
 
     @Override

@@ -33,12 +33,24 @@ public abstract class BaseActivity extends FragmentActivity {
      */
     protected abstract void setupActionBar(@NotNull ActionBar actionBar);
 
-    protected void setupTabsAndViewPager(@NotNull Fragment[] fragments, @NotNull String[] tabTitles) {
+    /**
+     * Setup a {@link ViewPager} and tabs for this activity.
+     *
+     * @param fragments      the fragments to page through
+     * @param tabTitles      the title for each tab
+     * @param offscreenLimit the number of tabs whose view hierarchy is to be retained in memory. If
+     *                       less than 1, the default value will be used.
+     */
+    protected void setupTabsAndViewPager(@NotNull Fragment[] fragments, @NotNull String[] tabTitles, int offscreenLimit) {
         // setup viewpager
         ViewPager pager = (ViewPager) findViewById(R.id.pager);
 
         if (pager == null)
             return;
+
+        if (offscreenLimit >= 1) {
+            pager.setOffscreenPageLimit(offscreenLimit);
+        }
 
         pager.setAdapter(new BaseFragmentPagerAdapter(getSupportFragmentManager(), fragments, tabTitles));
 

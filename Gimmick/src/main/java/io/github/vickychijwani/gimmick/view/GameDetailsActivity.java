@@ -61,7 +61,7 @@ public class GameDetailsActivity extends BaseActivity implements LoaderManager.L
         }, new String[] {
                 getString(R.string.overview),
                 getString(R.string.videos)
-        });
+        }, 2);
 
         getSupportLoaderManager().initLoader(LoaderId.GAME_OVERVIEW, null, this);
         getSupportLoaderManager().initLoader(LoaderId.GAME_VIDEOS, null, this);
