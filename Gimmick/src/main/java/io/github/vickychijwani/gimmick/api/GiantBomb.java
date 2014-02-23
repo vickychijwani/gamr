@@ -230,12 +230,13 @@ public class GiantBomb {
      * <p/>
      * NOTE: never call this from the UI thread!
      *
-     * @param game the {@link Game} for which to fetch video data. It must have {@link Video}s with
-     *             a valid GiantBomb video ID on each of them.
-     * @return the {@link Game} that was passed in, augmented with the requested video data
+     * @param game  the {@link Game} for which to fetch video data. It must have {@link Video}s with
+     *              a valid GiantBomb video ID on each of them.
+     * @return      the {@link Game} that was passed in, augmented with the requested video data
      */
-    @Nullable
-    public static Game fetchVideosForGame(@NotNull Game game) {
+    @NotNull
+    public static Game fetchVideosForGame(@NotNull Game game)
+            throws ExecutionException, InterruptedException, JSONException {
         Iterator<Video> videoIterator = game.getVideos();
 
         String videoIds = "";
@@ -269,20 +270,28 @@ public class GiantBomb {
             JSONArrayIterator videoJsonIterator = new JSONArrayIterator(videoJsonArray);
             videoIterator = game.getVideos();
             while (videoJsonIterator.hasNext() && videoIterator.hasNext()) {
-                parseVideoInfoFromJson(videoJsonIterator.next(), videoIterator.next());
+                JSONObject videoJson = videoJsonIterator.next();
+                if (videoJson != null) {
+                    parseVideoInfoFromJson(videoJson, videoIterator.next());
+                }
             }
+
             // sometimes GB returns fewer videos than were requested (the error is "Object Not Found"
-            // for the missing ones), so we remove those videos
+            // for the missing ones), also some videos may be skipped if their JSON cannot be parsed,
+            // so we remove those videos
             while (videoIterator.hasNext()) {
                 videoIterator.next();
                 videoIterator.remove();
             }
         } catch (InterruptedException e) {
             Log.e(TAG, Log.getStackTraceString(e));
+            throw e;
         } catch (ExecutionException e) {
             Log.e(TAG, Log.getStackTraceString(e));
+            throw e;
         } catch (JSONException e) {
             Log.e(TAG, Log.getStackTraceString(e));
+            throw e;
         }
 
         return game;
@@ -400,7 +409,7 @@ public class GiantBomb {
     }
 
     @NotNull
-    private static Video parseVideoInfoFromJson(JSONObject videoJson, Video video) throws JSONException {
+    private static Video parseVideoInfoFromJson(@NotNull JSONObject videoJson, @NotNull Video video) throws JSONException {
         // game id is set automatically when calling Game#addVideo()
 
         video.setName(videoJson.optString(NAME));

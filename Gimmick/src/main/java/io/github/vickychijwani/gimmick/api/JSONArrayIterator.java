@@ -3,6 +3,7 @@ package io.github.vickychijwani.gimmick.api;
 import android.util.Log;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,6 +35,7 @@ class JSONArrayIterator implements Iterator {
     }
 
     @Override
+    @Nullable
     public JSONObject next() {
         try {
             return mJsonArray.getJSONObject(mPosition++);

@@ -109,9 +109,9 @@ public class AddGameTask extends android.os.AsyncTask<Void, AddGameTask.Result, 
                 if (fullGame == null) {
                     result = new Result(StatusCode.UNKNOWN_ERROR, game.name);
                 } else {
-                    Metacritic.fetchMetascore(fullGame);
-                    GiantBomb.fetchVideosForGame(fullGame);
+                    Metacritic.fetchMetascore(fullGame);    // metascore is not essential
                     try {
+                        GiantBomb.fetchVideosForGame(fullGame); // videos are required when adding games
                         if (GamrProvider.addGame(fullGame)) {
                             result = new Result(StatusCode.SUCCESS, game.name);
                         } else {
