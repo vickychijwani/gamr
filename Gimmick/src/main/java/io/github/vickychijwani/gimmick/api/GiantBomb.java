@@ -85,6 +85,10 @@ public class GiantBomb {
     public static RequestTag searchGames(@NotNull String query,
                                          Response.Listener<GameList> successHandler,
                                          Response.ErrorListener errorHandler) {
+        // forgiving search: replace punctuations and spaces with % signs
+        // for instance, "batm asylum" should match "Batman: Arkham Asylum"
+        query = query.replaceAll("\\W", "%");
+
         Log.i(TAG, "Searching for \"" + query + "\"...");
 
         String url = new URLBuilder()
