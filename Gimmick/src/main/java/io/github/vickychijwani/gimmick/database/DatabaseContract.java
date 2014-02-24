@@ -10,7 +10,7 @@ import io.github.vickychijwani.gimmick.GamrApplication;
 import io.github.vickychijwani.gimmick.item.Game;
 import io.github.vickychijwani.gimmick.item.Platform;
 import io.github.vickychijwani.gimmick.item.Video;
-import io.github.vickychijwani.gimmick.utility.AppUtils;
+import io.github.vickychijwani.gimmick.utility.DateTimeUtils;
 
 public final class DatabaseContract {
 
@@ -324,7 +324,7 @@ public final class DatabaseContract {
                     SQL.DEF_COL(COL_USER, SQL.Type.TEXT, SQL.Constraint.NOT_NULL, SQL.Constraint.DEFAULT("\"\"")),
                     SQL.DEF_COL(COL_TYPE, SQL.Type.TEXT, SQL.Constraint.NOT_NULL, SQL.Constraint.DEFAULT("\"\"")),
                     SQL.DEF_COL(COL_YOUTUBE_ID, SQL.Type.TEXT, SQL.Constraint.NOT_NULL, SQL.Constraint.DEFAULT("\"\"")),
-                    SQL.DEF_COL(COL_PUBLISH_DATE, SQL.Type.TEXT, SQL.Constraint.NOT_NULL, SQL.Constraint.DEFAULT("\"" + AppUtils.getEarliestDateString() + "\""))
+                    SQL.DEF_COL(COL_PUBLISH_DATE, SQL.Type.TEXT, SQL.Constraint.NOT_NULL, SQL.Constraint.DEFAULT("\"" + DateTimeUtils.getEarliestDateString() + "\""))
             );
         }
 
@@ -342,8 +342,8 @@ public final class DatabaseContract {
             values.put(COL_USER, video.getUser());
             values.put(COL_TYPE, video.getType());
             values.put(COL_YOUTUBE_ID, video.getYoutubeId());
-            values.put(COL_PUBLISH_DATE, AppUtils.dateToIsoDateString(video.getPublishDate(),
-                    AppUtils.DateFallback.EARLIEST));
+            values.put(COL_PUBLISH_DATE, DateTimeUtils.dateToIsoDateString(video.getPublishDate(),
+                    DateTimeUtils.DateFallback.EARLIEST));
             return values;
         }
 

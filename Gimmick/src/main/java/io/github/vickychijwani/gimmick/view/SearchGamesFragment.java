@@ -16,7 +16,6 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.api.GiantBomb;
-import io.github.vickychijwani.gimmick.api.RequestTag;
 import io.github.vickychijwani.gimmick.item.GameList;
 import io.github.vickychijwani.gimmick.utility.AppUtils;
 import io.github.vickychijwani.gimmick.utility.DeviceUtils;

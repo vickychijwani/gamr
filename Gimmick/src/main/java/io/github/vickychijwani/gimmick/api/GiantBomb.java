@@ -32,7 +32,7 @@ import io.github.vickychijwani.gimmick.item.GameList;
 import io.github.vickychijwani.gimmick.item.Platform;
 import io.github.vickychijwani.gimmick.item.ReleaseDate;
 import io.github.vickychijwani.gimmick.item.Video;
-import io.github.vickychijwani.gimmick.utility.AppUtils;
+import io.github.vickychijwani.gimmick.utility.DateTimeUtils;
 
 public class GiantBomb {
 
@@ -161,9 +161,9 @@ public class GiantBomb {
     public static RequestTag fetchRecentGames(final Response.Listener<GameList> successHandler,
                                                 final Response.ErrorListener errorHandler) {
         Calendar currentDate = Calendar.getInstance();
-        String now = AppUtils.dateToIsoDateString(currentDate.getTime());
+        String now = DateTimeUtils.dateToIsoDateString(currentDate.getTime());
         currentDate.roll(Calendar.YEAR, false);
-        String oneYearAgo = AppUtils.dateToIsoDateString(currentDate.getTime());
+        String oneYearAgo = DateTimeUtils.dateToIsoDateString(currentDate.getTime());
 
         Log.i(TAG, "Fetching recent games released from " + oneYearAgo + " to " + now + " ...");
 
@@ -429,7 +429,7 @@ public class GiantBomb {
 
         // publish date
         try {
-            video.setPublishDate(AppUtils.isoDateStringToDate(videoJson.optString(PUBLISH_DATE, AppUtils.getEarliestDateString())));
+            video.setPublishDate(DateTimeUtils.isoDateStringToDate(videoJson.optString(PUBLISH_DATE, DateTimeUtils.getEarliestDateString())));
         } catch (ParseException e) {
             Log.e(TAG, Log.getStackTraceString(e));
         }

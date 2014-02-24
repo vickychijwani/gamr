@@ -10,9 +10,6 @@ import android.widget.Toast;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import io.github.vickychijwani.gimmick.R;
@@ -28,7 +25,7 @@ public class AppUtils {
      *                simply be cleared)
      * @param <T>     the type of data contained in the adapter
      */
-    public static <T> void changeAdapterDataSet(ArrayAdapter<T> adapter, @Nullable List<T> list) {
+    public static <T> void changeAdapterDataSet(@NotNull ArrayAdapter<T> adapter, @Nullable List<T> list) {
         adapter.setNotifyOnChange(false);
         adapter.clear();
         if (list != null) {
@@ -61,59 +58,12 @@ public class AppUtils {
      * @return  true if an error was shown, else false
      * @see     NetworkUtils#isNetworkConnected(Context)
      */
-    public static boolean showErrorIfOffline(Context context) {
+    public static boolean showErrorIfOffline(@NotNull Context context) {
         if (! NetworkUtils.isNetworkConnected(context)) {
             Toast.makeText(context, R.string.offline, Toast.LENGTH_LONG).show();
             return true;
         }
         return false;
-    }
-
-    public enum DateFallback {
-        /** Fallback parameter denoting earliest possible date */
-        EARLIEST,
-    }
-
-    /**
-     * Earliest possible date used in the app.
-     */
-    public static String getEarliestDateString() {
-        return "1970-01-01 00:00";
-    }
-
-    /**
-     * Converts a {@link Date} object to an ISO-formatted {@link String} representation of it.
-     *
-     * @param date      the {@link Date} to format. Can be {@code null}.
-     * @param fallback  if {@code date} is {@code null}, this parameter decides the return value.
-     * @return          a formatted {@link String} of the form "yyyy-MM-dd HH:mm"
-     */
-    public static String dateToIsoDateString(@Nullable Date date, DateFallback fallback) {
-        if (date != null) {
-            return new SimpleDateFormat("yyyy-MM-dd HH:mm").format(date);
-        } else if (fallback == DateFallback.EARLIEST) {
-            return getEarliestDateString();
-        }
-        throw new IllegalArgumentException("date is null and fallback parameter is invalid!");
-    }
-
-    /**
-     * Converts a {@link Date} object to an ISO-formatted {@link String} representation of it.
-     *
-     * @param date  the {@link Date} to format. Must not be {@code null}.
-     * @return      a formatted {@link String} of the form "yyyy-MM-dd HH:mm"
-     */
-    public static String dateToIsoDateString(@NotNull Date date) throws IllegalArgumentException {
-        return new SimpleDateFormat("yyyy-MM-dd HH:mm").format(date);
-    }
-
-    /**
-     * Converts an ISO-formatted {@link String} representation of a date to a {@link Date} object.
-     *
-     * @return  a {@link Date} object corresponding to given date string
-     */
-    public static Date isoDateStringToDate(String dateString) throws ParseException {
-        return new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(dateString);
     }
 
 }

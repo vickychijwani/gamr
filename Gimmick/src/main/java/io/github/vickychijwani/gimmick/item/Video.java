@@ -7,7 +7,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 import io.github.vickychijwani.gimmick.database.DatabaseContract.VideoTable;
-import io.github.vickychijwani.gimmick.utility.AppUtils;
+import io.github.vickychijwani.gimmick.utility.DateTimeUtils;
 
 public class Video implements Comparable<Video> {
 
@@ -42,7 +42,7 @@ public class Video implements Comparable<Video> {
         mType = cursor.getString(cursor.getColumnIndexOrThrow(VideoTable.COL_TYPE));
         mYoutubeId = cursor.getString(cursor.getColumnIndexOrThrow(VideoTable.COL_YOUTUBE_ID));
         try {
-            mPublishDate = AppUtils.isoDateStringToDate(cursor.getString(cursor.getColumnIndexOrThrow(VideoTable.COL_PUBLISH_DATE)));
+            mPublishDate = DateTimeUtils.isoDateStringToDate(cursor.getString(cursor.getColumnIndexOrThrow(VideoTable.COL_PUBLISH_DATE)));
         } catch (ParseException e) {
             Log.e(TAG, Log.getStackTraceString(e));
         }
