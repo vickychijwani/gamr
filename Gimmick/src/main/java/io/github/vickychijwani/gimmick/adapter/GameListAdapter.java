@@ -9,10 +9,10 @@ import android.widget.ArrayAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import io.github.vickychijwani.giantbomb.item.Game;
+import io.github.vickychijwani.giantbomb.item.GameList;
 import io.github.vickychijwani.gimmick.R;
-import io.github.vickychijwani.gimmick.item.Game;
-import io.github.vickychijwani.gimmick.item.GameList;
-import io.github.vickychijwani.gimmick.utility.NetworkUtils;
+import io.github.vickychijwani.gimmick.utility.Utils;
 
 public class GameListAdapter extends ArrayAdapter<Game> {
 
@@ -57,7 +57,7 @@ public class GameListAdapter extends ArrayAdapter<Game> {
             viewHolder = (GameViewHolder) convertView.getTag();
         }
 
-        NetworkUtils.loadImage(item.posterUrl, viewHolder.poster);
+        Utils.loadImage(item.posterUrl, viewHolder.poster);
         viewHolder.title.setText(item.name);
         viewHolder.releaseDate.setText(item.releaseDate.toString());
         viewHolder.platforms.setText(item.getPlatformsDisplayString());

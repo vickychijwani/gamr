@@ -1,4 +1,4 @@
-package io.github.vickychijwani.gimmick.utility;
+package io.github.vickychijwani.utility;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,8 +11,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-
-import io.github.vickychijwani.gimmick.R;
 
 public class AppUtils {
 
@@ -35,7 +33,8 @@ public class AppUtils {
     }
 
     /**
-     * Check if the specified {@link Intent} can be handled by any {@link Activity} on the system.
+     * Check if the specified {@link Intent} can be handled by any {@link android.app.Activity} on
+     * the system.
      *
      * @param context   used for querying available Activities on the system
      * @param intent    the {@link Intent} to resolve
@@ -60,7 +59,7 @@ public class AppUtils {
      */
     public static boolean showErrorIfOffline(@NotNull Context context) {
         if (! NetworkUtils.isNetworkConnected(context)) {
-            Toast.makeText(context, R.string.offline, Toast.LENGTH_LONG).show();
+            Toast.makeText(context, context.getString(R.string.offline), Toast.LENGTH_LONG).show();
             return true;
         }
         return false;

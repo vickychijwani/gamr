@@ -1,4 +1,4 @@
-package io.github.vickychijwani.gimmick.api;
+package io.github.vickychijwani.metacritic.api;
 
 import android.util.Log;
 
@@ -15,8 +15,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import io.github.vickychijwani.gimmick.item.Game;
-import io.github.vickychijwani.gimmick.item.Platform;
+import io.github.vickychijwani.giantbomb.item.Game;
+import io.github.vickychijwani.giantbomb.item.Platform;
+import io.github.vickychijwani.network.volley.VolleyRequestQueue;
 
 public class Metacritic {
 
@@ -51,7 +52,7 @@ public class Metacritic {
                 }
             };
 
-            NetworkRequestQueue.add(req);
+            VolleyRequestQueue.add(req);
 
             try {
                 JSONObject resultJson = future.get().getJSONObject(RESULT);

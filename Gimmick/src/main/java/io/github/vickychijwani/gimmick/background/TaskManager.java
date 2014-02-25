@@ -4,8 +4,8 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 
-import io.github.vickychijwani.gimmick.item.Game;
-import io.github.vickychijwani.gimmick.item.GameList;
+import io.github.vickychijwani.giantbomb.item.Game;
+import io.github.vickychijwani.giantbomb.item.GameList;
 
 /**
  * Inspired by florianmski's traktoid TraktManager. This class is used to hold running tasks, so it

@@ -1,4 +1,4 @@
-package io.github.vickychijwani.gimmick.api;
+package io.github.vickychijwani.network.json;
 
 import android.util.Log;
 
@@ -13,7 +13,7 @@ import java.util.Iterator;
 /**
  * Utility class to iterate over a {@link JSONArray} of {@link org.json.JSONObject}s.
  */
-class JSONArrayIterator implements Iterator {
+public class JSONArrayIterator implements Iterator {
 
     private static final String TAG = "JSONArrayIterator";
 

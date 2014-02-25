@@ -1,4 +1,4 @@
-package io.github.vickychijwani.gimmick.api;
+package io.github.vickychijwani.network.json;
 
 import android.util.Log;
 
@@ -12,7 +12,7 @@ import java.util.Iterator;
  * Utility class to iterate over a single property of type {@code T} in a {@link JSONArray} of
  * {@link org.json.JSONObject}s.
  */
-class JSONPropertyIterator<T> implements Iterator<T> {
+public class JSONPropertyIterator<T> implements Iterator<T> {
 
     private static final String TAG = "JSONPropertyIterator";
 

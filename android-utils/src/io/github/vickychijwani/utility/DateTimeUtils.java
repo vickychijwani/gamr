@@ -1,4 +1,4 @@
-package io.github.vickychijwani.gimmick.utility;
+package io.github.vickychijwani.utility;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

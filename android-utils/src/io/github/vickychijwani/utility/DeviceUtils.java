@@ -1,4 +1,4 @@
-package io.github.vickychijwani.gimmick.utility;
+package io.github.vickychijwani.utility;
 
 import android.content.Context;
 import android.os.Build;

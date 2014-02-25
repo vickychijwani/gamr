@@ -1,4 +1,4 @@
-package io.github.vickychijwani.gimmick.api;
+package io.github.vickychijwani.giantbomb.api;
 
 import android.text.TextUtils;
 import android.util.Log;
@@ -27,12 +27,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import io.github.vickychijwani.gimmick.item.Game;
-import io.github.vickychijwani.gimmick.item.GameList;
-import io.github.vickychijwani.gimmick.item.Platform;
-import io.github.vickychijwani.gimmick.item.ReleaseDate;
-import io.github.vickychijwani.gimmick.item.Video;
-import io.github.vickychijwani.gimmick.utility.DateTimeUtils;
+import io.github.vickychijwani.giantbomb.item.Game;
+import io.github.vickychijwani.giantbomb.item.GameList;
+import io.github.vickychijwani.giantbomb.item.Platform;
+import io.github.vickychijwani.giantbomb.item.ReleaseDate;
+import io.github.vickychijwani.giantbomb.item.Video;
+import io.github.vickychijwani.utility.DateTimeUtils;
+import io.github.vickychijwani.network.json.JSONArrayIterator;
+import io.github.vickychijwani.network.json.JSONPropertyIterator;
+import io.github.vickychijwani.network.volley.RequestTag;
+import io.github.vickychijwani.network.volley.VolleyRequestQueue;
 
 public class GiantBomb {
 
@@ -73,6 +77,10 @@ public class GiantBomb {
     private static final SortParam SORT_BY_MOST_REVIEWS = new SortParam(REVIEW_COUNT, SortParam.DESC);
     private static final SortParam SORT_BY_LATEST_RELEASES = new SortParam(ORIGINAL_RELEASE_DATE, SortParam.DESC);
 
+    private static final RequestTag REQUEST_TAG_SEARCH = RequestTag.generate();
+    private static final RequestTag REQUEST_TAG_UPCOMING = RequestTag.generate();
+    private static final RequestTag REQUEST_TAG_RECENT = RequestTag.generate();
+
     /**
      * Fire an asynchronous game search.
      *
@@ -80,7 +88,7 @@ public class GiantBomb {
      * @param successHandler    handler to invoke if request succeeds
      * @param errorHandler      handler to invoke if request fails
      * @return                  a tag that can be used to cancel any ongoing search requests by
-     *                          calling {@link NetworkRequestQueue#cancelPending(RequestTag)}.
+     *                          calling {@link io.github.vickychijwani.network.volley.VolleyRequestQueue#cancelAll(RequestTag)}.
      */
     public static RequestTag searchGames(@NotNull String query,
                                          Response.Listener<GameList> successHandler,
@@ -101,7 +109,7 @@ public class GiantBomb {
                 .toString();
 
         GameListJsonRequest req = new GameListJsonRequest(url, successHandler, errorHandler);
-        return NetworkRequestQueue.add(req, RequestTag.GIANTBOMB_SEARCH);
+        return VolleyRequestQueue.add(req, REQUEST_TAG_SEARCH);
     }
 
     /**
@@ -111,7 +119,7 @@ public class GiantBomb {
      * @param successHandler    handler to invoke if request succeeds
      * @param errorHandler      handler to invoke if request fails
      * @return                  a tag that can be used to cancel any ongoing "upcoming games"
-     *                          requests by calling {@link NetworkRequestQueue#cancelPending(RequestTag)}.
+     *                          requests by calling {@link VolleyRequestQueue#cancelAll(RequestTag)}.
      */
     public static RequestTag fetchUpcomingGames(final Response.Listener<GameList> successHandler,
                                           final Response.ErrorListener errorHandler) {
@@ -146,7 +154,7 @@ public class GiantBomb {
         };
 
         GameListJsonRequest req = new GameListJsonRequest(url, successHandlerWrapper, errorHandler);
-        return NetworkRequestQueue.add(req, RequestTag.GIANTBOMB_UPCOMING);
+        return VolleyRequestQueue.add(req, REQUEST_TAG_UPCOMING);
     }
 
     /**
@@ -156,7 +164,7 @@ public class GiantBomb {
      * @param successHandler    handler to invoke if request succeeds
      * @param errorHandler      handler to invoke if request fails
      * @return                  a tag that can be used to cancel any ongoing "recent games"
-     *                          requests by calling {@link NetworkRequestQueue#cancelPending(RequestTag)}.
+     *                          requests by calling {@link VolleyRequestQueue#cancelAll(RequestTag)}.
      */
     public static RequestTag fetchRecentGames(final Response.Listener<GameList> successHandler,
                                                 final Response.ErrorListener errorHandler) {
@@ -192,7 +200,7 @@ public class GiantBomb {
         };
 
         GameListJsonRequest req = new GameListJsonRequest(url, successHandlerWrapper, errorHandler);
-        return NetworkRequestQueue.add(req, RequestTag.GIANTBOMB_RECENT);
+        return VolleyRequestQueue.add(req, REQUEST_TAG_RECENT);
     }
 
     /**
@@ -201,7 +209,7 @@ public class GiantBomb {
      * NOTE: never call this from the UI thread!
      *
      * @param giantBombUrl  API URL
-     * @return  the requested {@link io.github.vickychijwani.gimmick.item.Game}
+     * @return  the requested {@link io.github.vickychijwani.giantbomb.item.Game}
      */
     @Nullable
     public static Game fetchGame(@NotNull String giantBombUrl) {
@@ -216,7 +224,7 @@ public class GiantBomb {
 
         RequestFuture<Game> future = RequestFuture.newFuture();
         GameJsonRequest req = new GameJsonRequest(url, future, future);
-        NetworkRequestQueue.add(req);
+        VolleyRequestQueue.add(req);
 
         try {
             return future.get();    // block until request completes
@@ -266,7 +274,7 @@ public class GiantBomb {
 
         RequestFuture<JSONObject> future = RequestFuture.newFuture();
         JsonObjectRequest req = new JsonObjectRequest(url, null, future, future);
-        NetworkRequestQueue.add(req);
+        VolleyRequestQueue.add(req);
 
         try {
             JSONArray videoJsonArray = future.get().getJSONArray(RESULTS);  // block until request completes
@@ -556,7 +564,7 @@ public class GiantBomb {
     }
 
     /**
-     * A JSON request for retrieving a <code>{@link java.util.List}<{@link io.github.vickychijwani.gimmick.item.Game}></code>
+     * A JSON request for retrieving a <code>{@link java.util.List}<{@link io.github.vickychijwani.giantbomb.item.Game}></code>
      * from a given URL.
      */
     private static class GameListJsonRequest extends JsonRequest<GameList> {
@@ -588,7 +596,7 @@ public class GiantBomb {
     }
 
     /**
-     * A JSON request for retrieving a {@link io.github.vickychijwani.gimmick.item.Game} from a given URL.
+     * A JSON request for retrieving a {@link io.github.vickychijwani.giantbomb.item.Game} from a given URL.
      */
     private static class GameJsonRequest extends JsonRequest<Game> {
 

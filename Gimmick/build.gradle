@@ -34,7 +34,8 @@ dependencies {
     compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
     compile 'com.jakewharton:butterknife:4.0.1'
     compile 'com.mcxiaoke.volley:library:1.0.+'
-    compile files('../libs/annotations.jar')
+    compile 'org.jetbrains:annotations:13.0'
     compile fileTree(dir: '../libs', include: 'glide-minus-volley-*.jar')
     compile project(':Android-MultiStateView')
+    compile project(':android-utils')
 }

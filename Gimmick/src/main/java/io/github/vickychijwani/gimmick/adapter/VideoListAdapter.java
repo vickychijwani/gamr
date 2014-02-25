@@ -16,9 +16,9 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import io.github.vickychijwani.giantbomb.item.Video;
 import io.github.vickychijwani.gimmick.R;
-import io.github.vickychijwani.gimmick.item.Video;
-import io.github.vickychijwani.gimmick.utility.NetworkUtils;
+import io.github.vickychijwani.gimmick.utility.Utils;
 
 public class VideoListAdapter extends ArrayAdapter<Video> {
 
@@ -56,7 +56,7 @@ public class VideoListAdapter extends ArrayAdapter<Video> {
             viewHolder = (VideoViewHolder) convertView.getTag();
         }
 
-        NetworkUtils.loadImage(item.getThumbUrl(), viewHolder.thumbnail);
+        Utils.loadImage(item.getThumbUrl(), viewHolder.thumbnail);
         viewHolder.duration.setText(DateUtils.formatElapsedTime(item.getDuration()));
         viewHolder.name.setText(item.getName());
         viewHolder.user.setText(getContext().getString(R.string.uploaded_by_user, item.getUser()));

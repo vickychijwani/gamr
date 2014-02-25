@@ -7,9 +7,9 @@ import android.view.ViewGroup;
 
 import butterknife.ButterKnife;
 import io.github.vickychijwani.gimmick.R;
-import io.github.vickychijwani.gimmick.api.GiantBomb;
-import io.github.vickychijwani.gimmick.item.GameList;
-import io.github.vickychijwani.gimmick.utility.AppUtils;
+import io.github.vickychijwani.giantbomb.api.GiantBomb;
+import io.github.vickychijwani.giantbomb.item.GameList;
+import io.github.vickychijwani.utility.AppUtils;
 
 public class UpcomingGamesFragment extends AddGamesFragment {
 

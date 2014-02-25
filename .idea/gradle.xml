@@ -10,6 +10,7 @@
             <option value="$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick" />
             <option value="$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Android-MultiStateView" />
             <option value="$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick" />
+            <option value="$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/android-utils" />
           </set>
         </option>
       </GradleProjectSettings>

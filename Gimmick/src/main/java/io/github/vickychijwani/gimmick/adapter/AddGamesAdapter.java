@@ -7,8 +7,8 @@ import org.jetbrains.annotations.Nullable;
 
 import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.background.TaskManager;
-import io.github.vickychijwani.gimmick.item.Game;
-import io.github.vickychijwani.gimmick.item.GameList;
+import io.github.vickychijwani.giantbomb.item.Game;
+import io.github.vickychijwani.giantbomb.item.GameList;
 
 public class AddGamesAdapter extends GameListAdapter {
 

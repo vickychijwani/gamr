@@ -1,4 +1,4 @@
-package io.github.vickychijwani.gimmick.item;
+package io.github.vickychijwani.giantbomb.item;
 
 import android.database.Cursor;
 import android.util.Log;
@@ -7,7 +7,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 import io.github.vickychijwani.gimmick.database.DatabaseContract.VideoTable;
-import io.github.vickychijwani.gimmick.utility.DateTimeUtils;
+import io.github.vickychijwani.utility.DateTimeUtils;
 
 public class Video implements Comparable<Video> {
 

@@ -4,39 +4,30 @@ import android.annotation.SuppressLint;
 import android.app.Application;
 import android.os.StrictMode;
 
-import org.jetbrains.annotations.NotNull;
-
-import io.github.vickychijwani.gimmick.api.GiantBomb;
-import io.github.vickychijwani.gimmick.api.Metacritic;
-import io.github.vickychijwani.gimmick.utility.DeviceUtils;
+import io.github.vickychijwani.giantbomb.api.GiantBomb;
+import io.github.vickychijwani.metacritic.api.Metacritic;
+import io.github.vickychijwani.network.volley.VolleyRequestQueue;
+import io.github.vickychijwani.utility.DeviceUtils;
 
 public class GamrApplication extends Application {
 
-    private static GamrApplication sInstance;
-
     /**
-     * The content authority used to identify the Gamr
+     * The content authority used to identify the application's
      * {@link android.content.ContentProvider}
      */
     public static String CONTENT_AUTHORITY;
 
-    /**
-     * @return singleton instance of the application
-     */
-    @NotNull
-    public static synchronized GamrApplication getInstance() {
-        return sInstance;
-    }
-
     @Override
     public void onCreate() {
         super.onCreate();
-        sInstance = this;
 
-        // Set content provider authority
+        // set content provider authority
         CONTENT_AUTHORITY = "io.github.vickychijwani.gimmick.provider";
 
-        // Set API keys
+        // initialize network request queue
+        VolleyRequestQueue.initialize(this.getApplicationContext());
+
+        // set API keys
         GiantBomb.setApiKey(getString(R.string.giantbomb_api_key));
         Metacritic.setApiKey(getString(R.string.mashape_api_key));
 
@@ -44,7 +35,7 @@ public class GamrApplication extends Application {
     }
 
     /**
-     * Used to enable {@link android.os.StrictMode} during production
+     * Used to enable {@link android.os.StrictMode} during development
      */
     @SuppressLint("NewApi")
     public static void enableStrictMode() {

@@ -38,8 +38,7 @@
     <string name="always">Always</string>
     <string name="just_once">Just once</string>
 
-    <!-- Generic strings -->
-    <string name="offline">No network connectivity. Try again later.</string>
+    <!-- Settings -->
     <string name="settings">Settings</string>
 
     <!-- Image content descriptions -->

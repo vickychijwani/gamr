@@ -24,9 +24,9 @@ import io.github.vickychijwani.gimmick.database.DatabaseContract.GamePlatformMap
 import io.github.vickychijwani.gimmick.database.DatabaseContract.GameTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.PlatformTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.VideoTable;
-import io.github.vickychijwani.gimmick.item.Game;
-import io.github.vickychijwani.gimmick.item.Platform;
-import io.github.vickychijwani.gimmick.item.Video;
+import io.github.vickychijwani.giantbomb.item.Game;
+import io.github.vickychijwani.giantbomb.item.Platform;
+import io.github.vickychijwani.giantbomb.item.Video;
 
 public class GamrProvider extends ContentProvider {
 

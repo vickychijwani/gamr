@@ -1,4 +1,4 @@
-package io.github.vickychijwani.gimmick.item;
+package io.github.vickychijwani.giantbomb.item;
 
 import android.database.Cursor;
 

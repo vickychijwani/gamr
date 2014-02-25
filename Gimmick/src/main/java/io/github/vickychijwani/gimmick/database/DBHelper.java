@@ -14,7 +14,7 @@ import io.github.vickychijwani.gimmick.database.DatabaseContract.GamePlatformMap
 import io.github.vickychijwani.gimmick.database.DatabaseContract.GameTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.PlatformTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.VideoTable;
-import io.github.vickychijwani.gimmick.utility.DeviceUtils;
+import io.github.vickychijwani.utility.DeviceUtils;
 
 public class DBHelper extends BaseDBHelper {
 

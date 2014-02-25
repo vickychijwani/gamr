@@ -15,10 +15,10 @@ import org.jetbrains.annotations.Nullable;
 import butterknife.InjectView;
 import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.adapter.AddGamesAdapter;
-import io.github.vickychijwani.gimmick.api.NetworkRequestQueue;
-import io.github.vickychijwani.gimmick.api.RequestTag;
-import io.github.vickychijwani.gimmick.item.GameList;
-import io.github.vickychijwani.gimmick.utility.AppUtils;
+import io.github.vickychijwani.network.volley.VolleyRequestQueue;
+import io.github.vickychijwani.network.volley.RequestTag;
+import io.github.vickychijwani.giantbomb.item.GameList;
+import io.github.vickychijwani.utility.AppUtils;
 
 public abstract class AddGamesFragment extends BaseFragment {
 
@@ -89,7 +89,7 @@ public abstract class AddGamesFragment extends BaseFragment {
 
     private void cancelPendingRequests() {
         if (mRequestTag != null) {
-            NetworkRequestQueue.cancelPending(mRequestTag);
+            VolleyRequestQueue.cancelAll(mRequestTag);
             mRequestTag = null;
         }
     }

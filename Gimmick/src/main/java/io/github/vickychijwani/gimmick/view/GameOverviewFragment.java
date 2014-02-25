@@ -13,9 +13,9 @@ import org.jetbrains.annotations.Nullable;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import io.github.vickychijwani.giantbomb.item.Game;
 import io.github.vickychijwani.gimmick.R;
-import io.github.vickychijwani.gimmick.item.Game;
-import io.github.vickychijwani.gimmick.utility.NetworkUtils;
+import io.github.vickychijwani.gimmick.utility.Utils;
 
 public class GameOverviewFragment extends DataFragment<Game,View> {
 
@@ -50,7 +50,7 @@ public class GameOverviewFragment extends DataFragment<Game,View> {
 
     @Override
     protected void onBindDataToView(@NotNull Game game, @NotNull View view) {
-        NetworkUtils.loadImage(game.smallPosterUrl, mPosterView);
+        Utils.loadImage(game.smallPosterUrl, mPosterView);
         mReleaseDateView.setText(game.releaseDate.toString());
         mPlatformsView.setText(game.getPlatformsDisplayString());
         mBlurbView.setText(game.blurb);

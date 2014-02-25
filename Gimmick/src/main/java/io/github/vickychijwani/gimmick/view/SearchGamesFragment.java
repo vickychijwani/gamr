@@ -15,10 +15,10 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import io.github.vickychijwani.gimmick.R;
-import io.github.vickychijwani.gimmick.api.GiantBomb;
-import io.github.vickychijwani.gimmick.item.GameList;
-import io.github.vickychijwani.gimmick.utility.AppUtils;
-import io.github.vickychijwani.gimmick.utility.DeviceUtils;
+import io.github.vickychijwani.giantbomb.api.GiantBomb;
+import io.github.vickychijwani.giantbomb.item.GameList;
+import io.github.vickychijwani.utility.AppUtils;
+import io.github.vickychijwani.utility.DeviceUtils;
 
 public class SearchGamesFragment extends AddGamesFragment {
 

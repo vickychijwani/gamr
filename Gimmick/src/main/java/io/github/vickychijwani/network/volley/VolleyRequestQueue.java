@@ -1,5 +1,6 @@
-package io.github.vickychijwani.gimmick.api;
+package io.github.vickychijwani.network.volley;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.android.volley.Request;
@@ -9,22 +10,21 @@ import com.android.volley.toolbox.Volley;
 
 import org.jetbrains.annotations.NotNull;
 
-import io.github.vickychijwani.gimmick.GamrApplication;
+public class VolleyRequestQueue {
 
-public class NetworkRequestQueue {
-
-    private static final String TAG = "NetworkRequestQueue";
+    private static final String TAG = "VolleyRequestQueue";
 
     private static RequestQueue sInstance;
 
-    private NetworkRequestQueue() { }
+    private VolleyRequestQueue() { }
 
-    private static RequestQueue getInstance() {
-        if (sInstance == null) {
-            sInstance = Volley.newRequestQueue(GamrApplication.getInstance().getApplicationContext());
+    public static void initialize(Context context) throws IllegalArgumentException {
+        if (context == null) {
+            throw new IllegalArgumentException("context must not be null");
         }
-
-        return sInstance;
+        if (sInstance == null) {
+            sInstance = Volley.newRequestQueue(context);
+        }
     }
 
     /**
@@ -43,7 +43,7 @@ public class NetworkRequestQueue {
         tag = (tag == null) ? RequestTag.DEFAULT : tag;
         req.setTag(tag);
 
-        getInstance().add(req);
+        sInstance.add(req);
         return tag;
     }
 
@@ -61,9 +61,9 @@ public class NetworkRequestQueue {
      *
      * @param tag   the tag whose requests are to be cancelled
      */
-    public static void cancelPending(@NotNull RequestTag tag) {
-        Log.i(TAG, "Cancelling all requests tagged '" + tag.toString() + "'");
-        getInstance().cancelAll(tag);
+    public static void cancelAll(@NotNull RequestTag tag) {
+        Log.i(TAG, "Cancelling all pending requests tagged '" + tag.toString() + "'");
+        sInstance.cancelAll(tag);
     }
 
 }
