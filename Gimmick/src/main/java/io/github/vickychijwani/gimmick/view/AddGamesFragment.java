@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import butterknife.InjectView;
 import io.github.vickychijwani.gimmick.R;
-import io.github.vickychijwani.gimmick.adapter.AddGamesAdapter;
+import io.github.vickychijwani.gimmick.view.adapter.AddGamesAdapter;
 import io.github.vickychijwani.network.volley.VolleyRequestQueue;
 import io.github.vickychijwani.network.volley.RequestTag;
 import io.github.vickychijwani.giantbomb.item.GameList;

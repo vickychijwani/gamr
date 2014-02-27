@@ -1,14 +1,19 @@
-package io.github.vickychijwani.gimmick.adapter;
+package io.github.vickychijwani.gimmick.view.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.Optional;
 import io.github.vickychijwani.giantbomb.item.Game;
 import io.github.vickychijwani.giantbomb.item.GameList;
 import io.github.vickychijwani.gimmick.R;
@@ -69,6 +74,19 @@ public class GameListAdapter extends ArrayAdapter<Game> {
 
     protected void onGetViewFinished(final GameViewHolder viewHolder, final Game item) {
         // nothing to do
+    }
+
+    protected class GameViewHolder {
+        @InjectView(R.id.poster)                ImageView poster;
+        @InjectView(R.id.title)                 TextView title;
+        @InjectView(R.id.release_date)          TextView releaseDate;
+        @InjectView(R.id.platforms)             TextView platforms;
+        @InjectView(R.id.details)               View details;
+        @InjectView(R.id.addbutton) @Optional   View addbutton;
+
+        public GameViewHolder(View view) {
+            ButterKnife.inject(this, view);
+        }
     }
 
 }

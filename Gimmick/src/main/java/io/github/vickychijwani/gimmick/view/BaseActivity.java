@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import io.github.vickychijwani.gimmick.R;
-import io.github.vickychijwani.gimmick.adapter.BaseFragmentPagerAdapter;
+import io.github.vickychijwani.gimmick.view.adapter.BaseFragmentPagerAdapter;
 import io.github.vickychijwani.utility.DeviceUtils;
 
 public abstract class BaseActivity extends FragmentActivity {

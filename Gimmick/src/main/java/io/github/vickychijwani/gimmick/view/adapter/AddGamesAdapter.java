@@ -1,4 +1,4 @@
-package io.github.vickychijwani.gimmick.adapter;
+package io.github.vickychijwani.gimmick.view.adapter;
 
 import android.content.Context;
 import android.view.View;
@@ -6,7 +6,7 @@ import android.view.View;
 import org.jetbrains.annotations.Nullable;
 
 import io.github.vickychijwani.gimmick.R;
-import io.github.vickychijwani.gimmick.background.TaskManager;
+import io.github.vickychijwani.gimmick.task.TaskManager;
 import io.github.vickychijwani.giantbomb.item.Game;
 import io.github.vickychijwani.giantbomb.item.GameList;
 

@@ -1,4 +1,4 @@
-package io.github.vickychijwani.gimmick.background;
+package io.github.vickychijwani.gimmick.task;
 
 import android.content.Context;
 import android.content.res.Resources;

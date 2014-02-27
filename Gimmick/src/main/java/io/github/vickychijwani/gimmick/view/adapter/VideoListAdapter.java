@@ -1,4 +1,4 @@
-package io.github.vickychijwani.gimmick.adapter;
+package io.github.vickychijwani.gimmick.view.adapter;
 
 import android.content.Context;
 import android.text.format.DateUtils;
