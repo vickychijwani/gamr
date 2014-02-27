@@ -32,7 +32,7 @@ public class UpcomingGamesFragment extends AddGamesFragment {
             return;
         }
 
-        setRequestTag(GiantBomb.fetchUpcomingGames(getResultsHandler(), getErrorHandler()));
+        setRequestTag(GiantBomb.Games.fetchUpcoming(getResultsHandler(), getErrorHandler()));
         onRequestInitiated();
     }
 

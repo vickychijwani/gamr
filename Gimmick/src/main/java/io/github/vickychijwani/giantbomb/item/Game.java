@@ -17,6 +17,8 @@ import io.github.vickychijwani.gimmick.database.DatabaseContract.GameTable;
 
 public class Game {
 
+    public static final Game INVALID = new Game();
+
     public String name = "";
     public int giantBombId = -1;
     public String giantBombUrl = "";

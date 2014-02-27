@@ -67,7 +67,7 @@ public class SearchGamesFragment extends AddGamesFragment {
             return;
         }
 
-        setRequestTag(GiantBomb.searchGames(query, getResultsHandler(), getErrorHandler()));
+        setRequestTag(GiantBomb.Games.search(query, getResultsHandler(), getErrorHandler()));
         onRequestInitiated();
     }
 

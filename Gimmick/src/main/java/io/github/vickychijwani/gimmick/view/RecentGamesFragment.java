@@ -32,7 +32,7 @@ public class RecentGamesFragment extends AddGamesFragment {
             return;
         }
 
-        setRequestTag(GiantBomb.fetchRecentGames(getResultsHandler(), getErrorHandler()));
+        setRequestTag(GiantBomb.Games.fetchRecent(getResultsHandler(), getErrorHandler()));
         onRequestInitiated();
     }
 

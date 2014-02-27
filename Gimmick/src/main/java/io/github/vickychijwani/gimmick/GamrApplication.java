@@ -28,7 +28,7 @@ public class GamrApplication extends Application {
         VolleyRequestQueue.initialize(this.getApplicationContext());
 
         // set API keys
-        GiantBomb.setApiKey(getString(R.string.giantbomb_api_key));
+        GiantBomb.initialize(getString(R.string.giantbomb_api_key));
         Metacritic.setApiKey(getString(R.string.mashape_api_key));
 
         enableStrictMode();
