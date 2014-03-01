@@ -5,6 +5,8 @@ import android.app.Application;
 import android.os.StrictMode;
 
 import io.github.vickychijwani.giantbomb.api.GiantBomb;
+import io.github.vickychijwani.gimmick.pref.AppState;
+import io.github.vickychijwani.gimmick.pref.UserPrefs;
 import io.github.vickychijwani.metacritic.api.Metacritic;
 import io.github.vickychijwani.network.volley.VolleyRequestQueue;
 import io.github.vickychijwani.utility.DeviceUtils;
@@ -21,6 +23,9 @@ public class GamrApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
+        // initialize preferences
+        AppState.initialize(this);
+        UserPrefs.initialize(this);
 
         // initialize network request queue
         VolleyRequestQueue.initialize(this);
