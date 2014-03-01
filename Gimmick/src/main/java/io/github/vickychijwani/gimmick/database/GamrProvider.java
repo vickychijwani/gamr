@@ -41,10 +41,9 @@ public class GamrProvider extends ContentProvider {
 
     private static final int LISTS = 200;
     private static final int LISTS_METADATA = 201;
-
     private static final int LISTS_GAMES = 202;
-    private static final int PLATFORMS = 300;
 
+    private static final int PLATFORMS = 300;
     private static final int PLATFORMS_ID = 301;
 
     private static final int GAME_PLATFORM_MAPPINGS = 400;
@@ -103,7 +102,7 @@ public class GamrProvider extends ContentProvider {
                 cursor = DBHelper.getGamesInList(ContentUris.parseId(uri));
                 break;
             default:
-                throw new IllegalArgumentException("Unknown uri: " + uri);
+                throw new IllegalArgumentException("[query ] uri unknown or operation not supported for this uri: " + uri);
         }
 
         // enable notifications on the cursor when underlying data changes
@@ -151,7 +150,7 @@ public class GamrProvider extends ContentProvider {
                 }
                 break;
             default:
-                throw new IllegalArgumentException("Unknown uri: " + uri);
+                throw new IllegalArgumentException("[insert] uri unknown or operation not supported for this uri: " + uri);
         }
 
         if (insertedId >= 0) {
@@ -226,6 +225,8 @@ public class GamrProvider extends ContentProvider {
                 return PlatformTable.CONTENT_ITEM_TYPE;
             case GAME_PLATFORM_MAPPINGS:
                 return GamePlatformMappingTable.CONTENT_TYPE;
+            case VIDEOS:
+                return VideoTable.CONTENT_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }

@@ -15,21 +15,19 @@ public class GamrApplication extends Application {
      * The content authority used to identify the application's
      * {@link android.content.ContentProvider}
      */
-    public static String CONTENT_AUTHORITY;
+    public static final String CONTENT_AUTHORITY = "io.github.vickychijwani.gimmick.provider";
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        // set content provider authority
-        CONTENT_AUTHORITY = "io.github.vickychijwani.gimmick.provider";
 
         // initialize network request queue
-        VolleyRequestQueue.initialize(this.getApplicationContext());
+        VolleyRequestQueue.initialize(this);
 
-        // set API keys
+        // initialize API clients
         GiantBomb.initialize(getString(R.string.giantbomb_api_key));
-        Metacritic.setApiKey(getString(R.string.mashape_api_key));
+        Metacritic.initialize(getString(R.string.mashape_api_key));
 
         enableStrictMode();
     }

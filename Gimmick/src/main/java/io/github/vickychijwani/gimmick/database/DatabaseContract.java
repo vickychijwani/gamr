@@ -25,7 +25,6 @@ public final class DatabaseContract {
     /**
      * Database schema
      */
-    // Game lists
     public static abstract class GameListTable implements BaseColumns {
         public static final String TABLE_NAME = "game_list";
         public static final String TO_PLAY = "To play";
@@ -64,7 +63,7 @@ public final class DatabaseContract {
         public static String qualify(@NotNull String colName) { return TABLE_NAME + "." + colName; }
     }
 
-    // Games
+
     public static abstract class GameTable implements BaseColumns {
         public static final String TABLE_NAME = "game";
 
@@ -141,7 +140,7 @@ public final class DatabaseContract {
         }
 
         @NotNull
-        public static ContentValues contentValuesFor(Game game) {
+        public static ContentValues contentValuesFor(@NotNull Game game) {
             ContentValues values = new ContentValues();
             values.put(_ID, game.giantBombId);
             values.put(COL_NAME, game.name);
@@ -182,7 +181,7 @@ public final class DatabaseContract {
         public static String qualify(@NotNull String colName) { return TABLE_NAME + "." + colName; }
     }
 
-    // Platforms
+
     public static abstract class PlatformTable implements BaseColumns {
         public static final String TABLE_NAME = "platform";
 
@@ -220,7 +219,7 @@ public final class DatabaseContract {
         public static String qualify(@NotNull String colName) { return TABLE_NAME + "." + colName; }
     }
 
-    // Join table mapping games <> platforms
+
     public static abstract class GamePlatformMappingTable {
         public static final String TABLE_NAME = "game_platform_mapping";
 
@@ -260,7 +259,7 @@ public final class DatabaseContract {
         }
     }
 
-    // Videos
+
     public static abstract class VideoTable implements BaseColumns {
         public static final String TABLE_NAME = "video";
 
@@ -329,7 +328,7 @@ public final class DatabaseContract {
         }
 
         @NotNull
-        public static ContentValues contentValuesFor(Video video) {
+        public static ContentValues contentValuesFor(@NotNull Video video) {
             ContentValues values = new ContentValues();
             values.put(_ID, video.getGiantBombId());
             values.put(COL_NAME, video.getName());

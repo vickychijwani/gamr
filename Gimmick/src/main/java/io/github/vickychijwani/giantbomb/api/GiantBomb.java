@@ -15,7 +15,7 @@ import io.github.vickychijwani.network.volley.RequestTag;
 /**
  * Public interface for accessing the GiantBomb API.
  */
-public class GiantBomb {
+public abstract class GiantBomb {
 
     private static final GameResource GAME_RESOURCE = new GameResource();
     private static final GameListResource GAME_LIST_RESOURCE = new GameListResource();

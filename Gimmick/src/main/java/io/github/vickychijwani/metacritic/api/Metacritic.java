@@ -72,7 +72,7 @@ public class Metacritic {
         Log.i(TAG, "Metascore not found for \"" + game.name + "\" on any platform (" + game.getPlatformsDisplayString() + ")");
     }
 
-    public static void setApiKey(@NotNull String apiKey) {
+    public static void initialize(@NotNull String apiKey) {
         API_KEY = apiKey;
     }
 

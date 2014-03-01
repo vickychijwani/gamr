@@ -14,31 +14,33 @@ interface Resource<T> {
     static final String RESULTS = "results";
     static final String ID = "id";
     static final String NAME = "name";
-    static final String PLATFORMS = "platforms";
     static final String IMAGE_URLS = "image";
     static final String POSTER_URL = "thumb_url";
     static final String SMALL_POSTER_URL = "small_url";
     static final String SCREEN_URL = "screen_url";
     static final String DECK = "deck";
     static final String API_DETAIL_URL = "api_detail_url";
+
+    // fields for games / releases
+    static final String PLATFORMS = "platforms";
     static final String REVIEW_COUNT = "number_of_user_reviews";
     static final String ORIGINAL_RELEASE_DATE = "original_release_date";
     static final String EXPECTED_RELEASE_YEAR = "expected_release_year";
     static final String EXPECTED_RELEASE_QUARTER = "expected_release_quarter";
     static final String EXPECTED_RELEASE_MONTH = "expected_release_month";
     static final String EXPECTED_RELEASE_DAY = "expected_release_day";
-    static final String USER = "user";
     static final String GENRES = "genres";
-
     static final String FRANCHISES = "franchises";
     static final String VIDEOS = "videos";
 
+    // fields for videos
     static final String LOW_URL = "low_url";
     static final String HIGH_URL = "high_url";
     static final String LENGTH_SECONDS = "length_seconds";
     static final String YOUTUBE_ID = "youtube_id";
     static final String VIDEO_TYPE = "video_type";
     static final String PUBLISH_DATE = "publish_date";
+    static final String USER = "user";
 
     // sorting parameters
     static final SortParam SORT_BY_MOST_REVIEWS = new SortParam(REVIEW_COUNT, SortParam.DESC);

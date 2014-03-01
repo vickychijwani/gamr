@@ -18,12 +18,12 @@ public class VolleyRequestQueue {
 
     private VolleyRequestQueue() { }
 
-    public static void initialize(Context context) throws IllegalArgumentException {
-        if (context == null) {
-            throw new IllegalArgumentException("context must not be null");
+    public static void initialize(@NotNull Context context) throws IllegalArgumentException {
+        if (context.getApplicationContext() == null) {
+            throw new IllegalArgumentException("context.getApplicationContext() returned null");
         }
         if (sInstance == null) {
-            sInstance = Volley.newRequestQueue(context);
+            sInstance = Volley.newRequestQueue(context.getApplicationContext());
         }
     }
 

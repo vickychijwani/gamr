@@ -23,15 +23,6 @@ import io.github.vickychijwani.utility.DateTimeUtils;
 
 class VideoResource implements Resource<Video> {
 
-    /**
-     * Fetch a game's videos' details in a <i>synchronous</i> manner.
-     * <p/>
-     * NOTE: never call this from the UI thread!
-     *
-     * @param game  the {@link Game} for which to fetch video data. It must have {@link Video}s with
-     *              a valid GiantBomb video ID on each of them.
-     * @return      the {@link Game} that was passed in, augmented with the requested video data
-     */
     @NotNull
     public Game fetchAllForGame(@NotNull Game game)
             throws ExecutionException, InterruptedException, JSONException {
