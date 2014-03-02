@@ -16,7 +16,7 @@ import java.util.List;
 
 abstract class BaseDBHelper extends SQLiteOpenHelper {
 
-    private static final String TAG = "BaseDBHelper";
+    protected static final String TAG = "DBHelper";
 
     protected static BaseDBHelper sInstance = null;
 

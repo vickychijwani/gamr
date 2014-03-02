@@ -56,7 +56,7 @@ class GameResource implements Resource<Game> {
 
     @Override
     public String getResourceName() {
-        return "games";
+        return "game";
     }
 
     @Override
