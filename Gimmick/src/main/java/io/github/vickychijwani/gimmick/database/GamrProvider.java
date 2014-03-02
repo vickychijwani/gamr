@@ -18,15 +18,18 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
+import io.github.vickychijwani.giantbomb.item.Game;
+import io.github.vickychijwani.giantbomb.item.Platform;
+import io.github.vickychijwani.giantbomb.item.ResourceType;
+import io.github.vickychijwani.giantbomb.item.Video;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.GameListTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.GamePlatformMappingTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.GameTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.PlatformTable;
+import io.github.vickychijwani.gimmick.database.DatabaseContract.ResourceTypeTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.VideoTable;
-import io.github.vickychijwani.giantbomb.item.Game;
-import io.github.vickychijwani.giantbomb.item.Platform;
-import io.github.vickychijwani.giantbomb.item.Video;
 
 public class GamrProvider extends ContentProvider {
 
@@ -34,6 +37,8 @@ public class GamrProvider extends ContentProvider {
 
     private static GamrProvider sInstance;
     private static UriMatcher sUriMatcher;
+
+    private static final int RESOURCE_TYPES = 0;
 
     private static final int GAMES = 100;
     private static final int GAMES_ID = 101;
@@ -124,6 +129,12 @@ public class GamrProvider extends ContentProvider {
         assert getContext() != null;
 
         switch (match) {
+            case RESOURCE_TYPES:
+                insertedId = DBHelper.addResourceType(values);
+                if (insertedId >= 0) {
+                    insertedUri = ContentUris.withAppendedId(ResourceTypeTable.CONTENT_URI_LIST, insertedId);
+                }
+                break;
             case LISTS_GAMES:
                 insertedId = DBHelper.addGame(values);
                 if (insertedId >= 0) {
@@ -172,6 +183,19 @@ public class GamrProvider extends ContentProvider {
         return 0;
     }
 
+    public static boolean addResourceTypes(List<ResourceType> resourceTypes) {
+        ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>(resourceTypes.size());
+        for (ResourceType type : resourceTypes) {
+            ops.add(ContentProviderOperation.newInsert(ResourceTypeTable.CONTENT_URI_INSERT)
+                    .withValues(ResourceTypeTable.contentValuesFor(type))
+                    .build());
+        }
+
+        ContentProviderResult[] result = sInstance.applyBatch(ops);
+
+        return result != null;
+    }
+
     public static boolean addGame(Game game) {
         ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
         Uri toPlayListUri = ContentUris.withAppendedId(GameListTable.CONTENT_URI_LIST_GAMES, GameListTable.TO_PLAY_ID);
@@ -207,6 +231,8 @@ public class GamrProvider extends ContentProvider {
     public String getType(Uri uri) {
         final int match = sUriMatcher.match(uri);
         switch (match) {
+            case RESOURCE_TYPES:
+                return ResourceTypeTable.CONTENT_TYPE;
             case GAMES:
                 return GameTable.CONTENT_TYPE;
             case GAMES_ID:
@@ -239,6 +265,9 @@ public class GamrProvider extends ContentProvider {
     private static UriMatcher buildUriMatcher(Context context) {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = context.getPackageName() + ".provider";
+
+        // Resource types
+        matcher.addURI(authority, ResourceTypeTable.TABLE_NAME, RESOURCE_TYPES);
 
         // Games
         matcher.addURI(authority, GameTable.TABLE_NAME, GAMES);

@@ -42,6 +42,10 @@ interface Resource<T> {
     static final String PUBLISH_DATE = "publish_date";
     static final String USER = "user";
 
+    // fields for resource types
+    static final String DETAIL_RESOURCE_NAME = "detail_resource_name";
+    static final String LIST_RESOURCE_NAME = "list_resource_name";
+
     // sorting parameters
     static final SortParam SORT_BY_MOST_REVIEWS = new SortParam(REVIEW_COUNT, SortParam.DESC);
     static final SortParam SORT_BY_LATEST_RELEASES = new SortParam(ORIGINAL_RELEASE_DATE, SortParam.DESC);
@@ -50,6 +54,7 @@ interface Resource<T> {
     static final RequestTag REQUEST_TAG_SEARCH = RequestTag.generate();
     static final RequestTag REQUEST_TAG_UPCOMING = RequestTag.generate();
     static final RequestTag REQUEST_TAG_RECENT = RequestTag.generate();
+
 
     // methods
     public String getResourceName();

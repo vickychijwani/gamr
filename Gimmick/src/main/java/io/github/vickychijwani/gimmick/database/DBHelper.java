@@ -13,6 +13,7 @@ import io.github.vickychijwani.gimmick.database.DatabaseContract.GameListTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.GamePlatformMappingTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.GameTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.PlatformTable;
+import io.github.vickychijwani.gimmick.database.DatabaseContract.ResourceTypeTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.VideoTable;
 import io.github.vickychijwani.utility.DeviceUtils;
 
@@ -63,6 +64,15 @@ public class DBHelper extends BaseDBHelper {
     @Override
     public void onOpen(SQLiteDatabase db) {
         validateInitialState(db);
+    }
+
+    /**
+     * Add a resource type to the database.
+     *
+     * @return      id of the newly-inserted resource type if successful, else -1
+     */
+    public static long addResourceType(ContentValues values) {
+        return insertOrIgnore(ResourceTypeTable.TABLE_NAME, values);
     }
 
     /**

@@ -6,10 +6,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONException;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import io.github.vickychijwani.giantbomb.item.Game;
 import io.github.vickychijwani.giantbomb.item.GameList;
+import io.github.vickychijwani.giantbomb.item.ResourceType;
 import io.github.vickychijwani.network.volley.RequestTag;
 
 /**
@@ -20,11 +22,11 @@ public abstract class GiantBomb {
     private static final GameResource GAME_RESOURCE = new GameResource();
     private static final GameListResource GAME_LIST_RESOURCE = new GameListResource();
     private static final VideoResource VIDEO_RESOURCE = new VideoResource();
+    private static final ResourceTypeResource RESOURCE_TYPE_RESOURCE = new ResourceTypeResource();
 
     // call this before using any other methods
     public static void initialize(@NotNull String apiKey) {
        URLBuilder.setApiKey(apiKey);
-
     }
 
     public static class Games {
@@ -103,6 +105,22 @@ public abstract class GiantBomb {
         public static Game fetchAllForGame(@NotNull Game game)
                 throws ExecutionException, InterruptedException, JSONException {
             return VIDEO_RESOURCE.fetchAllForGame(game);
+        }
+
+    }
+
+    public static class ResourceTypes {
+
+        /**
+         * Fetch all resource types supported by the GiantBomb API in a <i>synchronous</i> manner.
+         * <p/>
+         * NOTE: never call this from the UI thread!
+         *
+         * @return  a list of all resource types supported by the GiantBomb API
+         */
+        @Nullable
+        public static List<ResourceType> fetchAll() {
+            return RESOURCE_TYPE_RESOURCE.fetchAll();
         }
 
     }
