@@ -5,10 +5,10 @@ import android.view.View;
 
 import org.jetbrains.annotations.Nullable;
 
-import io.github.vickychijwani.gimmick.R;
-import io.github.vickychijwani.gimmick.task.TaskManager;
 import io.github.vickychijwani.giantbomb.item.Game;
 import io.github.vickychijwani.giantbomb.item.GameList;
+import io.github.vickychijwani.gimmick.R;
+import io.github.vickychijwani.gimmick.task.TaskManager;
 
 public class AddGamesAdapter extends GameListAdapter {
 

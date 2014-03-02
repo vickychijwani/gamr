@@ -20,12 +20,12 @@ import org.jetbrains.annotations.NotNull;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import io.github.vickychijwani.gimmick.R;
-import io.github.vickychijwani.gimmick.view.adapter.GameListAdapter;
-import io.github.vickychijwani.gimmick.constants.LoaderId;
-import io.github.vickychijwani.gimmick.database.DatabaseContract.GameListTable;
 import io.github.vickychijwani.giantbomb.item.Game;
 import io.github.vickychijwani.giantbomb.item.GameList;
+import io.github.vickychijwani.gimmick.R;
+import io.github.vickychijwani.gimmick.constants.LoaderId;
+import io.github.vickychijwani.gimmick.database.DatabaseContract.GameListTable;
+import io.github.vickychijwani.gimmick.view.adapter.GameListAdapter;
 import io.github.vickychijwani.utility.AppUtils;
 
 public class LibraryActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {

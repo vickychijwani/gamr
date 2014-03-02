@@ -13,11 +13,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import butterknife.InjectView;
+import io.github.vickychijwani.giantbomb.item.GameList;
 import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.view.adapter.AddGamesAdapter;
-import io.github.vickychijwani.network.volley.VolleyRequestQueue;
 import io.github.vickychijwani.network.volley.RequestTag;
-import io.github.vickychijwani.giantbomb.item.GameList;
+import io.github.vickychijwani.network.volley.VolleyRequestQueue;
 import io.github.vickychijwani.utility.AppUtils;
 
 public abstract class AddGamesFragment extends BaseFragment {

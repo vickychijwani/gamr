@@ -21,9 +21,9 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import io.github.vickychijwani.giantbomb.item.Video;
 import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.view.adapter.VideoListAdapter;
-import io.github.vickychijwani.giantbomb.item.Video;
 import io.github.vickychijwani.utility.AppUtils;
 
 public class VideosFragment extends DataFragment<List<Video>,VideoListAdapter> {

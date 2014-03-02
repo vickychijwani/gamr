@@ -6,11 +6,11 @@ import android.provider.BaseColumns;
 
 import org.jetbrains.annotations.NotNull;
 
-import io.github.vickychijwani.giantbomb.item.ResourceType;
-import io.github.vickychijwani.gimmick.GamrApplication;
 import io.github.vickychijwani.giantbomb.item.Game;
 import io.github.vickychijwani.giantbomb.item.Platform;
+import io.github.vickychijwani.giantbomb.item.ResourceType;
 import io.github.vickychijwani.giantbomb.item.Video;
+import io.github.vickychijwani.gimmick.GamrApplication;
 import io.github.vickychijwani.utility.DateTimeUtils;
 
 public final class DatabaseContract {

@@ -16,11 +16,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import io.github.vickychijwani.giantbomb.item.Game;
+import io.github.vickychijwani.giantbomb.item.Video;
 import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.constants.LoaderId;
 import io.github.vickychijwani.gimmick.database.DatabaseContract;
-import io.github.vickychijwani.giantbomb.item.Game;
-import io.github.vickychijwani.giantbomb.item.Video;
 
 public class GameDetailsActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 

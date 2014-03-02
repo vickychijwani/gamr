@@ -2,20 +2,21 @@ package io.github.vickychijwani.gimmick.task;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
 import java.util.LinkedList;
 
-import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.giantbomb.api.GiantBomb;
-import io.github.vickychijwani.metacritic.api.Metacritic;
-import io.github.vickychijwani.gimmick.database.GamrProvider;
 import io.github.vickychijwani.giantbomb.item.Game;
 import io.github.vickychijwani.giantbomb.item.GameList;
+import io.github.vickychijwani.gimmick.R;
+import io.github.vickychijwani.gimmick.database.GamrProvider;
+import io.github.vickychijwani.metacritic.api.Metacritic;
 import io.github.vickychijwani.utility.NetworkUtils;
 
-public class AddGameTask extends android.os.AsyncTask<Void, AddGameTask.Result, Void> {
+public class AddGameTask extends AsyncTask<Void, AddGameTask.Result, Void> {
 
     private final Context mContext;
     private final LinkedList<Game> mAddQueue = new LinkedList<Game>();

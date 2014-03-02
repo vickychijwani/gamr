@@ -14,9 +14,9 @@ import com.meetme.android.multistateview.MultiStateView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
-import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.giantbomb.api.GiantBomb;
 import io.github.vickychijwani.giantbomb.item.GameList;
+import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.utility.AppUtils;
 import io.github.vickychijwani.utility.DeviceUtils;
 
