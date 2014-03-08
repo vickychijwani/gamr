@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,9 +49,13 @@ abstract class BaseDBHelper extends SQLiteOpenHelper {
     }
 
     @NotNull
-    protected static BaseSelectStatement select(@NotNull String... colNames) {
+    protected static BaseSelectStatement select(@Nullable String... colNames) {
         assert sInstance != null;
-        return new CursorSelectStatement(TextUtils.join(",", colNames));
+        if (colNames != null) {
+            return new CursorSelectStatement(TextUtils.join(",", colNames));
+        } else {
+            return selectAll();
+        }
     }
 
     protected abstract static class BaseSelectStatement {
@@ -58,6 +63,7 @@ abstract class BaseDBHelper extends SQLiteOpenHelper {
         private String mTableName;
         private String mSelection;
         private String mGrouping;
+        private String mOrderBy;
         private final List<JoinClause> mJoinClauses = new ArrayList<JoinClause>();
 
         private class JoinClause {
@@ -102,9 +108,19 @@ abstract class BaseDBHelper extends SQLiteOpenHelper {
         }
 
         @NotNull
-        public BaseSelectStatement where(@NotNull SQL.Condition whereCondition) {
-            mSelection = (mSelection == null) ? "" : (mSelection + " AND ");
-            mSelection += whereCondition.toString();
+        public BaseSelectStatement where(@Nullable SQL.Condition whereCondition) {
+            if (whereCondition != null) {
+                return where(whereCondition.toString());
+            }
+            return this;
+        }
+
+        @NotNull
+        public BaseSelectStatement where(@Nullable String whereCondition) {
+            if (whereCondition != null) {
+                mSelection = (TextUtils.isEmpty(mSelection)) ? "" : (mSelection + " AND ");
+                mSelection += whereCondition;
+            }
             return this;
         }
 
@@ -115,11 +131,17 @@ abstract class BaseDBHelper extends SQLiteOpenHelper {
         }
 
         @NotNull
+        public BaseSelectStatement orderBy(@Nullable String colName) {
+            mOrderBy = colName;
+            return this;
+        }
+
+        @NotNull
         public abstract Object execute();
 
         @NotNull
-        protected String buildQuery() {
-            if (mProjection == null || mTableName == null || mSelection == null) {
+        public String buildQuery() {
+            if (mProjection == null || mTableName == null) {
                 throw new IllegalStateException("Query not completely built");
             }
 
@@ -130,10 +152,14 @@ abstract class BaseDBHelper extends SQLiteOpenHelper {
                 query += " " + c.type + " " + c.tableName + " ON " + c.onCondition.toString();
             }
 
-            query += " WHERE " + mSelection;
+            if (! TextUtils.isEmpty(mSelection))
+                query += " WHERE " + mSelection;
 
-            if (mGrouping != null)
+            if (! TextUtils.isEmpty(mGrouping))
                 query += " GROUP BY " + mGrouping;
+
+            if (! TextUtils.isEmpty(mOrderBy))
+                query += " ORDER BY " + mOrderBy;
 
             Log.i(TAG, "SQL query: " + query);
 

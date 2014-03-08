@@ -155,11 +155,7 @@ class GameListResource implements Resource<GameList> {
             try {
                 Game game = new Game();
                 JSONObject gameJson = gamesArray.getJSONObject(i);
-
-                if (! GameResource.parseEssentialGameInfoFromJson(gameJson, game)) {
-                    continue;
-                }
-
+                GameResource.parseEssentialGameInfoFromJson(gameJson, game);
                 gameList.add(game);
             } catch (JSONException e) {
                 Log.e(TAG, Log.getStackTraceString(e));

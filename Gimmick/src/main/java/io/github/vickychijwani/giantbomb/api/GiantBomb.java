@@ -11,6 +11,7 @@ import java.util.concurrent.ExecutionException;
 
 import io.github.vickychijwani.giantbomb.item.Game;
 import io.github.vickychijwani.giantbomb.item.GameList;
+import io.github.vickychijwani.giantbomb.item.Platform;
 import io.github.vickychijwani.giantbomb.item.ResourceType;
 import io.github.vickychijwani.network.volley.RequestTag;
 
@@ -80,6 +81,22 @@ public abstract class GiantBomb {
         public static RequestTag fetchRecent(final Response.Listener<GameList> successHandler,
                                              final Response.ErrorListener errorHandler) {
             return GameListResource.getInstance().fetchRecent(successHandler, errorHandler);
+        }
+
+    }
+
+    public static class Platforms {
+
+        /**
+         * Fetch all platforms listed by the GiantBomb API in a <i>synchronous</i> manner.
+         * <p/>
+         * NOTE: never call this from the UI thread!
+         *
+         * @return  a list of all platforms listed by the GiantBomb API
+         */
+        @Nullable
+        public static List<Platform> fetchAll() {
+            return PlatformResource.getInstance().fetchAll();
         }
 
     }

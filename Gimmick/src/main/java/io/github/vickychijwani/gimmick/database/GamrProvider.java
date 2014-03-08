@@ -12,11 +12,15 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.util.Log;
+import android.util.SparseArray;
+
+import com.squareup.otto.Subscribe;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -30,6 +34,8 @@ import io.github.vickychijwani.gimmick.database.DatabaseContract.GameTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.PlatformTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.ResourceTypeTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.VideoTable;
+import io.github.vickychijwani.gimmick.utility.EventBus;
+import io.github.vickychijwani.gimmick.utility.event.PlatformsChangedEvent;
 
 public class GamrProvider extends ContentProvider {
 
@@ -37,6 +43,8 @@ public class GamrProvider extends ContentProvider {
 
     private static GamrProvider sInstance;
     private static UriMatcher sUriMatcher;
+
+    private static SparseArray<Platform> mAllPlatforms = null;
 
     private static final int RESOURCE_TYPES = 0;
 
@@ -61,17 +69,33 @@ public class GamrProvider extends ContentProvider {
         sUriMatcher = buildUriMatcher(context);
         DBHelper.createInstance(context);
         sInstance = this;
+        EventBus.getInstance().register(this);
+        EventBus.getInstance().post(new PlatformsChangedEvent());
         return true;
     }
 
+    @Override
+    public void shutdown() {
+        EventBus.getInstance().unregister(this);
+        super.shutdown();
+    }
+
     /**
-     * Performs the work provided in a single transaction
+     * Performs the work provided in a single transaction.
+     *
+     * @return the results of all the operations ({@link Uri} in case of inserts, else the number of
+     * rows affected by the operation)
+     * @throws OperationApplicationException if an insert fails, or if the number of rows affected
+     *                                       by an update, delete, or assert does not match its
+     *                                       expected count.
+     * @see ContentProviderOperation.Builder#withExpectedCount(int)
      */
     @Nullable
     @Override
-    public ContentProviderResult[] applyBatch(@NotNull final ArrayList<ContentProviderOperation> operations) {
+    public ContentProviderResult[] applyBatch(@NotNull final ArrayList<ContentProviderOperation> operations)
+            throws OperationApplicationException {
         try {
-            return DBHelper.executeTransaction(new DBHelper.Transaction<ContentProviderResult[]>() {
+            return DBHelper.executeTransaction(new DBHelper.Operation<ContentProviderResult[]>() {
                 @Override
                 public ContentProviderResult[] run(@NotNull SQLiteDatabase db) throws OperationApplicationException {
                     int i = 0;
@@ -83,6 +107,9 @@ public class GamrProvider extends ContentProvider {
                     return result;
                 }
             });
+        } catch (OperationApplicationException e) {
+            Log.d(TAG, "batch operation failed: " + e.getMessage());
+            throw e;    // re-throw
         } catch (Exception e) {
             Log.d(TAG, "batch operation failed: " + e.getMessage());
             return null;
@@ -105,6 +132,9 @@ public class GamrProvider extends ContentProvider {
                 break;
             case LISTS_GAMES:
                 cursor = DBHelper.getGamesInList(ContentUris.parseId(uri));
+                break;
+            case PLATFORMS:
+                cursor = DBHelper.getPlatforms(projection, selection, sortOrder);
                 break;
             default:
                 throw new IllegalArgumentException("[query ] uri unknown or operation not supported for this uri: " + uri);
@@ -183,6 +213,31 @@ public class GamrProvider extends ContentProvider {
         return 0;
     }
 
+    @Subscribe public void onPlatformsChanged(@NotNull PlatformsChangedEvent event) {
+        Log.i(TAG, "Platforms changed, reloading platform data...");
+        Context context = sInstance.getContext();
+        if (context != null) {
+            Cursor cursor = context.getContentResolver().query(PlatformTable.CONTENT_URI_LIST,
+                    null, null, null, null);    // TODO select only enabled platforms (use WHERE...IN, get enabled id list from prefs)
+            if (cursor != null) {
+                mAllPlatforms = new SparseArray<Platform>(cursor.getCount());
+                cursor.moveToPosition(-1);
+                while (cursor.moveToNext()) {
+                    Platform platform = new Platform(cursor);
+                    mAllPlatforms.put(platform.getGiantBombId(), platform);
+                }
+            }
+        }
+    }
+
+    @Nullable
+    public static Platform getPlatform(int giantBombId) {
+        if (mAllPlatforms != null) {
+            return mAllPlatforms.get(giantBombId);
+        }
+        return null;
+    }
+
     public static boolean addResourceTypes(List<ResourceType> resourceTypes) {
         ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>(resourceTypes.size());
         for (ResourceType type : resourceTypes) {
@@ -191,40 +246,116 @@ public class GamrProvider extends ContentProvider {
                     .build());
         }
 
-        ContentProviderResult[] result = sInstance.applyBatch(ops);
-
-        return result != null;
+        try {
+            sInstance.applyBatch(ops);
+            return true;
+        } catch (OperationApplicationException e) {
+            Log.e(TAG, "Could not add resource types: " + Log.getStackTraceString(e));
+            return false;
+        }
     }
 
-    public static boolean addGame(Game game) {
+    public static boolean addGame(Game game)
+            throws OperationApplicationException {
+        return addOrUpdateGame(game, true);
+    }
+
+    public static boolean updateGame(Game game)
+            throws OperationApplicationException {
+        return addOrUpdateGame(game, false);
+    }
+
+    private static boolean addOrUpdateGame(Game game, boolean isNew)
+            throws OperationApplicationException {
         ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
-        Uri toPlayListUri = ContentUris.withAppendedId(GameListTable.CONTENT_URI_LIST_GAMES, GameListTable.TO_PLAY_ID);
-        ops.add(ContentProviderOperation.newInsert(toPlayListUri)
-                .withValues(GameTable.contentValuesFor(game))
-                .build());
+        ops.add(buildGameOp(game, isNew));
 
         Iterator<Platform> platforms = game.getPlatforms();
         while (platforms.hasNext()) {
             Platform platform = platforms.next();
-            ops.add(ContentProviderOperation.newInsert(PlatformTable.CONTENT_URI_INSERT)
-                    .withValues(PlatformTable.contentValuesFor(platform))
-                    .build());
-
-            ops.add(ContentProviderOperation.newInsert(GamePlatformMappingTable.CONTENT_URI_INSERT)
-                    .withValueBackReferences(GamePlatformMappingTable.contentValuesFor(0, ops.size() - 1))
-                    .build());
+            ops.add(buildGamePlatformMappingOp(0, platform.getGiantBombId(), isNew));
         }
 
         Iterator<Video> videos = game.getVideos();
         while (videos.hasNext()) {
-            ops.add(ContentProviderOperation.newInsert(VideoTable.CONTENT_URI_INSERT)
-                    .withValues(VideoTable.contentValuesFor(videos.next()))
-                    .build());
+            ops.add(buildVideoOp(videos.next(), isNew));
         }
 
-        ContentProviderResult[] result = sInstance.applyBatch(ops);
+        sInstance.applyBatch(ops);
+        return true;
+    }
 
-        return result != null;
+    public static boolean addPlatforms(Collection<Platform> platforms) {
+        return addOrUpdatePlatforms(platforms, true);
+    }
+
+    public static boolean updatePlatforms(Collection<Platform> platforms) {
+        return addOrUpdatePlatforms(platforms, false);
+    }
+
+    private static boolean addOrUpdatePlatforms(Collection<Platform> platforms, boolean isNew) {
+        ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
+        for (Platform platform : platforms) {
+            ops.add(buildPlatformOp(platform, isNew));
+        }
+
+        try {
+            sInstance.applyBatch(ops);
+            EventBus.getInstance().post(new PlatformsChangedEvent());
+            return true;
+        } catch (OperationApplicationException e) {
+            Log.e(TAG, "Could not add / update platforms: " + Log.getStackTraceString(e));
+            return false;
+        }
+    }
+
+    private static ContentProviderOperation buildGameOp(Game game, boolean isNew) {
+        ContentProviderOperation.Builder opBuilder;
+        if (isNew) {
+            Uri toPlayListUri = ContentUris.withAppendedId(GameListTable.CONTENT_URI_LIST_GAMES, GameListTable.TO_PLAY_ID);
+            opBuilder = ContentProviderOperation.newInsert(toPlayListUri);
+        } else {
+            Uri gameUri = ContentUris.withAppendedId(GameTable.CONTENT_URI_INSERT, game.giantBombId);
+            opBuilder = ContentProviderOperation.newUpdate(gameUri).withExpectedCount(1);
+        }
+        return opBuilder.withValues(GameTable.contentValuesFor(game)).build();
+    }
+
+    private static ContentProviderOperation buildPlatformOp(Platform platform, boolean isNew) {
+        ContentProviderOperation.Builder opBuilder;
+        if (isNew) {
+            opBuilder = ContentProviderOperation.newInsert(PlatformTable.CONTENT_URI_INSERT);
+        } else {
+            Uri platformUri = ContentUris.withAppendedId(GameTable.CONTENT_URI_INSERT, platform.getGiantBombId());
+            opBuilder = ContentProviderOperation.newUpdate(platformUri).withExpectedCount(1);
+        }
+        return opBuilder.withValues(PlatformTable.contentValuesFor(platform)).build();
+    }
+
+    private static ContentProviderOperation buildGamePlatformMappingOp(int gameIdRefIndex,
+                                                                       long platformId,
+                                                                       boolean isNew) {
+        ContentProviderOperation.Builder opBuilder;
+        if (isNew) {
+            opBuilder = ContentProviderOperation.newInsert(GamePlatformMappingTable.CONTENT_URI_INSERT);
+        } else {
+            throw new UnsupportedOperationException("Game <=> platform mapping cannot be updated.");
+        }
+        return opBuilder
+                .withValueBackReference(GamePlatformMappingTable.COL_GAME_ID, gameIdRefIndex)
+                .withValue(GamePlatformMappingTable.COL_PLATFORM_ID, platformId)
+                .build();
+    }
+
+    private static ContentProviderOperation buildVideoOp(Video video, boolean isNew) {
+        ContentProviderOperation.Builder opBuilder;
+        if (isNew) {
+            opBuilder = ContentProviderOperation.newInsert(VideoTable.CONTENT_URI_INSERT);
+        } else {
+            Uri videoUri = ContentUris.withAppendedId(GameTable.CONTENT_URI_INSERT, video.getGiantBombId());
+            opBuilder = ContentProviderOperation.newUpdate(videoUri).withExpectedCount(1);
+        }
+        return opBuilder.withValues(VideoTable.contentValuesFor(video)).build();
     }
 
     @Override

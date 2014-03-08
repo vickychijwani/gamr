@@ -20,6 +20,7 @@ interface Resource<T> {
     static final String SCREEN_URL = "screen_url";
     static final String DECK = "deck";
     static final String API_DETAIL_URL = "api_detail_url";
+    static final String ALIASES = "aliases";
 
     // fields for games / releases
     static final String PLATFORMS = "platforms";
@@ -32,6 +33,9 @@ interface Resource<T> {
     static final String GENRES = "genres";
     static final String FRANCHISES = "franchises";
     static final String VIDEOS = "videos";
+
+    // fields for platform
+    static final String ABBREVIATION = "abbreviation";
 
     // fields for videos
     static final String LOW_URL = "low_url";
@@ -60,6 +64,7 @@ interface Resource<T> {
     public String getResourceName();
 
     @NotNull
-    public T itemFromJson(@NotNull JSONObject json, @NotNull T item);
+    public T itemFromJson(@NotNull JSONObject json, @NotNull T item)
+            throws GiantBombException;
 
 }

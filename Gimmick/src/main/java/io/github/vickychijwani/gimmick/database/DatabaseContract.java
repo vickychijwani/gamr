@@ -3,6 +3,7 @@ package io.github.vickychijwani.gimmick.database;
 import android.content.ContentValues;
 import android.net.Uri;
 import android.provider.BaseColumns;
+import android.text.TextUtils;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -13,10 +14,7 @@ import io.github.vickychijwani.giantbomb.item.Video;
 import io.github.vickychijwani.gimmick.GamrApplication;
 import io.github.vickychijwani.utility.DateTimeUtils;
 
-public final class DatabaseContract {
-
-    // prevent creation of instances
-    private DatabaseContract() {}
+public abstract class DatabaseContract {
 
     private static final String CONTENT_TYPE_BASE = "vnd.android.cursor.dir/vnd.vickychijwani.gimmick.";
     private static final String CONTENT_ITEM_TYPE_BASE = "vnd.android.cursor.item/vnd.vickychijwani.gimmick.";
@@ -109,7 +107,7 @@ public final class DatabaseContract {
         /** [Foreign key] ID of the list to which this game belongs */
         public static final String COL_GAME_LIST_ID = "game_list_id";
 
-        /** [Pseudo-column] CSV of all platforms this game is available on */
+        /** [Pseudo-column] CSV of IDs of all platforms this game is available on */
         public static final String COL_PSEUDO_PLATFORMS = "platforms";
 
 
@@ -164,7 +162,7 @@ public final class DatabaseContract {
             return new String[] {
                     qualify(_ID), qualify(COL_NAME), COL_POSTER_URL,
                     COL_RELEASE_DAY, COL_RELEASE_MONTH, COL_RELEASE_QUARTER, COL_RELEASE_YEAR,
-                    SQL.groupConcat(PlatformTable.qualify(PlatformTable.COL_NAME), COL_PSEUDO_PLATFORMS)
+                    SQL.groupConcat(PlatformTable.qualify(PlatformTable._ID), COL_PSEUDO_PLATFORMS)
             };
         }
 
@@ -173,7 +171,7 @@ public final class DatabaseContract {
             return new String[] {
                     qualify(_ID), qualify(COL_NAME), COL_POSTER_URL, COL_SMALL_POSTER_URL, COL_BLURB,
                     COL_RELEASE_DAY, COL_RELEASE_MONTH, COL_RELEASE_QUARTER, COL_RELEASE_YEAR,
-                    SQL.groupConcat(PlatformTable.qualify(PlatformTable.COL_NAME), COL_PSEUDO_PLATFORMS),
+                    SQL.groupConcat(PlatformTable.qualify(PlatformTable._ID), COL_PSEUDO_PLATFORMS),
                     COL_METASCORE, COL_GENRES, COL_FRANCHISES
             };
         }
@@ -203,16 +201,32 @@ public final class DatabaseContract {
         /** Platform name */
         public static final String COL_NAME = "name";
 
+        /** Platform abbreviation */
+        public static final String COL_SHORT_NAME = "short_name";
+
+        /** Aliases for this platform (delimited by \n) */
+        public static final String COL_ALIASES = "aliases";
+
+        /** Metacritic ID for this platform */
+        public static final String COL_METACRITIC_ID = "metacritic_id";
+
         public static String createTable() {
             return SQL.CREATE_TABLE(TABLE_NAME,
                     SQL.DEF_PRIMARY_KEY_AUTOINCREMENT(_ID, SQL.Type.INTEGER),
-                    SQL.DEF_COL(COL_NAME, SQL.Type.TEXT, SQL.Constraint.NOT_NULL, SQL.Constraint.UNIQUE));
+                    SQL.DEF_COL(COL_NAME, SQL.Type.TEXT, SQL.Constraint.NOT_NULL, SQL.Constraint.UNIQUE),
+                    SQL.DEF_COL(COL_SHORT_NAME, SQL.Type.TEXT, SQL.Constraint.NOT_NULL, SQL.Constraint.UNIQUE),
+                    SQL.DEF_COL(COL_ALIASES, SQL.Type.TEXT, SQL.Constraint.DEFAULT("\"\"")),
+                    SQL.DEF_COL(COL_METACRITIC_ID, SQL.Type.INTEGER));
         }
 
         @NotNull
         public static ContentValues contentValuesFor(Platform platform) {
             ContentValues values = new ContentValues();
-            values.put(COL_NAME, platform.getShortName());
+            values.put(_ID, platform.getGiantBombId());
+            values.put(COL_NAME, platform.getName());
+            values.put(COL_SHORT_NAME, platform.getShortName());
+            values.put(COL_ALIASES, TextUtils.join("\n", platform.getAliases()));
+            values.put(COL_METACRITIC_ID, platform.getMetacriticId());
             return values;
         }
 

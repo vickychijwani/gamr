@@ -37,6 +37,7 @@
     <!-- Alerts and dialogs -->
     <string name="always">Always</string>
     <string name="just_once">Just once</string>
+    <string name="setting_up">Setting up Gamr…</string>
 
     <!-- Settings -->
     <string name="settings">Settings</string>

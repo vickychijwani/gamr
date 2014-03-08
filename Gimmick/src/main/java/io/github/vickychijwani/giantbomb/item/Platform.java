@@ -1,53 +1,88 @@
 package io.github.vickychijwani.giantbomb.item;
 
+import android.database.Cursor;
+import android.text.TextUtils;
+
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.TreeSet;
+import java.util.Set;
 
-// TODO make this data dynamic!
-public enum Platform {
+import io.github.vickychijwani.gimmick.database.DatabaseContract.PlatformTable;
 
-    PC(3, "PC", "PC"),
-    PS3(1, "PS3", "PlayStation 3", "PlayStation Network (PS3)"),
-    XBOX_360(2, "X360", "Xbox 360", "Xbox 360 Games Store"),
-    PS4(72496, "PS4", "PlayStation 4", "PS4", "Orbis"),
-    XBOX_ONE(80000, "X1", "Xbox One", "Xbox Durango", "XONE", "XBONE", "Xbox 1");
+public class Platform implements Comparable<Platform> {
 
-    private final int mMetacriticId;
-    private final String mShortName;
-    private final HashSet<String> mAliases;
+    private int mGiantBombId;
+    private String mName;
+    private String mShortName;
+    private final Set<String> mAliases = new HashSet<String>();
+    private int mMetacriticId;  // move this out (or don't? or simply merge metacritic and giantbomb code?)
 
-    Platform(int metacriticId, @NotNull String shortName, String... aliases) {
-        mMetacriticId = metacriticId;
-        mShortName = shortName;
-        mAliases = new HashSet<String>(Arrays.asList(aliases));
-    }
+    public Platform() { }
 
-    public static Platform fromName(@NotNull String name) {
-        for (Platform p : Platform.values())
-            if (p.mShortName.equals(name) || p.mAliases.contains(name))
-                return p;
-
-        throw new IllegalArgumentException("No platform '" + name + "' found");
-    }
-
-    public static TreeSet<Platform> fromCsv(@NotNull String platformsCsv) {
-        String[] platformsStr = platformsCsv.split(",");
-        TreeSet<Platform> platformSet = new TreeSet<Platform>();
-        for (String platformStr : platformsStr) {
-            platformSet.add(Platform.fromName(platformStr));
+    public Platform(Cursor cursor) {
+        mGiantBombId = cursor.getInt(cursor.getColumnIndexOrThrow(PlatformTable._ID));
+        mName = cursor.getString(cursor.getColumnIndexOrThrow(PlatformTable.COL_NAME));
+        mShortName = cursor.getString(cursor.getColumnIndexOrThrow(PlatformTable.COL_SHORT_NAME));
+        String aliasesJoined = cursor.getString(cursor.getColumnIndexOrThrow(PlatformTable.COL_ALIASES));
+        if (aliasesJoined != null) {
+            mAliases.addAll(Arrays.asList(TextUtils.split(aliasesJoined, "\n")));
         }
-        return platformSet;
+    }
+
+    @Override
+    public int compareTo(Platform another) {
+        // newer platforms tend to have larger IDs
+        return -((Integer) this.mGiantBombId).compareTo(another.mGiantBombId);
+    }
+
+    public int getGiantBombId() {
+        return mGiantBombId;
+    }
+
+    public void setGiantBombId(int giantBombId) {
+        mGiantBombId = giantBombId;
     }
 
     public int getMetacriticId() {
         return mMetacriticId;
     }
 
+    public void setMetacriticId(int metacriticId) {
+        mMetacriticId = metacriticId;
+    }
+
+    @Nullable
+    public String getName() {
+        return mName;
+    }
+
+    public void setName(@Nullable String name) {
+        mName = name;
+    }
+
+    @Nullable
     public String getShortName() {
         return mShortName;
+    }
+
+    public void setShortName(@Nullable String shortName) {
+        mShortName = shortName;
+    }
+
+    @NotNull
+    public Set<String> getAliases() {
+        return mAliases;
+    }
+
+    public void setAliases(@Nullable Collection<String> aliases) {
+        mAliases.clear();
+        if (aliases != null) {
+            mAliases.addAll(aliases);
+        }
     }
 
     @Override

@@ -28,7 +28,7 @@ import io.github.vickychijwani.gimmick.database.DatabaseContract.GameListTable;
 import io.github.vickychijwani.gimmick.view.adapter.GameListAdapter;
 import io.github.vickychijwani.utility.AppUtils;
 
-public class LibraryActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class LibraryActivity extends LauncherActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int LOADING_STATE_DELAY = 500;  // time after which to display loading spinner
 

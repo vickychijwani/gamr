@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import io.github.vickychijwani.gimmick.database.DatabaseContract.GameListTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.GamePlatformMappingTable;
@@ -54,6 +55,7 @@ public class DBHelper extends BaseDBHelper {
         db.execSQL(PlatformTable.createTable());
         db.execSQL(GamePlatformMappingTable.createTable());
         db.execSQL(VideoTable.createTable());
+        db.execSQL(ResourceTypeTable.createTable());
     }
 
     @Override
@@ -121,6 +123,16 @@ public class DBHelper extends BaseDBHelper {
     public static Cursor getGamesInList(long listId) {
         return getGames(GameTable.essentialColumns(),
                 new SQL.Eq(GameTable.COL_GAME_LIST_ID, listId));
+    }
+
+    @NotNull
+    public static Cursor getPlatforms(@Nullable String[] projection, @Nullable String selection,
+                                      @Nullable String sortOrder) {
+        return (Cursor) select(projection)
+                .from(PlatformTable.TABLE_NAME)
+                .where(selection)
+                .orderBy(sortOrder)
+                .execute();
     }
 
     @NotNull

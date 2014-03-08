@@ -6,6 +6,7 @@ import android.util.Log;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.RequestFuture;
@@ -23,6 +24,7 @@ import io.github.vickychijwani.giantbomb.item.Game;
 import io.github.vickychijwani.giantbomb.item.Platform;
 import io.github.vickychijwani.giantbomb.item.ReleaseDate;
 import io.github.vickychijwani.giantbomb.item.Video;
+import io.github.vickychijwani.network.json.JSONArrayIterator;
 import io.github.vickychijwani.network.json.JSONPropertyIterator;
 import io.github.vickychijwani.network.volley.VolleyRequestQueue;
 
@@ -75,13 +77,12 @@ class GameResource implements Resource<Game> {
 
     @Override
     @NotNull
-    public Game itemFromJson(@NotNull JSONObject gameJsonWrapper, @NotNull Game game) {
+    public Game itemFromJson(@NotNull JSONObject gameJsonWrapper, @NotNull Game game)
+            throws GiantBombException {
         try {
             JSONObject gameJson = gameJsonWrapper.getJSONObject(RESULTS);
 
-            if (! parseEssentialGameInfoFromJson(gameJson, game)) {
-                return Game.INVALID;
-            }
+            parseEssentialGameInfoFromJson(gameJson, game);
 
             // genres
             if (! gameJson.isNull(GENRES)) {
@@ -115,29 +116,20 @@ class GameResource implements Resource<Game> {
             return game;
         } catch (JSONException e) {
             Log.e(TAG, Log.getStackTraceString(e));
+            throw new GiantBombException("error parsing game json");
         }
-        return Game.INVALID;
     }
 
-    static boolean parseEssentialGameInfoFromJson(JSONObject gameJson, Game game)
+    static void parseEssentialGameInfoFromJson(JSONObject gameJson, Game game)
             throws JSONException {
-        if (gameJson.isNull(PLATFORMS))
-            return false;
-
         // platforms
-        JSONPropertyIterator<String> platformsIterator
-                = new JSONPropertyIterator<String>(gameJson.getJSONArray(PLATFORMS), NAME);
+        JSONArrayIterator platformsIterator = new JSONArrayIterator(gameJson.getJSONArray(PLATFORMS));
         while (platformsIterator.hasNext()) {
-            String platformName = platformsIterator.next();
-            try {
-                game.addPlatform(Platform.fromName(platformName));
-            } catch (IllegalArgumentException e) {
-                Log.d(TAG, "Ignoring '" + platformName + "' platform");
+            JSONObject platformJson = platformsIterator.next();
+            if (platformJson != null) {
+                game.addPlatform(PlatformResource.getInstance().itemFromJson(platformJson, new Platform()));
             }
         }
-
-        if (game.platforms.size() == 0)
-            return false;
 
         // essentials
         game.giantBombId = gameJson.getInt(ID);
@@ -150,7 +142,6 @@ class GameResource implements Resource<Game> {
         }
         game.blurb = gameJson.getString(DECK);
         game.releaseDate = parseReleaseDateFromJson(gameJson);
-        return true;
     }
 
     private static ReleaseDate parseReleaseDateFromJson(JSONObject gameJson) {
@@ -203,6 +194,8 @@ class GameResource implements Resource<Game> {
                 return Response.error(new ParseError(e));
             } catch (JSONException je) {
                 return Response.error(new ParseError(je));
+            } catch (GiantBombException e) {
+                return Response.error(new VolleyError(e));
             }
         }
 

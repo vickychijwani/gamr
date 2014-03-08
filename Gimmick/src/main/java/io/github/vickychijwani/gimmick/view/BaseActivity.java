@@ -17,10 +17,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import io.github.vickychijwani.gimmick.R;
+import io.github.vickychijwani.gimmick.utility.EventBus;
 import io.github.vickychijwani.gimmick.view.adapter.BaseFragmentPagerAdapter;
 import io.github.vickychijwani.utility.DeviceUtils;
 
 public abstract class BaseActivity extends FragmentActivity {
+
+    private Object mEventHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +32,23 @@ public abstract class BaseActivity extends FragmentActivity {
         ActionBar actionBar = getActionBar();
         actionBar.setIcon(R.drawable.ic_logo);
         setupActionBar(actionBar);
+    }
+
+    @Override
+    protected void onPause() {
+        if (usesEventBus() && mEventHandler != null) {
+            EventBus.getInstance().unregister(mEventHandler);
+        }
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (usesEventBus()) {
+            mEventHandler = getEventHandler();
+            EventBus.getInstance().register(mEventHandler);
+        }
     }
 
     /**
@@ -111,6 +131,30 @@ public abstract class BaseActivity extends FragmentActivity {
     public void startActivity(Intent intent) {
         super.startActivity(intent);
         overridePendingTransition(R.anim.blow_up_enter, R.anim.blow_up_exit);
+    }
+
+    /**
+     * Override this and return true if your activity subscribes to (or produces initial events for)
+     * the global {@link EventBus}. Also override {@link #getEventHandler()} and return an
+     * {@link Object} having methods annotated with {@link com.squareup.otto.Subscribe}.
+     *
+     * @see #getEventHandler()
+     */
+    protected boolean usesEventBus() {
+        return false;
+    }
+
+    /**
+     * Override this and return an {@link Object} having methods annotated with {@link
+     * com.squareup.otto.Subscribe}. Also override {@link #usesEventBus()} and return true if your
+     * activity subscribes to (or produces initial events for) the global {@link EventBus}.
+     *
+     * @return an {@link Object} having methods annotated with {@link com.squareup.otto.Subscribe}.
+     * @see #usesEventBus()
+     */
+    @NotNull
+    protected Object getEventHandler() {
+        return new Object();
     }
 
 }

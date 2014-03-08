@@ -14,10 +14,9 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import io.github.vickychijwani.gimmick.database.DatabaseContract.GameTable;
+import io.github.vickychijwani.gimmick.database.GamrProvider;
 
 public class Game {
-
-    public static final Game INVALID = new Game();
 
     public String name = "";
     public int giantBombId = -1;
@@ -48,9 +47,13 @@ public class Game {
         posterUrl = cursor.getString(cursor.getColumnIndexOrThrow(GameTable.COL_POSTER_URL));
         releaseDate = new ReleaseDate(cursor);
 
-        String platformsCsv = cursor.getString(cursor.getColumnIndexOrThrow(GameTable.COL_PSEUDO_PLATFORMS));
-        assert platformsCsv != null;
-        platforms = Platform.fromCsv(platformsCsv);
+        String platformIdsCsv = cursor.getString(cursor.getColumnIndexOrThrow(GameTable.COL_PSEUDO_PLATFORMS));
+        if (platformIdsCsv != null) {
+            String[] platformIds = platformIdsCsv.split(",");
+            for (String platformId : platformIds) {
+                platforms.add(GamrProvider.getPlatform(Integer.parseInt(platformId)));
+            }
+        }
 
         int colIndex;
 
