@@ -28,6 +28,13 @@ import io.github.vickychijwani.network.volley.VolleyRequestQueue;
 
 class GameResource implements Resource<Game> {
 
+    private static GameResource sInstance = null;
+
+    /**
+     * Use {@link #getInstance()} instead.
+     */
+    private GameResource() { }
+
     @Nullable
     public Game fetch(@NotNull String giantBombUrl) {
         Log.i(TAG, "Fetching game info from " + giantBombUrl);
@@ -52,6 +59,13 @@ class GameResource implements Resource<Game> {
         }
 
         return null;
+    }
+
+    public static GameResource getInstance() {
+        if (sInstance == null) {
+            sInstance = new GameResource();
+        }
+        return sInstance;
     }
 
     @Override

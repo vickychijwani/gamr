@@ -25,6 +25,13 @@ import io.github.vickychijwani.utility.DateTimeUtils;
 
 class GameListResource implements Resource<GameList> {
 
+    private static GameListResource sInstance = null;
+
+    /**
+     * Use {@link #getInstance()} instead.
+     */
+    private GameListResource() { }
+
     public RequestTag search(@NotNull String query,
                              Response.Listener<GameList> successHandler,
                              Response.ErrorListener errorHandler) {
@@ -118,6 +125,13 @@ class GameListResource implements Resource<GameList> {
 
         GameListJsonRequest req = new GameListJsonRequest(url, successHandlerWrapper, errorHandler);
         return VolleyRequestQueue.add(req, REQUEST_TAG_RECENT);
+    }
+
+    public static GameListResource getInstance() {
+        if (sInstance == null) {
+            sInstance = new GameListResource();
+        }
+        return sInstance;
     }
 
     @Override

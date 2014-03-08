@@ -19,11 +19,6 @@ import io.github.vickychijwani.network.volley.RequestTag;
  */
 public abstract class GiantBomb {
 
-    private static final GameResource GAME_RESOURCE = new GameResource();
-    private static final GameListResource GAME_LIST_RESOURCE = new GameListResource();
-    private static final VideoResource VIDEO_RESOURCE = new VideoResource();
-    private static final ResourceTypeResource RESOURCE_TYPE_RESOURCE = new ResourceTypeResource();
-
     // call this before using any other methods
     public static void initialize(@NotNull String apiKey) {
        URLBuilder.setApiKey(apiKey);
@@ -41,7 +36,7 @@ public abstract class GiantBomb {
          */
         @Nullable
         public static Game fetch(@NotNull String giantBombUrl) {
-            return GAME_RESOURCE.fetch(giantBombUrl);
+            return GameResource.getInstance().fetch(giantBombUrl);
         }
 
         /**
@@ -56,7 +51,7 @@ public abstract class GiantBomb {
         public static RequestTag search(@NotNull String query,
                                         Response.Listener<GameList> successHandler,
                                         Response.ErrorListener errorHandler) {
-            return GAME_LIST_RESOURCE.search(query, successHandler, errorHandler);
+            return GameListResource.getInstance().search(query, successHandler, errorHandler);
         }
 
         /**
@@ -70,7 +65,7 @@ public abstract class GiantBomb {
          */
         public static RequestTag fetchUpcoming(final Response.Listener<GameList> successHandler,
                                                final Response.ErrorListener errorHandler) {
-            return GAME_LIST_RESOURCE.fetchUpcoming(successHandler, errorHandler);
+            return GameListResource.getInstance().fetchUpcoming(successHandler, errorHandler);
         }
 
         /**
@@ -84,7 +79,7 @@ public abstract class GiantBomb {
          */
         public static RequestTag fetchRecent(final Response.Listener<GameList> successHandler,
                                              final Response.ErrorListener errorHandler) {
-            return GAME_LIST_RESOURCE.fetchRecent(successHandler, errorHandler);
+            return GameListResource.getInstance().fetchRecent(successHandler, errorHandler);
         }
 
     }
@@ -104,7 +99,7 @@ public abstract class GiantBomb {
         @NotNull
         public static Game fetchAllForGame(@NotNull Game game)
                 throws ExecutionException, InterruptedException, JSONException {
-            return VIDEO_RESOURCE.fetchAllForGame(game);
+            return VideoResource.getInstance().fetchAllForGame(game);
         }
 
     }
@@ -120,7 +115,7 @@ public abstract class GiantBomb {
          */
         @Nullable
         public static List<ResourceType> fetchAll() {
-            return RESOURCE_TYPE_RESOURCE.fetchAll();
+            return ResourceTypeResource.getInstance().fetchAll();
         }
 
     }

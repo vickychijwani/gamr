@@ -19,7 +19,14 @@ import io.github.vickychijwani.giantbomb.item.ResourceType;
 import io.github.vickychijwani.network.json.JSONArrayIterator;
 import io.github.vickychijwani.network.volley.VolleyRequestQueue;
 
-public class ResourceTypeResource implements Resource<ResourceType> {
+class ResourceTypeResource implements Resource<ResourceType> {
+
+    private static ResourceTypeResource sInstance = null;
+
+    /**
+     * Use {@link #getInstance()} instead.
+     */
+    private ResourceTypeResource() { }
 
     @Nullable
     public List<ResourceType> fetchAll() {
@@ -53,6 +60,13 @@ public class ResourceTypeResource implements Resource<ResourceType> {
         }
 
         return null;
+    }
+
+    public static ResourceTypeResource getInstance() {
+        if (sInstance == null) {
+            sInstance = new ResourceTypeResource();
+        }
+        return sInstance;
     }
 
     @Override

@@ -23,6 +23,13 @@ import io.github.vickychijwani.utility.DateTimeUtils;
 
 class VideoResource implements Resource<Video> {
 
+    private static VideoResource sInstance = null;
+
+    /**
+     * Use {@link #getInstance()} instead.
+     */
+    private VideoResource() { }
+
     @NotNull
     public Game fetchAllForGame(@NotNull Game game)
             throws ExecutionException, InterruptedException, JSONException {
@@ -84,6 +91,13 @@ class VideoResource implements Resource<Video> {
         }
 
         return game;
+    }
+
+    public static VideoResource getInstance() {
+        if (sInstance == null) {
+            sInstance = new VideoResource();
+        }
+        return sInstance;
     }
 
     @Override
