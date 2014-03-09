@@ -20,7 +20,6 @@ public class Game {
 
     public String name = "";
     public int giantBombId = -1;
-    public String giantBombUrl = "";
     public String posterUrl = "";
     public String smallPosterUrl = "";
     public String blurb = "";

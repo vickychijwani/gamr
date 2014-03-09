@@ -41,12 +41,12 @@ class GameListResource implements Resource<GameList> {
 
         Log.i(TAG, "Searching for \"" + query + "\"...");
 
-        String url = new URLBuilder()
+        String url = URLBuilder.newInstance()
                 .setResource(getResourceName())
                 .addParam("filter", NAME + ":" + query)
                 .setSortOrder(SORT_BY_LATEST_RELEASES, SORT_BY_MOST_REVIEWS)
-                .setFieldList(ID, NAME, PLATFORMS, IMAGE_URLS, DECK, API_DETAIL_URL,
-                        ORIGINAL_RELEASE_DATE, EXPECTED_RELEASE_YEAR, EXPECTED_RELEASE_QUARTER,
+                .setFieldList(ID, NAME, PLATFORMS, IMAGE_URLS, DECK, ORIGINAL_RELEASE_DATE,
+                        EXPECTED_RELEASE_YEAR, EXPECTED_RELEASE_QUARTER,
                         EXPECTED_RELEASE_MONTH, EXPECTED_RELEASE_DAY)
                 .build();
 
@@ -62,10 +62,10 @@ class GameListResource implements Resource<GameList> {
 
         // TODO what if the current date is 25th Dec? Shouldn't "upcoming" include the next year as well in that case?
 
-        final String url = new URLBuilder()
+        final String url = URLBuilder.newInstance()
                 .setResource(getResourceName())
                 .addParam("filter", EXPECTED_RELEASE_YEAR + ":" + currentYear)
-                .setFieldList(ID, NAME, PLATFORMS, IMAGE_URLS, DECK, API_DETAIL_URL,
+                .setFieldList(ID, NAME, PLATFORMS, IMAGE_URLS, DECK,
                         EXPECTED_RELEASE_YEAR, EXPECTED_RELEASE_QUARTER,
                         EXPECTED_RELEASE_MONTH, EXPECTED_RELEASE_DAY)
                 .build();
@@ -99,11 +99,10 @@ class GameListResource implements Resource<GameList> {
 
         Log.i(TAG, "Fetching recent games released from " + oneYearAgo + " to " + now + " ...");
 
-        final String url = new URLBuilder()
+        final String url = URLBuilder.newInstance()
                 .setResource(getResourceName())
                 .addParam("filter", ORIGINAL_RELEASE_DATE + ":" + oneYearAgo + "|" + now)
-                .setFieldList(ID, NAME, PLATFORMS, IMAGE_URLS, DECK, API_DETAIL_URL,
-                        ORIGINAL_RELEASE_DATE)
+                .setFieldList(ID, NAME, PLATFORMS, IMAGE_URLS, DECK, ORIGINAL_RELEASE_DATE)
                 .setSortOrder(SORT_BY_LATEST_RELEASES)
                 .build();
 

@@ -22,7 +22,7 @@ public abstract class GiantBomb {
 
     // call this before using any other methods
     public static void initialize(@NotNull String apiKey) {
-       URLBuilder.setApiKey(apiKey);
+       URLBuilder.initialize(apiKey);
     }
 
     public static class Games {
@@ -36,8 +36,8 @@ public abstract class GiantBomb {
          * @return  the requested {@link Game}
          */
         @Nullable
-        public static Game fetch(@NotNull String giantBombUrl) {
-            return GameResource.getInstance().fetch(giantBombUrl);
+        public static Game fetch(int giantBombId) {
+            return GameResource.getInstance().fetch(giantBombId);
         }
 
         /**

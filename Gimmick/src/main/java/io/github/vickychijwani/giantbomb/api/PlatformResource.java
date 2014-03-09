@@ -33,7 +33,7 @@ class PlatformResource implements Resource<Platform> {
     public List<Platform> fetchAll() {
         Log.i(TAG, "Fetching all platforms...");
 
-        String url = new URLBuilder()
+        String url = URLBuilder.newInstance()
                 .setResource(getResourceName())
                 .setFieldList(new String[] { ID, NAME, ALIASES, ABBREVIATION })
                 .build();

@@ -14,7 +14,7 @@ import android.net.Uri;
 import android.util.Log;
 import android.util.SparseArray;
 
-import com.squareup.otto.Subscribe;
+import com.squareup.otto.Produce;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import io.github.vickychijwani.giantbomb.api.ResourceTypesChangedEvent;
 import io.github.vickychijwani.giantbomb.item.Game;
 import io.github.vickychijwani.giantbomb.item.Platform;
 import io.github.vickychijwani.giantbomb.item.ResourceType;
@@ -35,7 +36,6 @@ import io.github.vickychijwani.gimmick.database.DatabaseContract.PlatformTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.ResourceTypeTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.VideoTable;
 import io.github.vickychijwani.gimmick.utility.EventBus;
-import io.github.vickychijwani.gimmick.utility.event.PlatformsChangedEvent;
 
 public class GamrProvider extends ContentProvider {
 
@@ -69,8 +69,8 @@ public class GamrProvider extends ContentProvider {
         sUriMatcher = buildUriMatcher(context);
         DBHelper.createInstance(context);
         sInstance = this;
+
         EventBus.getInstance().register(this);
-        EventBus.getInstance().post(new PlatformsChangedEvent());
         return true;
     }
 
@@ -124,6 +124,9 @@ public class GamrProvider extends ContentProvider {
         Cursor cursor;
 
         switch (match) {
+            case RESOURCE_TYPES:
+                cursor = DBHelper.getAllResourceTypes(projection);
+                break;
             case GAMES_ID:
                 cursor = DBHelper.getGame(ContentUris.parseId(uri));
                 break;
@@ -213,9 +216,9 @@ public class GamrProvider extends ContentProvider {
         return 0;
     }
 
-    @Subscribe public void onPlatformsChanged(@NotNull PlatformsChangedEvent event) {
+    public void reloadPlatforms() {
         Log.i(TAG, "Platforms changed, reloading platform data...");
-        Context context = sInstance.getContext();
+        Context context = getContext();
         if (context != null) {
             Cursor cursor = context.getContentResolver().query(PlatformTable.CONTENT_URI_LIST,
                     null, null, null, null);    // TODO select only enabled platforms (use WHERE...IN, get enabled id list from prefs)
@@ -226,16 +229,40 @@ public class GamrProvider extends ContentProvider {
                     Platform platform = new Platform(cursor);
                     mAllPlatforms.put(platform.getGiantBombId(), platform);
                 }
+                cursor.close();
             }
         }
     }
 
+    @Produce public ResourceTypesChangedEvent getResourceTypesChangedEvent() {
+        Log.i(TAG, "Resource types changed, reloading...");
+        Context context = getContext();
+        ResourceTypesChangedEvent event = new ResourceTypesChangedEvent();
+        if (context != null) {
+            Cursor cursor = context.getContentResolver().query(ResourceTypeTable.CONTENT_URI_LIST,
+                    null, null, null, null);
+            if (cursor != null) {
+                List<ResourceType> resourceTypes = new ArrayList<ResourceType>(cursor.getCount());
+                cursor.moveToPosition(-1);
+                while (cursor.moveToNext()) {
+                    ResourceType resourceType = new ResourceType(cursor);
+                    resourceTypes.add(resourceType);
+                }
+                cursor.close();
+
+                event.resourceTypes = resourceTypes;
+                return event;
+            }
+        }
+        return event;
+    }
+
     @Nullable
     public static Platform getPlatform(int giantBombId) {
-        if (mAllPlatforms != null) {
-            return mAllPlatforms.get(giantBombId);
+        if (mAllPlatforms == null) {
+            sInstance.reloadPlatforms();
         }
-        return null;
+        return mAllPlatforms.get(giantBombId);
     }
 
     public static boolean addResourceTypes(List<ResourceType> resourceTypes) {
@@ -265,8 +292,7 @@ public class GamrProvider extends ContentProvider {
         return addOrUpdateGame(game, false);
     }
 
-    private static boolean addOrUpdateGame(Game game, boolean isNew)
-            throws OperationApplicationException {
+    private static boolean addOrUpdateGame(Game game, boolean isNew) {
         ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
         ops.add(buildGameOp(game, isNew));
 
@@ -281,8 +307,13 @@ public class GamrProvider extends ContentProvider {
             ops.add(buildVideoOp(videos.next(), isNew));
         }
 
-        sInstance.applyBatch(ops);
-        return true;
+        try {
+            sInstance.applyBatch(ops);
+            return true;
+        } catch (OperationApplicationException e) {
+            Log.e(TAG, "Could not add / update game: " + Log.getStackTraceString(e));
+            return false;
+        }
     }
 
     public static boolean addPlatforms(Collection<Platform> platforms) {
@@ -301,7 +332,7 @@ public class GamrProvider extends ContentProvider {
 
         try {
             sInstance.applyBatch(ops);
-            EventBus.getInstance().post(new PlatformsChangedEvent());
+            sInstance.reloadPlatforms();
             return true;
         } catch (OperationApplicationException e) {
             Log.e(TAG, "Could not add / update platforms: " + Log.getStackTraceString(e));

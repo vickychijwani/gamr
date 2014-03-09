@@ -1,6 +1,6 @@
 package io.github.vickychijwani.giantbomb.api;
 
-public class GiantBombException extends Exception {
+class GiantBombException extends Exception {
 
     /**
      * Constructs a new {@link GiantBombException} that includes the current stack trace.

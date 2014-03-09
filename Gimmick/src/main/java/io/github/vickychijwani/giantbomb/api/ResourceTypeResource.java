@@ -32,7 +32,7 @@ class ResourceTypeResource implements Resource<ResourceType> {
     public List<ResourceType> fetchAll() {
         Log.i(TAG, "Fetching resource types...");
 
-        String url = new URLBuilder()
+        String url = URLBuilder.newInstance()
                 .setResource(getResourceName())
                 .build();
 

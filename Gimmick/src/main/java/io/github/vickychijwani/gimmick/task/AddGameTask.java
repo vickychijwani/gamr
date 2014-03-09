@@ -105,7 +105,7 @@ public class AddGameTask extends AsyncTask<Void, AddGameTask.Result, Void> {
                 }
 
                 Game game = mAddQueue.removeFirst();
-                Game fullGame = GiantBomb.Games.fetch(game.giantBombUrl);
+                Game fullGame = GiantBomb.Games.fetch(game.giantBombId);
 
                 if (fullGame == null) {
                     result = new Result(StatusCode.UNKNOWN_ERROR, game.name);

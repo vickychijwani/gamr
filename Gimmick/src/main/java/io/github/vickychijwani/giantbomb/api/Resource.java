@@ -19,7 +19,6 @@ interface Resource<T> {
     static final String SMALL_POSTER_URL = "small_url";
     static final String SCREEN_URL = "screen_url";
     static final String DECK = "deck";
-    static final String API_DETAIL_URL = "api_detail_url";
     static final String ALIASES = "aliases";
 
     // fields for games / releases

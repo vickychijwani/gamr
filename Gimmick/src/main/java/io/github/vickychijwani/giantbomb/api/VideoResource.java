@@ -49,7 +49,7 @@ class VideoResource implements Resource<Video> {
             return game;
         }
 
-        String url = new URLBuilder()
+        String url = URLBuilder.newInstance()
                 .setResource(getResourceName())
                 .addParam("filter", ID + ":" + videoIds)
                 .build();
@@ -114,7 +114,6 @@ class VideoResource implements Resource<Video> {
             video.setName(videoJson.optString(NAME));
             video.setBlurb(videoJson.optString(DECK));
             video.setGiantBombId(videoJson.getInt(ID));
-            video.setGiantBombUrl(videoJson.getString(API_DETAIL_URL));
             video.setLowUrl(videoJson.optString(LOW_URL));
             video.setHighUrl(videoJson.optString(HIGH_URL));
             video.setDuration(videoJson.optInt(LENGTH_SECONDS, -1));

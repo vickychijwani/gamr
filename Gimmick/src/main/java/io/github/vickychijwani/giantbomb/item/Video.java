@@ -17,7 +17,6 @@ public class Video implements Comparable<Video> {
     private int mGameId = -1;
     private String mBlurb = "";
     private int mGiantBombId = -1;
-    private String mGiantBombUrl = "";
     private String mLowUrl = "";
     private String mHighUrl = "";
     private int mDuration = -1;  // in seconds
@@ -87,14 +86,6 @@ public class Video implements Comparable<Video> {
 
     public void setGiantBombId(int giantBombId) {
         mGiantBombId = giantBombId;
-    }
-
-    public String getGiantBombUrl() {
-        return mGiantBombUrl;
-    }
-
-    public void setGiantBombUrl(String giantBombUrl) {
-        mGiantBombUrl = giantBombUrl;
     }
 
     public String getLowUrl() {

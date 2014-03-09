@@ -114,6 +114,13 @@ public class DBHelper extends BaseDBHelper {
     }
 
     @NotNull
+    public static Cursor getAllResourceTypes(@Nullable String[] projection) {
+        return (Cursor) select(projection)
+                .from(ResourceTypeTable.TABLE_NAME)
+                .execute();
+    }
+
+    @NotNull
     public static Cursor getGame(long gameId) {
         return getGames(GameTable.allColumns(),
                 new SQL.Eq(GameTable.qualify(GameTable._ID), gameId));
@@ -172,12 +179,28 @@ public class DBHelper extends BaseDBHelper {
     }
 
     /**
-     * Execute a transaction on the database.
+     * Execute an operation on the database.
+     *
+     * @param operation   the operation to run. Note that if the operation fails, no rollback will
+     *                    be performed, as when using {@link #executeTransaction(Operation)}.
+     * @return            the result of the database operation
+     */
+    public static <T> T executeOperation(@NotNull Operation<T> operation)
+            throws Exception {
+        SQLiteDatabase db = getInstance().getWritableDatabase();
+        assert db != null;
+
+        return operation.run(db);
+    }
+
+    /**
+     * Execute an operation as a transaction on the database. The transaction is atomic, meaning
+     * that either all changes are applied successfully, or none of them are.
      *
      * @param transaction   the transaction to run
      * @return              the result of the transaction
      */
-    public static <T> T executeTransaction(@NotNull Transaction<T> transaction)
+    public static <T> T executeTransaction(@NotNull Operation<T> transaction)
             throws Exception {
         SQLiteDatabase db = getInstance().getWritableDatabase();
         assert db != null;
@@ -202,9 +225,9 @@ public class DBHelper extends BaseDBHelper {
                 GameListTable.contentValuesForToPlayList(), SQLiteDatabase.CONFLICT_IGNORE);
     }
 
-    public interface Transaction<T> {
+    public interface Operation<T> {
         /**
-         * Run the transaction.
+         * Run the database operation.
          *
          * @param db    a writable instance of the SQLite database
          */

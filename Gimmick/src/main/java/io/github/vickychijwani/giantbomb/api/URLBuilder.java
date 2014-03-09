@@ -3,57 +3,69 @@ package io.github.vickychijwani.giantbomb.api;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.squareup.otto.Subscribe;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import io.github.vickychijwani.giantbomb.item.ResourceType;
+import io.github.vickychijwani.gimmick.utility.EventBus;
 
 class URLBuilder {
 
     private static final String TAG = "GiantBomb";
-    private final String BASE_URL = "http://www.giantbomb.com/api/";
+    private static final String BASE_URL = "http://www.giantbomb.com/api/";
     private static String API_KEY = null;
 
     private StringBuilder mBuilder;
-    private boolean mbAreEssentialParamsAppended;
+    private String mResource = null;
+    private int mResourceId = -1;
+    private Collection<String> mParams = new ArrayList<String>();
 
-    public static void setApiKey(@NotNull String apiKey) {
+    private static final Map<String, Integer> mResourceTypeToIdMap = new HashMap<String, Integer>();
+
+    public static void initialize(@NotNull String apiKey) {
         API_KEY = apiKey;
+        EventBus.getInstance().register(new Object() {
+            @Subscribe
+            public void onResourceTypesChanged(ResourceTypesChangedEvent event) {
+                mResourceTypeToIdMap.clear();
+                for (ResourceType type : event.resourceTypes) {
+                    mResourceTypeToIdMap.put(type.getSingularName(), type.getId());
+                }
+            }
+        });
     }
 
-    public URLBuilder() {
+    private URLBuilder() { }
+
+    public static URLBuilder newInstance() {
         if (API_KEY == null) {
             throw new IllegalStateException("API key not set");
         }
-        mBuilder = new StringBuilder(BASE_URL);
-    }
-
-    public URLBuilder(String url) {
-        if (API_KEY == null) {
-            throw new IllegalStateException("API key not set");
-        }
-        mBuilder = new StringBuilder(url);
-        appendEssentialParams();
+        URLBuilder urlBuilder = new URLBuilder();
+        urlBuilder.mBuilder = new StringBuilder(BASE_URL);
+        return urlBuilder;
     }
 
     public URLBuilder setResource(String resource) {
-        mBuilder.append(resource);
-        appendEssentialParams();
+        mResource = resource;
         return this;
     }
 
-    private void appendEssentialParams() throws IllegalStateException {
-        if (! mbAreEssentialParamsAppended) {
-            mbAreEssentialParamsAppended = true;
-        } else {
-            throw new IllegalStateException("appendEssentialParams() cannot be called more than once");
-        }
-        mBuilder.append("?api_key=")
-                .append(API_KEY)
-                .append("&format=json");
+    public URLBuilder setResource(String resource, int resourceId) {
+        mResource = resource;
+        mResourceId = resourceId;
+        return this;
     }
 
     public URLBuilder setFieldList(String... fieldList) {
@@ -68,22 +80,41 @@ class URLBuilder {
         return addParam("sort", sortOrderString);
     }
 
-    public URLBuilder addParam(String field, String value) {
+    public URLBuilder addParam(String key, String value) {
         try {
-            mBuilder.append("&");
-            mBuilder.append(field);
-            mBuilder.append("=");
-            mBuilder.append(URLEncoder.encode(value, "UTF-8"));
+            mParams.add(key + "=" + URLEncoder.encode(value, "UTF-8"));
         } catch (UnsupportedEncodingException e) {
             Log.e(TAG, Log.getStackTraceString(e));
         }
         return this;
     }
 
-    public String build() throws IllegalStateException {
-        if (! mbAreEssentialParamsAppended) {
-            throw new IllegalStateException("appendEssentialParams() must be called before the URL can be built");
+    public String build()
+            throws IllegalStateException {
+        if (mResource == null) {
+            throw new IllegalStateException("resource not set");
         }
+        mBuilder.append(mResource)
+                .append("/");
+
+        if (mResourceId >= 0) {
+            Integer resourceTypeId = mResourceTypeToIdMap.get(mResource);
+            if (resourceTypeId == null) {
+                throw new IllegalStateException("invalid resource type: " + mResource);
+            }
+            mBuilder.append(resourceTypeId)
+                    .append("-")
+                    .append(mResourceId)
+                    .append("/");
+        }
+
+        mBuilder.append("?");
+
+        // add essential parameters
+        addParam("api_key", API_KEY);
+        addParam("format", "json");
+
+        mBuilder.append(TextUtils.join("&", mParams));
 
         return mBuilder.toString();
     }

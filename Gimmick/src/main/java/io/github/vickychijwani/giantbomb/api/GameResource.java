@@ -38,15 +38,16 @@ class GameResource implements Resource<Game> {
     private GameResource() { }
 
     @Nullable
-    public Game fetch(@NotNull String giantBombUrl) {
-        Log.i(TAG, "Fetching game info from " + giantBombUrl);
-
-        String url = new URLBuilder(giantBombUrl)
-                .setFieldList(ID, NAME, PLATFORMS, IMAGE_URLS, DECK, API_DETAIL_URL,
-                        ORIGINAL_RELEASE_DATE, EXPECTED_RELEASE_YEAR, EXPECTED_RELEASE_QUARTER,
+    public Game fetch(int giantBombId) {
+        String url = URLBuilder.newInstance()
+                .setResource(getResourceName(), giantBombId)
+                .setFieldList(ID, NAME, PLATFORMS, IMAGE_URLS, DECK, ORIGINAL_RELEASE_DATE,
+                        EXPECTED_RELEASE_YEAR, EXPECTED_RELEASE_QUARTER,
                         EXPECTED_RELEASE_MONTH, EXPECTED_RELEASE_DAY,
                         GENRES, FRANCHISES, VIDEOS)
                 .build();
+
+        Log.i(TAG, "Fetching game info from " + url);
 
         RequestFuture<Game> future = RequestFuture.newFuture();
         GameJsonRequest req = new GameJsonRequest(url, future, future);
@@ -134,7 +135,6 @@ class GameResource implements Resource<Game> {
         // essentials
         game.giantBombId = gameJson.getInt(ID);
         game.name = gameJson.getString(NAME);
-        game.giantBombUrl = gameJson.getString(API_DETAIL_URL);
         JSONObject imagesJson = gameJson.optJSONObject(IMAGE_URLS);
         if (imagesJson != null) {
             game.posterUrl = imagesJson.getString(POSTER_URL);
