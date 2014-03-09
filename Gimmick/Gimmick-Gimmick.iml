@@ -31,53 +31,53 @@
       <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/build/source/buildConfig/defaultFlavor/debug" isTestSource="false" generated="true" />
       <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/build/source/rs/defaultFlavor/debug" isTestSource="false" generated="true" />
       <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/build/res/rs/defaultFlavor/debug" type="java-resource" />
+      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/defaultFlavorDebug/res" type="java-resource" />
+      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/defaultFlavorDebug/resources" type="java-resource" />
       <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/defaultFlavorDebug/aidl" isTestSource="false" />
       <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/defaultFlavorDebug/assets" isTestSource="false" />
       <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/defaultFlavorDebug/java" isTestSource="false" />
       <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/defaultFlavorDebug/jni" isTestSource="false" />
       <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/defaultFlavorDebug/rs" isTestSource="false" />
-      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/defaultFlavorDebug/res" type="java-resource" />
-      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/defaultFlavorDebug/resources" type="java-resource" />
       <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/build/source/r/test/defaultFlavor/debug" isTestSource="true" generated="true" />
       <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/build/source/aidl/test/defaultFlavor/debug" isTestSource="true" generated="true" />
       <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/build/source/buildConfig/test/defaultFlavor/debug" isTestSource="true" generated="true" />
       <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/build/source/rs/test/defaultFlavor/debug" isTestSource="true" generated="true" />
       <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/build/res/rs/test/defaultFlavor/debug" type="java-test-resource" />
+      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/defaultFlavor/res" type="java-resource" />
+      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/defaultFlavor/resources" type="java-resource" />
       <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/defaultFlavor/aidl" isTestSource="false" />
       <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/defaultFlavor/assets" isTestSource="false" />
       <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/defaultFlavor/java" isTestSource="false" />
       <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/defaultFlavor/jni" isTestSource="false" />
       <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/defaultFlavor/rs" isTestSource="false" />
-      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/defaultFlavor/res" type="java-resource" />
-      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/defaultFlavor/resources" type="java-resource" />
-      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/instrumentTestDefaultFlavor/aidl" isTestSource="true" />
-      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/instrumentTestDefaultFlavor/assets" isTestSource="true" />
-      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/instrumentTestDefaultFlavor/java" isTestSource="true" />
-      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/instrumentTestDefaultFlavor/jni" isTestSource="true" />
-      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/instrumentTestDefaultFlavor/rs" isTestSource="true" />
-      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/instrumentTestDefaultFlavor/res" type="java-test-resource" />
-      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/instrumentTestDefaultFlavor/resources" type="java-test-resource" />
+      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/androidTestDefaultFlavor/res" type="java-test-resource" />
+      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/androidTestDefaultFlavor/resources" type="java-test-resource" />
+      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/androidTestDefaultFlavor/aidl" isTestSource="true" />
+      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/androidTestDefaultFlavor/assets" isTestSource="true" />
+      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/androidTestDefaultFlavor/java" isTestSource="true" />
+      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/androidTestDefaultFlavor/jni" isTestSource="true" />
+      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/androidTestDefaultFlavor/rs" isTestSource="true" />
+      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/debug/res" type="java-resource" />
+      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/debug/resources" type="java-resource" />
       <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/debug/aidl" isTestSource="false" />
       <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/debug/assets" isTestSource="false" />
       <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/debug/java" isTestSource="false" />
       <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/debug/jni" isTestSource="false" />
       <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/debug/rs" isTestSource="false" />
-      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/debug/res" type="java-resource" />
-      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/debug/resources" type="java-resource" />
+      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/main/res" type="java-resource" />
+      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/main/resources" type="java-resource" />
       <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/main/aidl" isTestSource="false" />
       <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/main/assets" isTestSource="false" />
       <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/main/jni" isTestSource="false" />
       <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/main/rs" isTestSource="false" />
-      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/main/res" type="java-resource" />
-      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/main/resources" type="java-resource" />
-      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/instrumentTest/aidl" isTestSource="true" />
-      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/instrumentTest/assets" isTestSource="true" />
-      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/instrumentTest/java" isTestSource="true" />
-      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/instrumentTest/jni" isTestSource="true" />
-      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/instrumentTest/rs" isTestSource="true" />
-      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/instrumentTest/res" type="java-test-resource" />
-      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/instrumentTest/resources" type="java-test-resource" />
+      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/androidTest/res" type="java-test-resource" />
+      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/androidTest/resources" type="java-test-resource" />
+      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/androidTest/aidl" isTestSource="true" />
+      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/androidTest/assets" isTestSource="true" />
+      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/androidTest/java" isTestSource="true" />
+      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/androidTest/jni" isTestSource="true" />
+      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/androidTest/rs" isTestSource="true" />
       <excludeFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/build/apk" />
       <excludeFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/build/assets" />
       <excludeFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/build/bundles" />
