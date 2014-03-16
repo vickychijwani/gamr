@@ -7,6 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * Utility class to iterate over a single property of type {@code T} in a {@link JSONArray} of
@@ -42,6 +43,9 @@ public class JSONPropertyIterator<T> implements Iterator<T> {
     @Override
     @SuppressWarnings("unchecked")
     public T next() {
+        if (! hasNext()) {
+            throw new NoSuchElementException();
+        }
         try {
             return (T) mJsonArray.getJSONObject(mPosition++).get(mPropertyName);
         } catch (JSONException e) {

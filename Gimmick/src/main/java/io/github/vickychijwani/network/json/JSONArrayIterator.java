@@ -9,11 +9,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * Utility class to iterate over a {@link JSONArray} of {@link org.json.JSONObject}s.
  */
-public class JSONArrayIterator implements Iterator {
+public class JSONArrayIterator implements Iterator<JSONObject> {
 
     private static final String TAG = "JSONArrayIterator";
 
@@ -37,6 +38,9 @@ public class JSONArrayIterator implements Iterator {
     @Override
     @Nullable
     public JSONObject next() {
+        if (! hasNext()) {
+            throw new NoSuchElementException();
+        }
         try {
             return mJsonArray.getJSONObject(mPosition++);
         } catch (JSONException e) {
