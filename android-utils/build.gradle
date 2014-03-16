@@ -1,16 +1,4 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:0.9.+'
-    }
-}
 apply plugin: 'android-library'
-
-repositories {
-    mavenCentral()
-}
 
 android {
     compileSdkVersion 19
@@ -49,6 +37,5 @@ android {
 }
 
 dependencies {
-    compile 'org.jetbrains:annotations:13.0'
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile rootProject.ext.libraries.jetbrains_annotations
 }

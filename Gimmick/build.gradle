@@ -1,20 +1,8 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:0.9.+'
-    }
-}
 apply plugin: 'android'
 
-repositories {
-    mavenCentral()
-}
-
 android {
-    compileSdkVersion 19
-    buildToolsVersion '19.0.3'
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
     buildTypes {
         release {
@@ -30,11 +18,11 @@ android {
 }
 
 dependencies {
+    compile rootProject.ext.libraries.jetbrains_annotations
     compile 'com.android.support:support-v4:19.0.+'
     compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
     compile 'com.jakewharton:butterknife:4.0.1'
     compile 'com.mcxiaoke.volley:library:1.0.+'
-    compile 'org.jetbrains:annotations:13.0'
     compile 'com.squareup:otto:1.3.+'
     compile fileTree(dir: '../libs', include: 'glide-minus-volley-*.jar')
     compile project(':Android-MultiStateView')
