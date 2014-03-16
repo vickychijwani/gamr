@@ -19,18 +19,26 @@ import io.github.vickychijwani.giantbomb.item.Game;
 import io.github.vickychijwani.giantbomb.item.Platform;
 import io.github.vickychijwani.network.volley.VolleyRequestQueue;
 
-public class Metacritic {
+public class MetacriticAPI {
 
-    private static final String TAG = "Metacritic";
+    private static final String TAG = "MetacriticAPI";
 
-    private static final String BASE_URL = "https://byroredux-metacritic.p.mashape.com/find/game";
-    private static String API_KEY = null;
+    private final String mBaseUrl;
+    private final String mApiKey;
+    private final VolleyRequestQueue mRequestQueue;
 
     private static final String RESULT = "result";
     private static final String SCORE = "score";
 
-    public static void fetchMetascore(@NotNull Game game) {
-        String url = BASE_URL;
+    public MetacriticAPI(@NotNull String baseUrl, @NotNull String apiKey,
+                         @NotNull VolleyRequestQueue requestQueue) {
+        mBaseUrl = baseUrl;
+        mApiKey = apiKey;
+        mRequestQueue = requestQueue;
+    }
+
+    public void fetchMetascore(@NotNull Game game) {
+        String url = mBaseUrl;
 
         Iterator<Platform> platforms = game.getPlatforms();
         while (platforms.hasNext()) {
@@ -47,12 +55,12 @@ public class Metacritic {
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     Map<String, String> headers = new HashMap<String, String>();
-                    headers.put("X-Mashape-Authorization", API_KEY);
+                    headers.put("X-Mashape-Authorization", mApiKey);
                     return headers;
                 }
             };
 
-            VolleyRequestQueue.add(req);
+            mRequestQueue.add(req);
 
             try {
                 JSONObject resultJson = future.get().getJSONObject(RESULT);
@@ -70,10 +78,6 @@ public class Metacritic {
         }
 
         Log.i(TAG, "Metascore not found for \"" + game.name + "\" on any platform (" + game.getPlatformsDisplayString() + ")");
-    }
-
-    public static void initialize(@NotNull String apiKey) {
-        API_KEY = apiKey;
     }
 
 }

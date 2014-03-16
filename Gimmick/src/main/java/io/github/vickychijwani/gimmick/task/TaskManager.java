@@ -1,11 +1,19 @@
 package io.github.vickychijwani.gimmick.task;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import io.github.vickychijwani.giantbomb.api.GamesAPI;
+import io.github.vickychijwani.giantbomb.api.VideosAPI;
 import io.github.vickychijwani.giantbomb.item.Game;
 import io.github.vickychijwani.giantbomb.item.GameList;
+import io.github.vickychijwani.gimmick.dagger.ApplicationContext;
+import io.github.vickychijwani.metacritic.api.MetacriticAPI;
 
 /**
  * Inspired by florianmski's traktoid TraktManager. This class is used to hold running tasks, so it
@@ -13,30 +21,29 @@ import io.github.vickychijwani.giantbomb.item.GameList;
  * update continues). A plain AsyncTask could do this, too, but here we can also restrict it to one
  * task running at a time.
  */
+@Singleton
 public class TaskManager {
 
-    private static TaskManager sInstance;
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private AddGameTask mAddTask;
     private final Context mContext;
+    private final GamesAPI mGamesAPI;
+    private final VideosAPI mVideosAPI;
+    private final MetacriticAPI mMetacriticAPI;
 
-    private TaskManager(Context context) {
+    @Inject
+    TaskManager(@ApplicationContext Context context,
+                GamesAPI gamesAPI, VideosAPI videosAPI,
+                MetacriticAPI metacriticAPI) {
         mContext = context;
+        mGamesAPI = gamesAPI;
+        mVideosAPI = videosAPI;
+        mMetacriticAPI = metacriticAPI;
     }
 
-    public static synchronized TaskManager getInstance(Context context) {
-        // Use the application context, which will ensure that you
-        // don't accidentally leak an Activity's context.
-        // See http://android-developers.blogspot.in/2009/01/avoiding-memory-leaks.html
-        if (sInstance == null) {
-            sInstance = new TaskManager(context.getApplicationContext());
-        }
-        return sInstance;
-    }
-
-    public synchronized void performAddTask(Game show) {
+    public synchronized void performAddTask(Game game) {
         GameList wrapper = new GameList();
-        wrapper.add(show);
+        wrapper.add(game);
         performAddTask(wrapper, false);
     }
 
@@ -56,14 +63,16 @@ public class TaskManager {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    mAddTask = (AddGameTask) new AddGameTask(mContext, games).execute();
+                    mAddTask = new AddGameTask(mContext, games,
+                            mGamesAPI, mVideosAPI, mMetacriticAPI);
+                    mAddTask.execute();
                 }
             });
         }
     }
 
     public boolean isAddTaskRunning() {
-        return ! (mAddTask == null || mAddTask.getStatus() == android.os.AsyncTask.Status.FINISHED);
+        return ! (mAddTask == null || mAddTask.getStatus() == AsyncTask.Status.FINISHED);
     }
 
 }

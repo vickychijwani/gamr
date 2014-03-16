@@ -1,14 +1,20 @@
 package io.github.vickychijwani.giantbomb.api;
 
+import com.android.volley.Request;
+
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
-import io.github.vickychijwani.giantbomb.api.URLBuilder.SortParam;
+import java.util.List;
+
+import io.github.vickychijwani.giantbomb.api.URLFactory.SortParam;
+import io.github.vickychijwani.giantbomb.item.ResourceType;
 import io.github.vickychijwani.network.volley.RequestTag;
+import io.github.vickychijwani.network.volley.VolleyRequestQueue;
 
-interface Resource<T> {
+abstract class BaseAPI<T> {
 
-    static final String TAG = "GiantBomb";
+    static final String TAG = "GiantBombAPI";
 
     // API fields
     static final String RESULTS = "results";
@@ -59,11 +65,44 @@ interface Resource<T> {
     static final RequestTag REQUEST_TAG_RECENT = RequestTag.generate();
 
 
+    // instance fields
+    private final ResourceType mResourceType;
+    private final VolleyRequestQueue mRequestQueue;
+    private final URLFactory mUrlfactory;
+
     // methods
-    public String getResourceName();
+    protected BaseAPI(ResourceType resourceType, VolleyRequestQueue requestQueue,
+                      URLFactory urlFactory) {
+        mResourceType = resourceType;
+        mRequestQueue = requestQueue;
+        mUrlfactory = urlFactory;
+    }
+
+    protected final URLFactory.Builder newDetailResourceURL(int resourceId) {
+        return mUrlfactory.newURL()
+                .setResource(mResourceType.getSingularName(), mResourceType.getId(), resourceId);
+    }
+
+    protected final URLFactory.Builder newListResourceURL() {
+        return mUrlfactory.newURL()
+                .setResource(mResourceType.getPluralName());
+    }
+
+    protected final RequestTag enqueueRequest(Request request) {
+        return mRequestQueue.add(request);
+    }
+
+    protected final RequestTag enqueueRequest(Request request, RequestTag tag) {
+        return mRequestQueue.add(request, tag);
+    }
 
     @NotNull
-    public T itemFromJson(@NotNull JSONObject json, @NotNull T item)
+    abstract T itemFromJson(@NotNull JSONObject json, @NotNull T item)
             throws GiantBombException;
+
+    @NotNull
+    List<T> itemListFromJson(@NotNull JSONObject json, @NotNull List<T> itemList) {
+        throw new UnsupportedOperationException(mResourceType.getPluralName() + " API does not support this operation");
+    }
 
 }

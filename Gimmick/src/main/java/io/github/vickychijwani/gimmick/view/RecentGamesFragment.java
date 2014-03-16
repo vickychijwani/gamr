@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import butterknife.ButterKnife;
-import io.github.vickychijwani.giantbomb.api.GiantBomb;
 import io.github.vickychijwani.giantbomb.item.GameList;
 import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.utility.AppUtils;
@@ -32,7 +31,7 @@ public class RecentGamesFragment extends AddGamesFragment {
             return;
         }
 
-        setRequestTag(GiantBomb.Games.fetchRecent(getResultsHandler(), getErrorHandler()));
+        setRequestTag(mGamesAPI.fetchRecent(getResultsHandler(), getErrorHandler()));
         onRequestInitiated();
     }
 

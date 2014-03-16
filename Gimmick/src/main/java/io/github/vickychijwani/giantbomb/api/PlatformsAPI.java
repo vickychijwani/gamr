@@ -16,31 +16,42 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import io.github.vickychijwani.giantbomb.item.Platform;
+import io.github.vickychijwani.giantbomb.item.ResourceType;
+import io.github.vickychijwani.gimmick.dagger.PlatformResourceType;
 import io.github.vickychijwani.network.json.JSONArrayIterator;
 import io.github.vickychijwani.network.volley.VolleyRequestQueue;
 
-class PlatformResource implements Resource<Platform> {
+@Singleton
+public class PlatformsAPI extends BaseAPI<Platform> {
 
-    private static PlatformResource sInstance = null;
+    @Inject
+    public PlatformsAPI(@PlatformResourceType ResourceType resourceType,
+                        VolleyRequestQueue requestQueue, URLFactory urlFactory) {
+        super(resourceType, requestQueue, urlFactory);
+    }
 
     /**
-     * Use {@link #getInstance()} instead.
+     * Fetch all platforms listed by the GiantBomb API in a <i>synchronous</i> manner.
+     * <p/>
+     * NOTE: never call this from the UI thread!
+     *
+     * @return  a list of all platforms listed by the GiantBomb API
      */
-    private PlatformResource() { }
-
     @Nullable
     public List<Platform> fetchAll() {
         Log.i(TAG, "Fetching all platforms...");
 
-        String url = URLBuilder.newInstance()
-                .setResource(getResourceName())
+        String url = newListResourceURL()
                 .setFieldList(new String[] { ID, NAME, ALIASES, ABBREVIATION })
                 .build();
 
         RequestFuture<JSONObject> future = RequestFuture.newFuture();
         JsonObjectRequest req = new JsonObjectRequest(url, null, future, future);
-        VolleyRequestQueue.add(req);
+        enqueueRequest(req);
 
         try {
             JSONArray platformsJson = future.get().getJSONArray(RESULTS);
@@ -64,21 +75,9 @@ class PlatformResource implements Resource<Platform> {
         return null;
     }
 
-    public static PlatformResource getInstance() {
-        if (sInstance == null) {
-            sInstance = new PlatformResource();
-        }
-        return sInstance;
-    }
-
-    @Override
-    public String getResourceName() {
-        return "platforms";
-    }
-
     @NotNull
     @Override
-    public Platform itemFromJson(@NotNull JSONObject json, @NotNull Platform platform) {
+    Platform itemFromJson(@NotNull JSONObject json, @NotNull Platform platform) {
         try {
             platform.setGiantBombId(json.getInt(ID));
             platform.setName(json.getString(NAME));

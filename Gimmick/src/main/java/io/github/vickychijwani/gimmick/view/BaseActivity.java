@@ -10,14 +10,18 @@ import android.support.v4.view.ViewPager;
 import android.view.MenuItem;
 
 import com.astuetz.PagerSlidingTabStrip;
+import com.squareup.otto.Bus;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import io.github.vickychijwani.gimmick.GamrApplication;
 import io.github.vickychijwani.gimmick.R;
-import io.github.vickychijwani.gimmick.utility.EventBus;
+import io.github.vickychijwani.gimmick.pref.AppState;
 import io.github.vickychijwani.gimmick.view.adapter.BaseFragmentPagerAdapter;
 import io.github.vickychijwani.utility.DeviceUtils;
 
@@ -25,9 +29,14 @@ public abstract class BaseActivity extends FragmentActivity {
 
     private Object mEventHandler;
 
+    @Inject AppState mAppState;
+    @Inject Bus mEventBus;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        GamrApplication.getApp(this).inject(this);
 
         ActionBar actionBar = getActionBar();
         actionBar.setIcon(R.drawable.ic_logo);
@@ -37,7 +46,7 @@ public abstract class BaseActivity extends FragmentActivity {
     @Override
     protected void onPause() {
         if (usesEventBus() && mEventHandler != null) {
-            EventBus.getInstance().unregister(mEventHandler);
+            mEventBus.unregister(mEventHandler);
         }
         super.onPause();
     }
@@ -47,8 +56,13 @@ public abstract class BaseActivity extends FragmentActivity {
         super.onResume();
         if (usesEventBus()) {
             mEventHandler = getEventHandler();
-            EventBus.getInstance().register(mEventHandler);
+            mEventBus.register(mEventHandler);
         }
+    }
+
+    @NotNull
+    protected final AppState getAppState() {
+        return mAppState;
     }
 
     /**
@@ -135,8 +149,8 @@ public abstract class BaseActivity extends FragmentActivity {
 
     /**
      * Override this and return true if your activity subscribes to (or produces initial events for)
-     * the global {@link EventBus}. Also override {@link #getEventHandler()} and return an
-     * {@link Object} having methods annotated with {@link com.squareup.otto.Subscribe}.
+     * the global {@link Bus}. Also override {@link #getEventHandler()} and return an {@link Object}
+     * having methods annotated with {@link com.squareup.otto.Subscribe}.
      *
      * @see #getEventHandler()
      */
@@ -147,7 +161,7 @@ public abstract class BaseActivity extends FragmentActivity {
     /**
      * Override this and return an {@link Object} having methods annotated with {@link
      * com.squareup.otto.Subscribe}. Also override {@link #usesEventBus()} and return true if your
-     * activity subscribes to (or produces initial events for) the global {@link EventBus}.
+     * activity subscribes to (or produces initial events for) the global {@link Bus}.
      *
      * @return an {@link Object} having methods annotated with {@link com.squareup.otto.Subscribe}.
      * @see #usesEventBus()

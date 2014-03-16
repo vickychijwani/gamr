@@ -14,17 +14,17 @@ import android.net.Uri;
 import android.util.Log;
 import android.util.SparseArray;
 
-import com.squareup.otto.Produce;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
-import io.github.vickychijwani.giantbomb.api.ResourceTypesChangedEvent;
 import io.github.vickychijwani.giantbomb.item.Game;
 import io.github.vickychijwani.giantbomb.item.Platform;
 import io.github.vickychijwani.giantbomb.item.ResourceType;
@@ -35,7 +35,6 @@ import io.github.vickychijwani.gimmick.database.DatabaseContract.GameTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.PlatformTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.ResourceTypeTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.VideoTable;
-import io.github.vickychijwani.gimmick.utility.EventBus;
 
 public class GamrProvider extends ContentProvider {
 
@@ -66,18 +65,12 @@ public class GamrProvider extends ContentProvider {
     @Override
     public boolean onCreate() {
         final Context context = getContext();
+
         sUriMatcher = buildUriMatcher(context);
         DBHelper.createInstance(context);
         sInstance = this;
 
-        EventBus.getInstance().register(this);
         return true;
-    }
-
-    @Override
-    public void shutdown() {
-        EventBus.getInstance().unregister(this);
-        super.shutdown();
     }
 
     /**
@@ -234,27 +227,24 @@ public class GamrProvider extends ContentProvider {
         }
     }
 
-    @Produce public ResourceTypesChangedEvent getResourceTypesChangedEvent() {
-        Log.i(TAG, "Resource types changed, reloading...");
-        Context context = getContext();
-        ResourceTypesChangedEvent event = new ResourceTypesChangedEvent();
+    public static Map<String, ResourceType> getResourceTypes(Context context) {
+        Log.i(TAG, "Fetching resource types...");
         if (context != null) {
             Cursor cursor = context.getContentResolver().query(ResourceTypeTable.CONTENT_URI_LIST,
                     null, null, null, null);
             if (cursor != null) {
-                List<ResourceType> resourceTypes = new ArrayList<ResourceType>(cursor.getCount());
+                Map<String, ResourceType> resourceTypes = new HashMap<String, ResourceType>(cursor.getCount());
                 cursor.moveToPosition(-1);
                 while (cursor.moveToNext()) {
                     ResourceType resourceType = new ResourceType(cursor);
-                    resourceTypes.add(resourceType);
+                    resourceTypes.put(resourceType.getSingularName(), resourceType);
                 }
                 cursor.close();
 
-                event.resourceTypes = resourceTypes;
-                return event;
+                return resourceTypes;
             }
         }
-        return event;
+        return Collections.emptyMap();
     }
 
     @Nullable
@@ -443,7 +433,7 @@ public class GamrProvider extends ContentProvider {
 
         // Platforms
         matcher.addURI(authority, PlatformTable.TABLE_NAME, PLATFORMS);
-        matcher.addURI(authority, PlatformTable.TABLE_NAME + "/#", PLATFORMS_ID );
+        matcher.addURI(authority, PlatformTable.TABLE_NAME + "/#", PLATFORMS_ID);
 
         // Game <=> platform mappings
         matcher.addURI(authority, GamePlatformMappingTable.TABLE_NAME, GAME_PLATFORM_MAPPINGS);

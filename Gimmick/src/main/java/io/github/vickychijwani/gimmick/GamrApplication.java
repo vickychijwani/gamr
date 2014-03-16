@@ -2,13 +2,16 @@ package io.github.vickychijwani.gimmick;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
+import android.content.Context;
 import android.os.StrictMode;
 
-import io.github.vickychijwani.giantbomb.api.GiantBomb;
-import io.github.vickychijwani.gimmick.pref.AppState;
-import io.github.vickychijwani.gimmick.pref.UserPrefs;
-import io.github.vickychijwani.metacritic.api.Metacritic;
-import io.github.vickychijwani.network.volley.VolleyRequestQueue;
+import java.util.Map;
+
+import dagger.ObjectGraph;
+import io.github.vickychijwani.giantbomb.api.GiantBombAPIModule;
+import io.github.vickychijwani.giantbomb.item.ResourceType;
+import io.github.vickychijwani.gimmick.database.GamrProvider;
+import io.github.vickychijwani.metacritic.api.MetacriticAPIModule;
 import io.github.vickychijwani.utility.DeviceUtils;
 
 public class GamrApplication extends Application {
@@ -19,22 +22,34 @@ public class GamrApplication extends Application {
      */
     public static final String CONTENT_AUTHORITY = "io.github.vickychijwani.gimmick.provider";
 
+    private ObjectGraph mObjectGraph;
+
     @Override
     public void onCreate() {
         super.onCreate();
-
-        // initialize preferences
-        AppState.initialize(this);
-        UserPrefs.initialize(this);
-
-        // initialize network request queue
-        VolleyRequestQueue.initialize(this);
-
-        // initialize API clients
-        GiantBomb.initialize(getString(R.string.giantbomb_api_key));
-        Metacritic.initialize(getString(R.string.mashape_api_key));
-
+        buildObjectGraph();
         enableStrictMode();
+    }
+
+    private void buildObjectGraph() {
+        Map<String, ResourceType> resourceTypes = GamrProvider.getResourceTypes(this);
+        GiantBombAPIModule.setAPIKey(getString(R.string.giantbomb_api_key));
+        GiantBombAPIModule.setResourceTypes(resourceTypes);
+        MetacriticAPIModule.setAPIKey(getString(R.string.mashape_api_key));
+
+        mObjectGraph = ObjectGraph.create(new GamrModule(this));
+    }
+
+    public void inject(Object o) {
+        mObjectGraph.inject(o);
+    }
+
+    public <T> T get(Class<T> klazz) {
+        return mObjectGraph.get(klazz);
+    }
+
+    public static GamrApplication getApp(Context context) {
+        return (GamrApplication) context.getApplicationContext();
     }
 
     /**

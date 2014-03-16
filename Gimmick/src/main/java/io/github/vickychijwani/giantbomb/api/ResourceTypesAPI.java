@@ -15,30 +15,39 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import io.github.vickychijwani.giantbomb.item.ResourceType;
 import io.github.vickychijwani.network.json.JSONArrayIterator;
 import io.github.vickychijwani.network.volley.VolleyRequestQueue;
 
-class ResourceTypeResource implements Resource<ResourceType> {
+@Singleton
+public class ResourceTypesAPI extends BaseAPI<ResourceType> {
 
-    private static ResourceTypeResource sInstance = null;
+    @Inject
+    public ResourceTypesAPI(VolleyRequestQueue requestQueue, URLFactory urlFactory) {
+        super(new ResourceType(0, "resource_type", "resource_types"),   // dummy ResourceType
+                requestQueue, urlFactory);
+    }
 
     /**
-     * Use {@link #getInstance()} instead.
+     * Fetch all resource types supported by the GiantBomb API in a <i>synchronous</i> manner.
+     * <p/>
+     * NOTE: never call this from the UI thread!
+     *
+     * @return  a list of all resource types supported by the GiantBomb API
      */
-    private ResourceTypeResource() { }
-
     @Nullable
     public List<ResourceType> fetchAll() {
         Log.i(TAG, "Fetching resource types...");
 
-        String url = URLBuilder.newInstance()
-                .setResource(getResourceName())
+        String url = newListResourceURL()
                 .build();
 
         RequestFuture<JSONObject> future = RequestFuture.newFuture();
         JsonObjectRequest req = new JsonObjectRequest(url, null, future, future);
-        VolleyRequestQueue.add(req);
+        enqueueRequest(req);
 
         try {
             JSONArray typesJson = future.get().getJSONArray(RESULTS);    // block until request completes
@@ -62,21 +71,9 @@ class ResourceTypeResource implements Resource<ResourceType> {
         return null;
     }
 
-    public static ResourceTypeResource getInstance() {
-        if (sInstance == null) {
-            sInstance = new ResourceTypeResource();
-        }
-        return sInstance;
-    }
-
-    @Override
-    public String getResourceName() {
-        return "types";
-    }
-
     @NotNull
     @Override
-    public ResourceType itemFromJson(@NotNull JSONObject json, @NotNull ResourceType resourceType) {
+    ResourceType itemFromJson(@NotNull JSONObject json, @NotNull ResourceType resourceType) {
         try {
             resourceType.setId(json.getInt(ID));
             resourceType.setSingularName(json.getString(DETAIL_RESOURCE_NAME));

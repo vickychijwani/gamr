@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import butterknife.ButterKnife;
-import io.github.vickychijwani.giantbomb.api.GiantBomb;
 import io.github.vickychijwani.giantbomb.item.GameList;
 import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.utility.AppUtils;
@@ -32,7 +31,7 @@ public class UpcomingGamesFragment extends AddGamesFragment {
             return;
         }
 
-        setRequestTag(GiantBomb.Games.fetchUpcoming(getResultsHandler(), getErrorHandler()));
+        setRequestTag(mGamesAPI.fetchUpcoming(getResultsHandler(), getErrorHandler()));
         onRequestInitiated();
     }
 

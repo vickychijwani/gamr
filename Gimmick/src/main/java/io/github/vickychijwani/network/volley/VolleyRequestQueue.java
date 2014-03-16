@@ -1,30 +1,26 @@
 package io.github.vickychijwani.network.volley;
 
-import android.content.Context;
 import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.Volley;
 
 import org.jetbrains.annotations.NotNull;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
 public class VolleyRequestQueue {
 
     private static final String TAG = "VolleyRequestQueue";
 
-    private static RequestQueue sInstance;
+    private final RequestQueue mRequestQueue;
 
-    private VolleyRequestQueue() { }
-
-    public static void initialize(@NotNull Context context) throws IllegalArgumentException {
-        if (context.getApplicationContext() == null) {
-            throw new IllegalArgumentException("context.getApplicationContext() returned null");
-        }
-        if (sInstance == null) {
-            sInstance = Volley.newRequestQueue(context.getApplicationContext());
-        }
+    @Inject
+    public VolleyRequestQueue(@NotNull RequestQueue requestQueue) {
+        mRequestQueue = requestQueue;
     }
 
     /**
@@ -36,14 +32,14 @@ public class VolleyRequestQueue {
      * @return      the tag that actually got attached to {@code req} (i.e., {@code tag}, or
      *              {@link RequestTag#DEFAULT} if {@code tag} was null)
      */
-    public static <T> RequestTag add(Request<T> req, RequestTag tag) {
+    public <T> RequestTag add(Request<T> req, RequestTag tag) {
         VolleyLog.d("Adding request to queue: %s", req.getUrl());
 
         // set the default tag if tag is empty
         tag = (tag == null) ? RequestTag.DEFAULT : tag;
         req.setTag(tag);
 
-        sInstance.add(req);
+        mRequestQueue.add(req);
         return tag;
     }
 
@@ -52,7 +48,7 @@ public class VolleyRequestQueue {
      *
      * @param req   the request to add
      */
-    public static <T> RequestTag add(Request<T> req) {
+    public <T> RequestTag add(Request<T> req) {
         return add(req, RequestTag.DEFAULT);
     }
 
@@ -61,9 +57,9 @@ public class VolleyRequestQueue {
      *
      * @param tag   the tag whose requests are to be cancelled
      */
-    public static void cancelAll(@NotNull RequestTag tag) {
+    public void cancelAll(@NotNull RequestTag tag) {
         Log.i(TAG, "Cancelling all pending requests tagged '" + tag.toString() + "'");
-        sInstance.cancelAll(tag);
+        mRequestQueue.cancelAll(tag);
     }
 
 }

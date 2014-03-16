@@ -15,21 +15,36 @@ import java.text.ParseException;
 import java.util.Iterator;
 import java.util.concurrent.ExecutionException;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import io.github.vickychijwani.giantbomb.item.Game;
+import io.github.vickychijwani.giantbomb.item.ResourceType;
 import io.github.vickychijwani.giantbomb.item.Video;
+import io.github.vickychijwani.gimmick.dagger.VideoResourceType;
 import io.github.vickychijwani.network.json.JSONArrayIterator;
 import io.github.vickychijwani.network.volley.VolleyRequestQueue;
 import io.github.vickychijwani.utility.DateTimeUtils;
 
-class VideoResource implements Resource<Video> {
+@Singleton
+public class VideosAPI extends BaseAPI<Video> {
 
-    private static VideoResource sInstance = null;
+    @Inject
+    public VideosAPI(@VideoResourceType ResourceType resourceType,
+                     VolleyRequestQueue requestQueue, URLFactory urlFactory) {
+        super(resourceType, requestQueue, urlFactory);
+    }
 
     /**
-     * Use {@link #getInstance()} instead.
+     * Fetch a game's videos' details in a <i>synchronous</i> manner.
+     * <p/>
+     * NOTE: never call this from the UI thread!
+     *
+     * @param game  the {@link Game} for which to fetch video data. It must have
+     *              {@link io.github.vickychijwani.giantbomb.item.Video}s with a valid GiantBomb
+     *              video ID on each of them.
+     * @return      the {@link Game} that was passed in, augmented with the requested video data
      */
-    private VideoResource() { }
-
     @NotNull
     public Game fetchAllForGame(@NotNull Game game)
             throws ExecutionException, InterruptedException, JSONException {
@@ -49,8 +64,7 @@ class VideoResource implements Resource<Video> {
             return game;
         }
 
-        String url = URLBuilder.newInstance()
-                .setResource(getResourceName())
+        String url = newListResourceURL()
                 .addParam("filter", ID + ":" + videoIds)
                 .build();
 
@@ -58,7 +72,7 @@ class VideoResource implements Resource<Video> {
 
         RequestFuture<JSONObject> future = RequestFuture.newFuture();
         JsonObjectRequest req = new JsonObjectRequest(url, null, future, future);
-        VolleyRequestQueue.add(req);
+        enqueueRequest(req);
 
         try {
             JSONArray videoJsonArray = future.get().getJSONArray(RESULTS);  // block until request completes
@@ -93,21 +107,9 @@ class VideoResource implements Resource<Video> {
         return game;
     }
 
-    public static VideoResource getInstance() {
-        if (sInstance == null) {
-            sInstance = new VideoResource();
-        }
-        return sInstance;
-    }
-
-    @Override
-    public String getResourceName() {
-        return "videos";
-    }
-
     @Override
     @NotNull
-    public Video itemFromJson(@NotNull JSONObject videoJson, @NotNull Video video) {
+    Video itemFromJson(@NotNull JSONObject videoJson, @NotNull Video video) {
         // game id is set automatically when calling Game#addVideo()
 
         try {

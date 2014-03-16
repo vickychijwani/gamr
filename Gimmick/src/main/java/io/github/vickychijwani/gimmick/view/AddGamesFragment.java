@@ -1,5 +1,6 @@
 package io.github.vickychijwani.gimmick.view;
 
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
@@ -12,8 +13,12 @@ import com.meetme.android.multistateview.MultiStateView;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.inject.Inject;
+
 import butterknife.InjectView;
+import io.github.vickychijwani.giantbomb.api.GamesAPI;
 import io.github.vickychijwani.giantbomb.item.GameList;
+import io.github.vickychijwani.gimmick.GamrApplication;
 import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.view.adapter.AddGamesAdapter;
 import io.github.vickychijwani.network.volley.RequestTag;
@@ -29,6 +34,15 @@ public abstract class AddGamesFragment extends BaseFragment {
 
     @InjectView(android.R.id.list) AbsListView mGameList;
     @InjectView(R.id.list_container) MultiStateView mGameListContainer;
+
+    @Inject GamesAPI mGamesAPI;
+    @Inject VolleyRequestQueue mRequestQueue;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        GamrApplication.getApp(getActivity()).inject(this);
+    }
 
     /**
      * Initiate a network request to fetch some games.
@@ -89,7 +103,7 @@ public abstract class AddGamesFragment extends BaseFragment {
 
     private void cancelPendingRequests() {
         if (mRequestTag != null) {
-            VolleyRequestQueue.cancelAll(mRequestTag);
+            mRequestQueue.cancelAll(mRequestTag);
             mRequestTag = null;
         }
     }

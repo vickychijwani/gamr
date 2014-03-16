@@ -14,6 +14,10 @@ import com.squareup.otto.Subscribe;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.inject.Inject;
+
+import dagger.Lazy;
+import io.github.vickychijwani.gimmick.GamrApplication;
 import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.pref.AppState;
 import io.github.vickychijwani.gimmick.task.FirstRunTask;
@@ -21,11 +25,13 @@ import io.github.vickychijwani.gimmick.utility.event.FirstRunTaskDoneEvent;
 
 public abstract class LauncherActivity extends BaseActivity {
 
+    @Inject Lazy<FirstRunTask> mFirstRunTask;
     FirstRunDialog mFirstRunDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        GamrApplication.getApp(this).inject(this);
         checkFirstRun();
     }
 
@@ -35,10 +41,10 @@ public abstract class LauncherActivity extends BaseActivity {
     }
 
     private void checkFirstRun() {
-        if (AppState.getInstance().getBoolean(AppState.Key.FIRST_RUN)) {
+        if (getAppState().getBoolean(AppState.Key.FIRST_RUN)) {
             mFirstRunDialog = new FirstRunDialog();
             mFirstRunDialog.show(getSupportFragmentManager(), null);
-            new FirstRunTask().execute();
+            mFirstRunTask.get().execute();
         }
     }
 

@@ -8,18 +8,22 @@ import android.widget.Toast;
 
 import java.util.LinkedList;
 
-import io.github.vickychijwani.giantbomb.api.GiantBomb;
+import io.github.vickychijwani.giantbomb.api.GamesAPI;
+import io.github.vickychijwani.giantbomb.api.VideosAPI;
 import io.github.vickychijwani.giantbomb.item.Game;
 import io.github.vickychijwani.giantbomb.item.GameList;
 import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.database.GamrProvider;
-import io.github.vickychijwani.metacritic.api.Metacritic;
+import io.github.vickychijwani.metacritic.api.MetacriticAPI;
 import io.github.vickychijwani.utility.NetworkUtils;
 
 public class AddGameTask extends AsyncTask<Void, AddGameTask.Result, Void> {
 
     private final Context mContext;
     private final LinkedList<Game> mAddQueue = new LinkedList<Game>();
+    private final GamesAPI mGamesAPI;
+    private final VideosAPI mVideosAPI;
+    private final MetacriticAPI mMetacriticAPI;
 
     private boolean mIsFinishedAddingGames = false;
 
@@ -46,10 +50,14 @@ public class AddGameTask extends AsyncTask<Void, AddGameTask.Result, Void> {
 
     private static final String TAG = "AddGameTask";
 
-    public AddGameTask(Context context, GameList games) {
+    public AddGameTask(Context context, GameList games,
+                       GamesAPI gamesAPI, VideosAPI videosAPI, MetacriticAPI metacriticAPI) {
         // use an activity-independent context
         mContext = context.getApplicationContext();
         mAddQueue.addAll(games);
+        mGamesAPI = gamesAPI;
+        mVideosAPI = videosAPI;
+        mMetacriticAPI = metacriticAPI;
     }
 
     /**
@@ -105,14 +113,14 @@ public class AddGameTask extends AsyncTask<Void, AddGameTask.Result, Void> {
                 }
 
                 Game game = mAddQueue.removeFirst();
-                Game fullGame = GiantBomb.Games.fetch(game.giantBombId);
+                Game fullGame = mGamesAPI.fetch(game.giantBombId);
 
                 if (fullGame == null) {
                     result = new Result(StatusCode.UNKNOWN_ERROR, game.name);
                 } else {
-                    Metacritic.fetchMetascore(fullGame);    // metascore is not essential
+                    mMetacriticAPI.fetchMetascore(fullGame);    // metascore is not essential
                     try {
-                        GiantBomb.Videos.fetchAllForGame(fullGame); // videos are required when adding games
+                        mVideosAPI.fetchAllForGame(fullGame); // videos are required when adding games
                         if (GamrProvider.addGame(fullGame)) {
                             result = new Result(StatusCode.SUCCESS, game.name);
                         } else {

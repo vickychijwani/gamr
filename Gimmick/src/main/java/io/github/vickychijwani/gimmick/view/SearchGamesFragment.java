@@ -14,7 +14,6 @@ import com.meetme.android.multistateview.MultiStateView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
-import io.github.vickychijwani.giantbomb.api.GiantBomb;
 import io.github.vickychijwani.giantbomb.item.GameList;
 import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.utility.AppUtils;
@@ -67,7 +66,7 @@ public class SearchGamesFragment extends AddGamesFragment {
             return;
         }
 
-        setRequestTag(GiantBomb.Games.search(query, getResultsHandler(), getErrorHandler()));
+        setRequestTag(mGamesAPI.search(query, getResultsHandler(), getErrorHandler()));
         onRequestInitiated();
     }
 

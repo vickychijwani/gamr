@@ -5,8 +5,11 @@ import android.view.View;
 
 import org.jetbrains.annotations.Nullable;
 
+import javax.inject.Inject;
+
 import io.github.vickychijwani.giantbomb.item.Game;
 import io.github.vickychijwani.giantbomb.item.GameList;
+import io.github.vickychijwani.gimmick.GamrApplication;
 import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.task.TaskManager;
 
@@ -14,9 +17,12 @@ public class AddGamesAdapter extends GameListAdapter {
 
     private static final int LAYOUT = R.layout.component_game_add;
 
+    @Inject TaskManager mTaskManager;
+
     public AddGamesAdapter(Context context, GameList objects,
                            @Nullable View.OnClickListener detailsButtonListener) {
         super(context, LAYOUT, objects, detailsButtonListener);
+        GamrApplication.getApp(context).inject(this);
     }
 
     @Override
@@ -26,7 +32,7 @@ public class AddGamesAdapter extends GameListAdapter {
         viewHolder.addbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TaskManager.getInstance(getContext()).performAddTask(item);
+                mTaskManager.performAddTask(item);
                 item.isAdded = true;
                 v.setVisibility(View.INVISIBLE);
             }

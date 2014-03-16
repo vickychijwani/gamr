@@ -30,6 +30,7 @@
       <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/build/source/aidl/defaultFlavor/debug" isTestSource="false" generated="true" />
       <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/build/source/buildConfig/defaultFlavor/debug" isTestSource="false" generated="true" />
       <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/build/source/rs/defaultFlavor/debug" isTestSource="false" generated="true" />
+      <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/build/source/apt/defaultFlavor/debug" isTestSource="false" generated="true" />
       <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/build/res/rs/defaultFlavor/debug" type="java-resource" />
       <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/defaultFlavorDebug/res" type="java-resource" />
       <sourceFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Gimmick/src/defaultFlavorDebug/resources" type="java-resource" />
@@ -96,8 +97,10 @@
     <orderEntry type="library" exported="" name="glide-minus-volley-dcbac15" level="project" />
     <orderEntry type="library" exported="" name="otto-1.3.4" level="project" />
     <orderEntry type="library" exported="" name="pagerslidingtabstrip-1.0.1" level="project" />
+    <orderEntry type="library" exported="" name="dagger-1.2.1" level="project" />
     <orderEntry type="library" exported="" name="annotations-13.0" level="project" />
     <orderEntry type="library" exported="" name="butterknife-4.0.1" level="project" />
+    <orderEntry type="library" exported="" name="javax.inject-1" level="project" />
     <orderEntry type="library" exported="" name="support-v4-19.0.1" level="project" />
     <orderEntry type="module" module-name="Android-MultiStateView" exported="" />
     <orderEntry type="module" module-name="android-utils" exported="" />
