@@ -32,7 +32,6 @@ import io.github.vickychijwani.giantbomb.item.Platform;
 import io.github.vickychijwani.giantbomb.item.ReleaseDate;
 import io.github.vickychijwani.giantbomb.item.ResourceType;
 import io.github.vickychijwani.giantbomb.item.Video;
-import io.github.vickychijwani.gimmick.dagger.GameResourceType;
 import io.github.vickychijwani.network.json.JSONArrayIterator;
 import io.github.vickychijwani.network.json.JSONPropertyIterator;
 import io.github.vickychijwani.network.volley.RequestTag;
@@ -45,10 +44,9 @@ public class GamesAPI extends BaseAPI<Game> {
     private final PlatformsAPI mPlatformsApi;
 
     @Inject
-    public GamesAPI(@GameResourceType ResourceType resourceType,
-                    VolleyRequestQueue requestQueue, URLFactory urlFactory,
+    public GamesAPI(VolleyRequestQueue requestQueue, URLFactory urlFactory,
                     PlatformsAPI platformsApi) {
-        super(resourceType, requestQueue, urlFactory);
+        super(ResourceType.GAME, requestQueue, urlFactory);
         mPlatformsApi = platformsApi;
     }
 

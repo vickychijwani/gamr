@@ -14,7 +14,6 @@ import io.github.vickychijwani.gimmick.database.DatabaseContract.GameListTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.GamePlatformMappingTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.GameTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.PlatformTable;
-import io.github.vickychijwani.gimmick.database.DatabaseContract.ResourceTypeTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.VideoTable;
 import io.github.vickychijwani.utility.DeviceUtils;
 
@@ -55,7 +54,6 @@ public class DBHelper extends BaseDBHelper {
         db.execSQL(PlatformTable.createTable());
         db.execSQL(GamePlatformMappingTable.createTable());
         db.execSQL(VideoTable.createTable());
-        db.execSQL(ResourceTypeTable.createTable());
     }
 
     @Override
@@ -66,15 +64,6 @@ public class DBHelper extends BaseDBHelper {
     @Override
     public void onOpen(SQLiteDatabase db) {
         validateInitialState(db);
-    }
-
-    /**
-     * Add a resource type to the database.
-     *
-     * @return      id of the newly-inserted resource type if successful, else -1
-     */
-    public static long addResourceType(ContentValues values) {
-        return insertOrIgnore(ResourceTypeTable.TABLE_NAME, values);
     }
 
     /**
@@ -111,13 +100,6 @@ public class DBHelper extends BaseDBHelper {
      */
     public static long addVideo(@NotNull ContentValues values) {
         return insertOrIgnore(VideoTable.TABLE_NAME, values);
-    }
-
-    @NotNull
-    public static Cursor getAllResourceTypes(@Nullable String[] projection) {
-        return (Cursor) select(projection)
-                .from(ResourceTypeTable.TABLE_NAME)
-                .execute();
     }
 
     @NotNull

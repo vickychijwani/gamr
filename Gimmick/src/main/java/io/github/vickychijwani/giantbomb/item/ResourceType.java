@@ -1,53 +1,34 @@
 package io.github.vickychijwani.giantbomb.item;
 
-import android.database.Cursor;
-
 import org.jetbrains.annotations.NotNull;
 
-import io.github.vickychijwani.gimmick.database.DatabaseContract.ResourceTypeTable;
+public enum ResourceType {
 
-public class ResourceType {
+    GAME(3030, "game", "games"),
+    PLATFORM(3045, "platform", "platforms"),
+    VIDEO(2300, "video", "videos"),
+    ;
 
     private int mId;
     private String mSingularName;
     private String mPluralName;
 
-    public ResourceType() { }
-
-    public ResourceType(int id, @NotNull String singularName, @NotNull String pluralName) {
+    private ResourceType(int id, @NotNull String singularName, @NotNull String pluralName) {
         mId = id;
         mSingularName = singularName;
         mPluralName = pluralName;
-    }
-
-    public ResourceType(Cursor cursor) {
-        mId = cursor.getInt(cursor.getColumnIndexOrThrow(ResourceTypeTable._ID));
-        mSingularName = cursor.getString(cursor.getColumnIndexOrThrow(ResourceTypeTable.COL_DETAIL_RESOURCE_NAME));
-        mPluralName = cursor.getString(cursor.getColumnIndexOrThrow(ResourceTypeTable.COL_LIST_RESOURCE_NAME));
     }
 
     public int getId() {
         return mId;
     }
 
-    public void setId(int id) {
-        mId = id;
-    }
-
     public String getSingularName() {
         return mSingularName;
     }
 
-    public void setSingularName(String singularName) {
-        mSingularName = singularName;
-    }
-
     public String getPluralName() {
         return mPluralName;
-    }
-
-    public void setPluralName(String pluralName) {
-        mPluralName = pluralName;
     }
 
 }

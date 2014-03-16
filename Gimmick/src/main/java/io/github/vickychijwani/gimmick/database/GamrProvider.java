@@ -19,21 +19,15 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 import io.github.vickychijwani.giantbomb.item.Game;
 import io.github.vickychijwani.giantbomb.item.Platform;
-import io.github.vickychijwani.giantbomb.item.ResourceType;
 import io.github.vickychijwani.giantbomb.item.Video;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.GameListTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.GamePlatformMappingTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.GameTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.PlatformTable;
-import io.github.vickychijwani.gimmick.database.DatabaseContract.ResourceTypeTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.VideoTable;
 
 public class GamrProvider extends ContentProvider {
@@ -44,8 +38,6 @@ public class GamrProvider extends ContentProvider {
     private static UriMatcher sUriMatcher;
 
     private static SparseArray<Platform> mAllPlatforms = null;
-
-    private static final int RESOURCE_TYPES = 0;
 
     private static final int GAMES = 100;
     private static final int GAMES_ID = 101;
@@ -117,9 +109,6 @@ public class GamrProvider extends ContentProvider {
         Cursor cursor;
 
         switch (match) {
-            case RESOURCE_TYPES:
-                cursor = DBHelper.getAllResourceTypes(projection);
-                break;
             case GAMES_ID:
                 cursor = DBHelper.getGame(ContentUris.parseId(uri));
                 break;
@@ -155,12 +144,6 @@ public class GamrProvider extends ContentProvider {
         assert getContext() != null;
 
         switch (match) {
-            case RESOURCE_TYPES:
-                insertedId = DBHelper.addResourceType(values);
-                if (insertedId >= 0) {
-                    insertedUri = ContentUris.withAppendedId(ResourceTypeTable.CONTENT_URI_LIST, insertedId);
-                }
-                break;
             case LISTS_GAMES:
                 insertedId = DBHelper.addGame(values);
                 if (insertedId >= 0) {
@@ -227,49 +210,12 @@ public class GamrProvider extends ContentProvider {
         }
     }
 
-    public static Map<String, ResourceType> getResourceTypes(Context context) {
-        Log.i(TAG, "Fetching resource types...");
-        if (context != null) {
-            Cursor cursor = context.getContentResolver().query(ResourceTypeTable.CONTENT_URI_LIST,
-                    null, null, null, null);
-            if (cursor != null) {
-                Map<String, ResourceType> resourceTypes = new HashMap<String, ResourceType>(cursor.getCount());
-                cursor.moveToPosition(-1);
-                while (cursor.moveToNext()) {
-                    ResourceType resourceType = new ResourceType(cursor);
-                    resourceTypes.put(resourceType.getSingularName(), resourceType);
-                }
-                cursor.close();
-
-                return resourceTypes;
-            }
-        }
-        return Collections.emptyMap();
-    }
-
     @Nullable
     public static Platform getPlatform(int giantBombId) {
         if (mAllPlatforms == null) {
             sInstance.reloadPlatforms();
         }
         return mAllPlatforms.get(giantBombId);
-    }
-
-    public static boolean addResourceTypes(List<ResourceType> resourceTypes) {
-        ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>(resourceTypes.size());
-        for (ResourceType type : resourceTypes) {
-            ops.add(ContentProviderOperation.newInsert(ResourceTypeTable.CONTENT_URI_INSERT)
-                    .withValues(ResourceTypeTable.contentValuesFor(type))
-                    .build());
-        }
-
-        try {
-            sInstance.applyBatch(ops);
-            return true;
-        } catch (OperationApplicationException e) {
-            Log.e(TAG, "Could not add resource types: " + Log.getStackTraceString(e));
-            return false;
-        }
     }
 
     public static boolean addGame(Game game)
@@ -383,8 +329,6 @@ public class GamrProvider extends ContentProvider {
     public String getType(Uri uri) {
         final int match = sUriMatcher.match(uri);
         switch (match) {
-            case RESOURCE_TYPES:
-                return ResourceTypeTable.CONTENT_TYPE;
             case GAMES:
                 return GameTable.CONTENT_TYPE;
             case GAMES_ID:
@@ -417,9 +361,6 @@ public class GamrProvider extends ContentProvider {
     private static UriMatcher buildUriMatcher(Context context) {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = context.getPackageName() + ".provider";
-
-        // Resource types
-        matcher.addURI(authority, ResourceTypeTable.TABLE_NAME, RESOURCE_TYPES);
 
         // Games
         matcher.addURI(authority, GameTable.TABLE_NAME, GAMES);

@@ -21,7 +21,6 @@ import javax.inject.Singleton;
 import io.github.vickychijwani.giantbomb.item.Game;
 import io.github.vickychijwani.giantbomb.item.ResourceType;
 import io.github.vickychijwani.giantbomb.item.Video;
-import io.github.vickychijwani.gimmick.dagger.VideoResourceType;
 import io.github.vickychijwani.network.json.JSONArrayIterator;
 import io.github.vickychijwani.network.volley.VolleyRequestQueue;
 import io.github.vickychijwani.utility.DateTimeUtils;
@@ -30,9 +29,8 @@ import io.github.vickychijwani.utility.DateTimeUtils;
 public class VideosAPI extends BaseAPI<Video> {
 
     @Inject
-    public VideosAPI(@VideoResourceType ResourceType resourceType,
-                     VolleyRequestQueue requestQueue, URLFactory urlFactory) {
-        super(resourceType, requestQueue, urlFactory);
+    public VideosAPI(VolleyRequestQueue requestQueue, URLFactory urlFactory) {
+        super(ResourceType.VIDEO, requestQueue, urlFactory);
     }
 
     /**

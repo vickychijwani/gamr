@@ -21,7 +21,6 @@ import javax.inject.Singleton;
 
 import io.github.vickychijwani.giantbomb.item.Platform;
 import io.github.vickychijwani.giantbomb.item.ResourceType;
-import io.github.vickychijwani.gimmick.dagger.PlatformResourceType;
 import io.github.vickychijwani.network.json.JSONArrayIterator;
 import io.github.vickychijwani.network.volley.VolleyRequestQueue;
 
@@ -29,9 +28,8 @@ import io.github.vickychijwani.network.volley.VolleyRequestQueue;
 public class PlatformsAPI extends BaseAPI<Platform> {
 
     @Inject
-    public PlatformsAPI(@PlatformResourceType ResourceType resourceType,
-                        VolleyRequestQueue requestQueue, URLFactory urlFactory) {
-        super(resourceType, requestQueue, urlFactory);
+    public PlatformsAPI(VolleyRequestQueue requestQueue, URLFactory urlFactory) {
+        super(ResourceType.PLATFORM, requestQueue, urlFactory);
     }
 
     /**

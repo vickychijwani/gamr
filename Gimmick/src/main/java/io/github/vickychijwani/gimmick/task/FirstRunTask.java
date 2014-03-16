@@ -11,9 +11,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.github.vickychijwani.giantbomb.api.PlatformsAPI;
-import io.github.vickychijwani.giantbomb.api.ResourceTypesAPI;
 import io.github.vickychijwani.giantbomb.item.Platform;
-import io.github.vickychijwani.giantbomb.item.ResourceType;
 import io.github.vickychijwani.gimmick.database.GamrProvider;
 import io.github.vickychijwani.gimmick.pref.AppState;
 import io.github.vickychijwani.gimmick.utility.event.FirstRunTaskDoneEvent;
@@ -22,30 +20,23 @@ public class FirstRunTask extends AsyncTask<Void, Void, Boolean> {
 
     private final AppState mAppState;
     private final Bus mEventBus;
-    private final ResourceTypesAPI mResourceTypesAPI;
     private final PlatformsAPI mPlatformsAPI;
 
     @Inject
-    public FirstRunTask(AppState appState, Bus eventBus, ResourceTypesAPI resourceTypesAPI, PlatformsAPI platformsAPI) {
+    public FirstRunTask(AppState appState, Bus eventBus, PlatformsAPI platformsAPI) {
         mAppState = appState;
         mEventBus = eventBus;
-        mResourceTypesAPI = resourceTypesAPI;
         mPlatformsAPI = platformsAPI;
     }
 
     @Override
     @NotNull
     protected Boolean doInBackground(Void... params) {
-        List<ResourceType> resourceTypes = mResourceTypesAPI.fetchAll();
-        boolean resourceTypesAdded = GamrProvider.addResourceTypes(resourceTypes);
-
         List<Platform> platforms = mPlatformsAPI.fetchAll();
         boolean platformsAdded = GamrProvider.addPlatforms(platforms);
 
-        boolean taskSucceeded = resourceTypesAdded && platformsAdded;
-
-        mAppState.setBoolean(AppState.Key.FIRST_RUN, (! taskSucceeded));
-        return taskSucceeded;
+        mAppState.setBoolean(AppState.Key.FIRST_RUN, (! platformsAdded));
+        return platformsAdded;
     }
 
     @Override

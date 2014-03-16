@@ -32,9 +32,7 @@ public class GamrApplication extends Application {
     }
 
     private void buildObjectGraph() {
-        Map<String, ResourceType> resourceTypes = GamrProvider.getResourceTypes(this);
         GiantBombAPIModule.setAPIKey(getString(R.string.giantbomb_api_key));
-        GiantBombAPIModule.setResourceTypes(resourceTypes);
         MetacriticAPIModule.setAPIKey(getString(R.string.mashape_api_key));
 
         mObjectGraph = ObjectGraph.create(new GamrModule(this));

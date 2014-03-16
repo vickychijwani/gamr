@@ -9,7 +9,6 @@ import org.jetbrains.annotations.NotNull;
 
 import io.github.vickychijwani.giantbomb.item.Game;
 import io.github.vickychijwani.giantbomb.item.Platform;
-import io.github.vickychijwani.giantbomb.item.ResourceType;
 import io.github.vickychijwani.giantbomb.item.Video;
 import io.github.vickychijwani.gimmick.GamrApplication;
 import io.github.vickychijwani.utility.DateTimeUtils;
@@ -358,50 +357,6 @@ public abstract class DatabaseContract {
             values.put(COL_YOUTUBE_ID, video.getYoutubeId());
             values.put(COL_PUBLISH_DATE, DateTimeUtils.dateToIsoDateString(video.getPublishDate(),
                     DateTimeUtils.DateFallback.EARLIEST));
-            return values;
-        }
-
-        @NotNull
-        public static String qualify(@NotNull String colName) { return TABLE_NAME + "." + colName; }
-    }
-
-
-    public static abstract class ResourceTypeTable implements BaseColumns {
-        public static final String TABLE_NAME = "resource_type";
-
-        /** Use if multiple items get returned */
-        public static final String CONTENT_TYPE = CONTENT_TYPE_BASE + TABLE_NAME;
-
-        /** Use if a single item is returned */
-        public static final String CONTENT_ITEM_TYPE = CONTENT_ITEM_TYPE_BASE + TABLE_NAME;
-
-        /** Content URI for listing all known resource types */
-        public static final Uri CONTENT_URI_LIST = CONTENT_URI_BASE.buildUpon()
-                .appendPath(TABLE_NAME)
-                .build();
-
-        /** Content URI for inserting a new resource type */
-        public static final Uri CONTENT_URI_INSERT = CONTENT_URI_LIST;
-
-        /** Singular name of the resource */
-        public static final String COL_DETAIL_RESOURCE_NAME = "detail_resource_name";
-
-        /** Plural name of the resource */
-        public static final String COL_LIST_RESOURCE_NAME = "list_resource_name";
-
-        public static String createTable() {
-            return SQL.CREATE_TABLE(TABLE_NAME,
-                    SQL.DEF_PRIMARY_KEY(_ID, SQL.Type.INTEGER),
-                    SQL.DEF_COL(COL_DETAIL_RESOURCE_NAME, SQL.Type.TEXT, SQL.Constraint.NOT_NULL),
-                    SQL.DEF_COL(COL_LIST_RESOURCE_NAME, SQL.Type.TEXT, SQL.Constraint.NOT_NULL));
-        }
-
-        @NotNull
-        public static ContentValues contentValuesFor(@NotNull ResourceType resourceType) {
-            ContentValues values = new ContentValues();
-            values.put(_ID, resourceType.getId());
-            values.put(COL_DETAIL_RESOURCE_NAME, resourceType.getSingularName());
-            values.put(COL_LIST_RESOURCE_NAME, resourceType.getPluralName());
             return values;
         }
 
