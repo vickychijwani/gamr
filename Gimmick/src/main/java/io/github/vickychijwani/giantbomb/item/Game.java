@@ -15,6 +15,7 @@ import java.util.TreeSet;
 
 import io.github.vickychijwani.gimmick.database.DatabaseContract.GameTable;
 import io.github.vickychijwani.gimmick.database.GamrProvider;
+import io.github.vickychijwani.utility.DateTimeUtils;
 
 public class Game {
 
@@ -84,6 +85,11 @@ public class Game {
             assert franchisesCsv != null;
             franchises = new TreeSet<String>(Arrays.asList(franchisesCsv.split(", ")));
         }
+    }
+
+    public boolean isReleased() {
+        // game is released if its release date occurs before today's date
+        return releaseDate.compareTo(new ReleaseDate(DateTimeUtils.getCurrentDate())) < 0;
     }
 
     public void addPlatform(Platform platform) {

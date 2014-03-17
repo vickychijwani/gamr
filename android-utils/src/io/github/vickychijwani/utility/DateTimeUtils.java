@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 public class DateTimeUtils {
@@ -20,6 +21,14 @@ public class DateTimeUtils {
     @NotNull
     public static String getEarliestDateString() {
         return "1970-01-01 00:00";
+    }
+
+    /**
+     * Get the current {@link Date}.
+     */
+    @NotNull
+    public static Date getCurrentDate() {
+        return Calendar.getInstance().getTime();
     }
 
     /**

@@ -77,8 +77,12 @@ public class ReleaseDate implements Comparable<ReleaseDate> {
         mYear = year;
     }
 
-    public ReleaseDate(String dateStr) throws ParseException {
-        Date date = FORMATTER.parse(dateStr);
+    public ReleaseDate(String dateStr)
+            throws ParseException {
+        this(FORMATTER.parse(dateStr));
+    }
+
+    public ReleaseDate(Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
 
@@ -108,11 +112,8 @@ public class ReleaseDate implements Comparable<ReleaseDate> {
     public short getYear() { return mYear; }
 
     /**
-     * <p>
      * Compare this {@link ReleaseDate} to another.
-     * </p>
-     *
-     * <p>
+     * <p/>
      * <code>
      *     31st Dec 2014
      *     < Dec 2014
@@ -121,7 +122,6 @@ public class ReleaseDate implements Comparable<ReleaseDate> {
      *     < {@link ReleaseDate#INVALID}
      *     == {@link ReleaseDate#INVALID}
      * </code>
-     * </p>
      *
      * @param another    the {@link ReleaseDate} to compare against
      * @return  -1, 0, or 1 depending on whether this {@link ReleaseDate} occurs before, with, or after

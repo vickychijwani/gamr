@@ -38,6 +38,11 @@ public class MetacriticAPI {
     }
 
     public void fetchMetascore(@NotNull Game game) {
+        if (! game.isReleased()) {
+            Log.i(TAG, "Game not released, not fetching Metascore");
+            return;
+        }
+
         String url = mBaseUrl;
 
         Iterator<Platform> platforms = game.getPlatforms();

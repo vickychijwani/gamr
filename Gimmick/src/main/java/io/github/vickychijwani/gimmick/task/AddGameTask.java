@@ -119,6 +119,7 @@ public class AddGameTask extends AsyncTask<Void, AddGameTask.Result, Void> {
                     result = new Result(StatusCode.UNKNOWN_ERROR, game.name);
                 } else {
                     mMetacriticAPI.fetchMetascore(fullGame);    // metascore is not essential
+
                     try {
                         mVideosAPI.fetchAllForGame(fullGame); // videos are required when adding games
                         if (GamrProvider.addGame(fullGame)) {
