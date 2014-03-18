@@ -19,6 +19,15 @@ public class GameList extends ArrayList<Game> {
     }
 
     /**
+     * Construct a {@link GameList} having the specified capacity.
+     *
+     * @param capacity  the capacity of this list
+     */
+    public GameList(int capacity) {
+        super(capacity);
+    }
+
+    /**
      * Construct a {@link GameList} from a {@link Cursor} object. The cursor must contain rows suitable for
      * constructing individual {@link Game} objects.
      *

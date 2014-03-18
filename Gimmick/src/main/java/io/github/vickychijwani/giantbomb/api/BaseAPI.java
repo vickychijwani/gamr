@@ -3,6 +3,8 @@ package io.github.vickychijwani.giantbomb.api;
 import com.android.volley.Request;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -88,20 +90,20 @@ abstract class BaseAPI<T> {
                 .setResource(mResourceType.getPluralName());
     }
 
-    protected final RequestTag enqueueRequest(Request request) {
+    final RequestTag enqueueRequest(Request request) {
         return mRequestQueue.add(request);
     }
 
-    protected final RequestTag enqueueRequest(Request request, RequestTag tag) {
+    final RequestTag enqueueRequest(Request request, RequestTag tag) {
         return mRequestQueue.add(request, tag);
     }
 
     @NotNull
     abstract T itemFromJson(@NotNull JSONObject json, @NotNull T item)
-            throws GiantBombException;
+            throws JSONException;
 
     @NotNull
-    List<T> itemListFromJson(@NotNull JSONObject json, @NotNull List<T> itemList) {
+    List<T> itemListFromJson(@NotNull JSONArray json) {
         throw new UnsupportedOperationException(mResourceType.getPluralName() + " API does not support this operation");
     }
 
