@@ -28,6 +28,7 @@ abstract class BaseAPI<T> {
     static final String SCREEN_URL = "screen_url";
     static final String DECK = "deck";
     static final String ALIASES = "aliases";
+    static final String SITE_DETAIL_URL = "site_detail_url";
 
     // fields for games / releases
     static final String PLATFORMS = "platforms";
@@ -40,6 +41,7 @@ abstract class BaseAPI<T> {
     static final String GENRES = "genres";
     static final String FRANCHISES = "franchises";
     static final String VIDEOS = "videos";
+    static final String REVIEWS = "reviews";
 
     // fields for platform
     static final String ABBREVIATION = "abbreviation";
@@ -56,6 +58,10 @@ abstract class BaseAPI<T> {
     // fields for resource types
     static final String DETAIL_RESOURCE_NAME = "detail_resource_name";
     static final String LIST_RESOURCE_NAME = "list_resource_name";
+
+    // fields for reviews
+    static final String REVIEWER = "reviewer";
+    static final String SCORE = "score";
 
     // sorting parameters
     static final SortParam SORT_BY_MOST_REVIEWS = new SortParam(REVIEW_COUNT, SortParam.DESC);

@@ -7,6 +7,7 @@ public enum ResourceType {
     GAME(3030, "game", "games"),
     PLATFORM(3045, "platform", "platforms"),
     VIDEO(2300, "video", "videos"),
+    REVIEW(1900, "review", "reviews"),
     ;
 
     private int mId;

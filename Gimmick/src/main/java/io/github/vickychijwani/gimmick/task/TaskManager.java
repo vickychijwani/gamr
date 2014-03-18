@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.github.vickychijwani.giantbomb.api.GamesAPI;
+import io.github.vickychijwani.giantbomb.api.ReviewsAPI;
 import io.github.vickychijwani.giantbomb.api.VideosAPI;
 import io.github.vickychijwani.giantbomb.item.Game;
 import io.github.vickychijwani.giantbomb.item.GameList;
@@ -29,15 +30,16 @@ public class TaskManager {
     private final Context mContext;
     private final GamesAPI mGamesAPI;
     private final VideosAPI mVideosAPI;
+    private final ReviewsAPI mReviewsAPI;
     private final MetacriticAPI mMetacriticAPI;
 
     @Inject
-    TaskManager(@ApplicationContext Context context,
-                GamesAPI gamesAPI, VideosAPI videosAPI,
-                MetacriticAPI metacriticAPI) {
+    TaskManager(@ApplicationContext Context context, GamesAPI gamesAPI, VideosAPI videosAPI,
+                ReviewsAPI reviewsAPI, MetacriticAPI metacriticAPI) {
         mContext = context;
         mGamesAPI = gamesAPI;
         mVideosAPI = videosAPI;
+        mReviewsAPI = reviewsAPI;
         mMetacriticAPI = metacriticAPI;
     }
 
@@ -63,8 +65,8 @@ public class TaskManager {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    mAddTask = new AddGameTask(mContext, games,
-                            mGamesAPI, mVideosAPI, mMetacriticAPI);
+                    mAddTask = new AddGameTask(mContext, games, mGamesAPI, mVideosAPI, mReviewsAPI,
+                            mMetacriticAPI);
                     mAddTask.execute();
                 }
             });

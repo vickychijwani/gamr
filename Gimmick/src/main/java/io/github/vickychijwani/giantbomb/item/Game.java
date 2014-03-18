@@ -31,6 +31,7 @@ public class Game {
     public Set<String> genres = new TreeSet<String>();
     public Set<String> franchises = new TreeSet<String>();
     public List<Video> videos = new ArrayList<Video>();
+    public List<Review> reviews = new ArrayList<Review>();
 
     public boolean isAdded;
 
@@ -109,12 +110,21 @@ public class Game {
         videos.add(video);
     }
 
+    public void addReview(@NotNull Review review) {
+        review.setGameId(giantBombId);
+        reviews.add(review);
+    }
+
     public Iterator<Platform> getPlatforms() {
         return platforms.iterator();
     }
 
     public Iterator<Video> getVideos() {
         return videos.iterator();
+    }
+
+    public Iterator<Review> getReviews() {
+        return reviews.iterator();
     }
 
     public String getPlatformsDisplayString() {

@@ -12,6 +12,7 @@ public class SQL {
     // utils for creating new tables
     public enum Type {
         INTEGER,
+        REAL,
         TEXT
     }
 
@@ -23,6 +24,7 @@ public class SQL {
         public static       String FOREIGN_KEY(String tableName, String colName) { return "REFERENCES " + tableName + "(" + colName + ")"; }
         public static       String DEFAULT(String value) { return "DEFAULT " + value; }
         public static       String DEFAULT(int value) { return "DEFAULT " + value; }
+        public static       String DEFAULT(double value) { return "DEFAULT " + value; }
     }
 
     public static String CREATE_TABLE(String tableName, String... columnDefs) {

@@ -31,6 +31,7 @@ import io.github.vickychijwani.giantbomb.item.GameList;
 import io.github.vickychijwani.giantbomb.item.Platform;
 import io.github.vickychijwani.giantbomb.item.ReleaseDate;
 import io.github.vickychijwani.giantbomb.item.ResourceType;
+import io.github.vickychijwani.giantbomb.item.Review;
 import io.github.vickychijwani.giantbomb.item.Video;
 import io.github.vickychijwani.network.json.JSONArrayIterator;
 import io.github.vickychijwani.network.json.JSONPropertyIterator;
@@ -64,7 +65,7 @@ public class GamesAPI extends BaseAPI<Game> {
                 .setFieldList(ID, NAME, PLATFORMS, IMAGE_URLS, DECK, ORIGINAL_RELEASE_DATE,
                         EXPECTED_RELEASE_YEAR, EXPECTED_RELEASE_QUARTER,
                         EXPECTED_RELEASE_MONTH, EXPECTED_RELEASE_DAY,
-                        GENRES, FRANCHISES, VIDEOS)
+                        GENRES, FRANCHISES, VIDEOS, REVIEWS)
                 .build();
 
         Log.i(TAG, "Fetching game info from " + uri);
@@ -234,6 +235,17 @@ public class GamesAPI extends BaseAPI<Game> {
                 Video video = new Video();
                 video.setGiantBombId(idIterator.next());
                 game.addVideo(video);
+            }
+        }
+
+        // reviews
+        if (! gameJson.isNull(REVIEWS)) {
+            JSONPropertyIterator<Integer> idIterator
+                    = new JSONPropertyIterator<Integer>(gameJson.getJSONArray(REVIEWS), ID);
+            while (idIterator.hasNext()) {
+                Review review = new Review();
+                review.setGiantBombId(idIterator.next());
+                game.addReview(review);
             }
         }
 

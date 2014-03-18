@@ -14,6 +14,7 @@ import io.github.vickychijwani.gimmick.database.DatabaseContract.GameListTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.GamePlatformMappingTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.GameTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.PlatformTable;
+import io.github.vickychijwani.gimmick.database.DatabaseContract.ReviewTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.VideoTable;
 import io.github.vickychijwani.utility.DeviceUtils;
 
@@ -54,6 +55,7 @@ public class DBHelper extends BaseDBHelper {
         db.execSQL(PlatformTable.createTable());
         db.execSQL(GamePlatformMappingTable.createTable());
         db.execSQL(VideoTable.createTable());
+        db.execSQL(ReviewTable.createTable());
     }
 
     @Override
@@ -102,6 +104,15 @@ public class DBHelper extends BaseDBHelper {
         return insertOrIgnore(VideoTable.TABLE_NAME, values);
     }
 
+    /**
+     * Add a review to the database.
+     *
+     * @return      id of the newly-inserted review if successful, else -1
+     */
+    public static long addReview(@NotNull ContentValues values) {
+        return insertOrIgnore(ReviewTable.TABLE_NAME, values);
+    }
+
     @NotNull
     public static Cursor getGame(long gameId) {
         return getGames(GameTable.allColumns(),
@@ -129,6 +140,14 @@ public class DBHelper extends BaseDBHelper {
         return (Cursor) selectAll()
                 .from(VideoTable.TABLE_NAME)
                 .where(new SQL.Eq(VideoTable.COL_GAME_ID, gameId))
+                .execute();
+    }
+
+    @NotNull
+    public static Cursor getReviewsForGame(long gameId) {
+        return (Cursor) selectAll()
+                .from(ReviewTable.TABLE_NAME)
+                .where(new SQL.Eq(ReviewTable.COL_GAME_ID, gameId))
                 .execute();
     }
 
