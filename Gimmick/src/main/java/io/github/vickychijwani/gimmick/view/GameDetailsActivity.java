@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import io.github.vickychijwani.giantbomb.item.Game;
+import io.github.vickychijwani.giantbomb.item.Review;
 import io.github.vickychijwani.giantbomb.item.Video;
 import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.constants.LoaderId;
@@ -30,6 +31,7 @@ public class GameDetailsActivity extends BaseActivity implements LoaderManager.L
 
     private GameOverviewFragment    mGameOverviewFragment;
     private VideosFragment          mGameVideosFragment;
+    private ReviewsFragment         mGameReviewsFragment;
 
     public interface IntentFields {
         String GAME_GIANT_BOMB_ID = "game_giant_bomb_id";
@@ -58,10 +60,12 @@ public class GameDetailsActivity extends BaseActivity implements LoaderManager.L
         if (savedInstanceState == null) {
             mGameOverviewFragment = new GameOverviewFragment();
             mGameVideosFragment = new VideosFragment();
+            mGameReviewsFragment = new ReviewsFragment();
 
             fragments = Arrays.asList(new Fragment[] {
                     mGameOverviewFragment,
-                    mGameVideosFragment
+                    mGameVideosFragment,
+                    mGameReviewsFragment,
             });
         } else {
             /**
@@ -77,11 +81,13 @@ public class GameDetailsActivity extends BaseActivity implements LoaderManager.L
 
         setupTabsAndViewPager(fragments, new String[] {
                 getString(R.string.overview),
-                getString(R.string.videos)
+                getString(R.string.videos),
+                getString(R.string.reviews),
         }, 2);
 
         getSupportLoaderManager().initLoader(LoaderId.GAME_OVERVIEW, null, this);
         getSupportLoaderManager().initLoader(LoaderId.GAME_VIDEOS, null, this);
+        getSupportLoaderManager().initLoader(LoaderId.GAME_REVIEWS, null, this);
     }
 
     @Override
@@ -95,6 +101,8 @@ public class GameDetailsActivity extends BaseActivity implements LoaderManager.L
             mGameOverviewFragment = (GameOverviewFragment) fragment;
         } else if (fragment instanceof VideosFragment) {
             mGameVideosFragment = (VideosFragment) fragment;
+        } else if (fragment instanceof ReviewsFragment) {
+            mGameReviewsFragment = (ReviewsFragment) fragment;
         }
     }
 
@@ -108,6 +116,10 @@ public class GameDetailsActivity extends BaseActivity implements LoaderManager.L
             case LoaderId.GAME_VIDEOS:
                 return new CursorLoader(this,
                         ContentUris.withAppendedId(DatabaseContract.GameTable.CONTENT_URI_GAME_VIDEOS, mGiantBombId),
+                        null, null, null, null);
+            case LoaderId.GAME_REVIEWS:
+                return new CursorLoader(this,
+                        ContentUris.withAppendedId(DatabaseContract.GameTable.CONTENT_URI_GAME_REVIEWS, mGiantBombId),
                         null, null, null, null);
             default:
                 throw new IllegalArgumentException("Invalid loader id " + id);
@@ -131,6 +143,14 @@ public class GameDetailsActivity extends BaseActivity implements LoaderManager.L
                     videoList.add(new Video(cursor));
                 }
                 mGameVideosFragment.onDataLoaded(videoList);
+                return;
+            case LoaderId.GAME_REVIEWS:
+                List<Review> reviewList = new ArrayList<Review>(cursor.getCount());
+                cursor.moveToPosition(-1);  // move to beginning
+                while (cursor.moveToNext()) {
+                    reviewList.add(new Review(cursor));
+                }
+                mGameReviewsFragment.onDataLoaded(reviewList);
                 return;
             default:
                 throw new IllegalArgumentException("Invalid loader id " + loader.getId());

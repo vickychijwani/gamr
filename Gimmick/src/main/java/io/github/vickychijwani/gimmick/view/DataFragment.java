@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
  * Base class for fragments that depend on an external (possibly slow-loading) data-source.
  *
  * @param <D>   the type of data the fragment needs to construct its views.
- * @param <V>   the type of view to which data of type {@code <D>}
+ * @param <V>   the type of view to which data of type {@code <D>} will be bound.
  */
 public abstract class DataFragment<D,V> extends BaseFragment {
 

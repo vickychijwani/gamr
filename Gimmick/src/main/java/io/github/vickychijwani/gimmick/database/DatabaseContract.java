@@ -86,6 +86,12 @@ public abstract class DatabaseContract {
                 .appendPath(VideoTable.TABLE_NAME)
                 .build();
 
+        /** Content URI for listing all reviews of a given game */
+        public static final Uri CONTENT_URI_GAME_REVIEWS = CONTENT_URI_BASE.buildUpon()
+                .appendPath(GameTable.TABLE_NAME)
+                .appendPath(ReviewTable.TABLE_NAME)
+                .build();
+
         /** Game name */
         public static final String COL_NAME = "name";
 

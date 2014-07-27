@@ -8,5 +8,6 @@ public class LoaderId {
     // Game details
     public static final int GAME_OVERVIEW = 200;
     public static final int GAME_VIDEOS = 201;
+    public static final int GAME_REVIEWS = 202;
 
 }

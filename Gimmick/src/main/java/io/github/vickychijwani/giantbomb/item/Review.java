@@ -3,6 +3,8 @@ package io.github.vickychijwani.giantbomb.item;
 import android.database.Cursor;
 import android.util.Log;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.text.ParseException;
 import java.util.Date;
 
@@ -10,7 +12,7 @@ import io.github.vickychijwani.gimmick.database.DatabaseContract.ReviewTable;
 import io.github.vickychijwani.utility.DateTimeUtils;
 
 public class Review implements Comparable<Review> {
-    private static final String TAG = "Video";
+    private static final String TAG = "Review";
 
     private int mGiantBombId = -1;
     private String mReviewer = "";
@@ -37,7 +39,7 @@ public class Review implements Comparable<Review> {
     }
 
     @Override
-    public int compareTo(Review another) {
+    public int compareTo(@NotNull Review another) {
         if (this.mPublishDate != null && another.mPublishDate != null) {
             return this.mPublishDate.compareTo(another.mPublishDate);
         }

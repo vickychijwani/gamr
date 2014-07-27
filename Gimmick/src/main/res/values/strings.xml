@@ -24,15 +24,18 @@
     <string name="metacritic">Metacritic</string>
     <string name="no_rating">n/a</string>
     <string name="metascore_range">/100</string>
-    <string name="videos">Videos</string>
 
     <!-- Videos -->
+    <string name="videos">Videos</string>
     <string name="uploaded_by_user">Uploaded by %1$s</string>
     <string name="play_which_version">Play which version?</string>
     <string-array name="video_resolutions">
         <item>Low-res (360p)</item>
         <item>High-res (720p)</item>
     </string-array>
+
+    <!-- Reviews -->
+    <string name="reviews">Reviews</string>
 
     <!-- Alerts and dialogs -->
     <string name="always">Always</string>
