@@ -2,10 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Android-MultiStateView/Android-MultiStateView.iml" filepath="$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/Android-MultiStateView/Android-MultiStateView.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Gimmick.iml" filepath="$PROJECT_DIR$/Gimmick.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Gimmick/Gimmick-Gimmick.iml" filepath="$PROJECT_DIR$/Gimmick/Gimmick-Gimmick.iml" />
-      <module fileurl="file://$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/android-utils/android-utils.iml" filepath="$USER_HOME$/Dropbox/Private/Documents/Android/Gimmick/android-utils/android-utils.iml" />
+      <module fileurl="file://$USER_HOME$/Dropbox/Private/Documents/Android/gamr/Android-MultiStateView/Android-MultiStateView.iml" filepath="$USER_HOME$/Dropbox/Private/Documents/Android/gamr/Android-MultiStateView/Android-MultiStateView.iml" />
+      <module fileurl="file://$USER_HOME$/Dropbox/Private/Documents/Android/gamr/Gimmick/Gimmick.iml" filepath="$USER_HOME$/Dropbox/Private/Documents/Android/gamr/Gimmick/Gimmick.iml" />
+      <module fileurl="file://$USER_HOME$/Dropbox/Private/Documents/Android/gamr/android-utils/android-utils.iml" filepath="$USER_HOME$/Dropbox/Private/Documents/Android/gamr/android-utils/android-utils.iml" />
+      <module fileurl="file://$PROJECT_DIR$/gamr.iml" filepath="$PROJECT_DIR$/gamr.iml" />
     </modules>
   </component>
 </project>

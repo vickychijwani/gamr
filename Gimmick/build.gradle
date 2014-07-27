@@ -1,4 +1,4 @@
-apply plugin: 'android'
+apply plugin: 'com.android.application'
 apply plugin: 'android-apt'
 
 android {
@@ -22,7 +22,7 @@ dependencies {
     apt "com.squareup.dagger:dagger-compiler:1.2.+"
 
     compile rootProject.ext.libraries.jetbrains_annotations
-    compile 'com.android.support:support-v4:19.0.+'
+    compile 'com.android.support:support-v4:20.0.+'
     compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
     compile 'com.jakewharton:butterknife:4.0.1'
     compile 'com.mcxiaoke.volley:library:1.0.+'
