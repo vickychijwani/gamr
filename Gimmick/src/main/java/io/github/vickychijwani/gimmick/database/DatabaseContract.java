@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import io.github.vickychijwani.giantbomb.item.Game;
 import io.github.vickychijwani.giantbomb.item.Platform;
+import io.github.vickychijwani.giantbomb.item.Review;
 import io.github.vickychijwani.giantbomb.item.Video;
 import io.github.vickychijwani.gimmick.GamrApplication;
 import io.github.vickychijwani.utility.DateTimeUtils;
@@ -83,6 +84,12 @@ public abstract class DatabaseContract {
         public static final Uri CONTENT_URI_GAME_VIDEOS = CONTENT_URI_BASE.buildUpon()
                 .appendPath(GameTable.TABLE_NAME)
                 .appendPath(VideoTable.TABLE_NAME)
+                .build();
+
+        /** Content URI for listing all reviews of a given game */
+        public static final Uri CONTENT_URI_GAME_REVIEWS = CONTENT_URI_BASE.buildUpon()
+                .appendPath(GameTable.TABLE_NAME)
+                .appendPath(ReviewTable.TABLE_NAME)
                 .build();
 
         /** Game name */
@@ -283,12 +290,12 @@ public abstract class DatabaseContract {
         /** Use if a single item is returned */
         public static final String CONTENT_ITEM_TYPE = CONTENT_ITEM_TYPE_BASE + TABLE_NAME;
 
-        /** Content URI for listing all platforms */
+        /** Content URI for listing all videos */
         public static final Uri CONTENT_URI_LIST = CONTENT_URI_BASE.buildUpon()
                 .appendPath(TABLE_NAME)
                 .build();
 
-        /** Content URI for inserting a new platform */
+        /** Content URI for inserting a new video */
         public static final Uri CONTENT_URI_INSERT = CONTENT_URI_LIST;
 
         /** Video name */
@@ -357,6 +364,74 @@ public abstract class DatabaseContract {
             values.put(COL_YOUTUBE_ID, video.getYoutubeId());
             values.put(COL_PUBLISH_DATE, DateTimeUtils.dateToIsoDateString(video.getPublishDate(),
                     DateTimeUtils.DateFallback.EARLIEST));
+            return values;
+        }
+
+        @NotNull
+        public static String qualify(@NotNull String colName) { return TABLE_NAME + "." + colName; }
+    }
+
+
+    public static abstract class ReviewTable implements BaseColumns {
+        public static final String TABLE_NAME = "review";
+
+        /** Use if multiple items get returned */
+        public static final String CONTENT_TYPE = CONTENT_TYPE_BASE + TABLE_NAME;
+
+        /** Use if a single item is returned */
+        public static final String CONTENT_ITEM_TYPE = CONTENT_ITEM_TYPE_BASE + TABLE_NAME;
+
+        /** Content URI for listing all reviews */
+        public static final Uri CONTENT_URI_LIST = CONTENT_URI_BASE.buildUpon()
+                .appendPath(TABLE_NAME)
+                .build();
+
+        /** Content URI for inserting a new review */
+        public static final Uri CONTENT_URI_INSERT = CONTENT_URI_LIST;
+
+        /** Reviewer name */
+        public static final String COL_REVIEWER = "reviewer";
+
+        /** Game this review is for */
+        public static final String COL_GAME_ID = "game_id";
+
+        /** Review title */
+        public static final String COL_TITLE = "title";
+
+        /** Review body is not stored in the database, because it is huge */
+
+        /** Review score (floating point number, out of 5.0) */
+        public static final String COL_SCORE = "score";
+
+        /** Date of publishing */
+        public static final String COL_PUBLISH_DATE = "publish_date";
+
+        /** URL of review on giantbomb.com */
+        public static final String COL_SITE_URL = "site_url";
+
+        public static String createTable() {
+            return SQL.CREATE_TABLE(TABLE_NAME,
+                    SQL.DEF_PRIMARY_KEY(_ID, SQL.Type.INTEGER),
+                    SQL.DEF_COL(COL_REVIEWER, SQL.Type.TEXT, SQL.Constraint.NOT_NULL, SQL.Constraint.DEFAULT("\"\"")),
+                    SQL.DEF_FOREIGN_KEY_NOT_NULL(COL_GAME_ID, GameTable.TABLE_NAME, GameTable._ID),
+                    SQL.DEF_COL(COL_TITLE, SQL.Type.TEXT, SQL.Constraint.DEFAULT("\"\"")),
+                    SQL.DEF_COL(COL_SCORE, SQL.Type.REAL, SQL.Constraint.NOT_NULL, SQL.Constraint.DEFAULT(-1.0)),
+                    SQL.DEF_COL(COL_PUBLISH_DATE, SQL.Type.TEXT, SQL.Constraint.NOT_NULL, SQL.Constraint.DEFAULT("\"" + DateTimeUtils.getEarliestDateString() + "\"")),
+                    SQL.DEF_COL(COL_SITE_URL, SQL.Type.TEXT, SQL.Constraint.DEFAULT("\"\""))
+            );
+        }
+
+        @NotNull
+        public static ContentValues contentValuesFor(@NotNull Review video) {
+            ContentValues values = new ContentValues();
+            values.put(_ID, video.getGiantBombId());
+            values.put(COL_REVIEWER, video.getReviewer());
+            values.put(COL_GAME_ID, video.getGameId());
+            values.put(COL_TITLE, video.getTitle());
+            values.put(COL_SCORE, video.getScore());
+            values.put(COL_PUBLISH_DATE, DateTimeUtils.dateToIsoDateString(video.getPublishDate(),
+                    DateTimeUtils.DateFallback.EARLIEST));
+            values.put(COL_SITE_URL, video.getSiteUrl());
             return values;
         }
 

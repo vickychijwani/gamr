@@ -3,6 +3,8 @@ package io.github.vickychijwani.giantbomb.api;
 import com.android.volley.Request;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -26,6 +28,7 @@ abstract class BaseAPI<T> {
     static final String SCREEN_URL = "screen_url";
     static final String DECK = "deck";
     static final String ALIASES = "aliases";
+    static final String SITE_DETAIL_URL = "site_detail_url";
 
     // fields for games / releases
     static final String PLATFORMS = "platforms";
@@ -38,6 +41,7 @@ abstract class BaseAPI<T> {
     static final String GENRES = "genres";
     static final String FRANCHISES = "franchises";
     static final String VIDEOS = "videos";
+    static final String REVIEWS = "reviews";
 
     // fields for platform
     static final String ABBREVIATION = "abbreviation";
@@ -54,6 +58,10 @@ abstract class BaseAPI<T> {
     // fields for resource types
     static final String DETAIL_RESOURCE_NAME = "detail_resource_name";
     static final String LIST_RESOURCE_NAME = "list_resource_name";
+
+    // fields for reviews
+    static final String REVIEWER = "reviewer";
+    static final String SCORE = "score";
 
     // sorting parameters
     static final SortParam SORT_BY_MOST_REVIEWS = new SortParam(REVIEW_COUNT, SortParam.DESC);
@@ -88,20 +96,20 @@ abstract class BaseAPI<T> {
                 .setResource(mResourceType.getPluralName());
     }
 
-    protected final RequestTag enqueueRequest(Request request) {
+    final RequestTag enqueueRequest(Request request) {
         return mRequestQueue.add(request);
     }
 
-    protected final RequestTag enqueueRequest(Request request, RequestTag tag) {
+    final RequestTag enqueueRequest(Request request, RequestTag tag) {
         return mRequestQueue.add(request, tag);
     }
 
     @NotNull
     abstract T itemFromJson(@NotNull JSONObject json, @NotNull T item)
-            throws GiantBombException;
+            throws JSONException;
 
     @NotNull
-    List<T> itemListFromJson(@NotNull JSONObject json, @NotNull List<T> itemList) {
+    List<T> itemListFromJson(@NotNull JSONArray json) {
         throw new UnsupportedOperationException(mResourceType.getPluralName() + " API does not support this operation");
     }
 

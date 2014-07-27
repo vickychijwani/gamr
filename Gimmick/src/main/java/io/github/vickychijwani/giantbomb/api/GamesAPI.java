@@ -1,12 +1,12 @@
 package io.github.vickychijwani.giantbomb.api;
 
+import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.RequestFuture;
@@ -31,6 +31,7 @@ import io.github.vickychijwani.giantbomb.item.GameList;
 import io.github.vickychijwani.giantbomb.item.Platform;
 import io.github.vickychijwani.giantbomb.item.ReleaseDate;
 import io.github.vickychijwani.giantbomb.item.ResourceType;
+import io.github.vickychijwani.giantbomb.item.Review;
 import io.github.vickychijwani.giantbomb.item.Video;
 import io.github.vickychijwani.network.json.JSONArrayIterator;
 import io.github.vickychijwani.network.json.JSONPropertyIterator;
@@ -60,17 +61,17 @@ public class GamesAPI extends BaseAPI<Game> {
      */
     @Nullable
     public Game fetch(int giantBombId) {
-        String url = newDetailResourceURL(giantBombId)
+        Uri uri = newDetailResourceURL(giantBombId)
                 .setFieldList(ID, NAME, PLATFORMS, IMAGE_URLS, DECK, ORIGINAL_RELEASE_DATE,
                         EXPECTED_RELEASE_YEAR, EXPECTED_RELEASE_QUARTER,
                         EXPECTED_RELEASE_MONTH, EXPECTED_RELEASE_DAY,
-                        GENRES, FRANCHISES, VIDEOS)
+                        GENRES, FRANCHISES, VIDEOS, REVIEWS)
                 .build();
 
-        Log.i(TAG, "Fetching game info from " + url);
+        Log.i(TAG, "Fetching game info from " + uri);
 
         RequestFuture<Game> future = RequestFuture.newFuture();
-        GameJsonRequest req = new GameJsonRequest(url, future, future);
+        GameJsonRequest req = new GameJsonRequest(uri, future, future);
         enqueueRequest(req);
 
         try {
@@ -102,7 +103,7 @@ public class GamesAPI extends BaseAPI<Game> {
 
         Log.i(TAG, "Searching for \"" + query + "\"...");
 
-        String url = newListResourceURL()
+        Uri uri = newListResourceURL()
                 .addParam("filter", NAME + ":" + query)
                 .setSortOrder(SORT_BY_LATEST_RELEASES, SORT_BY_MOST_REVIEWS)
                 .setFieldList(ID, NAME, PLATFORMS, IMAGE_URLS, DECK, ORIGINAL_RELEASE_DATE,
@@ -110,7 +111,7 @@ public class GamesAPI extends BaseAPI<Game> {
                         EXPECTED_RELEASE_MONTH, EXPECTED_RELEASE_DAY)
                 .build();
 
-        GameListJsonRequest req = new GameListJsonRequest(url, successHandler, errorHandler);
+        GameListJsonRequest req = new GameListJsonRequest(uri, successHandler, errorHandler);
         return enqueueRequest(req, REQUEST_TAG_SEARCH);
     }
 
@@ -131,7 +132,7 @@ public class GamesAPI extends BaseAPI<Game> {
 
         // TODO what if the current date is 25th Dec? Shouldn't "upcoming" include the next year as well in that case?
 
-        final String url = newListResourceURL()
+        final Uri uri = newListResourceURL()
                 .addParam("filter", EXPECTED_RELEASE_YEAR + ":" + currentYear)
                 .setFieldList(ID, NAME, PLATFORMS, IMAGE_URLS, DECK,
                         EXPECTED_RELEASE_YEAR, EXPECTED_RELEASE_QUARTER,
@@ -154,7 +155,7 @@ public class GamesAPI extends BaseAPI<Game> {
             }
         };
 
-        GameListJsonRequest req = new GameListJsonRequest(url, successHandlerWrapper, errorHandler);
+        GameListJsonRequest req = new GameListJsonRequest(uri, successHandlerWrapper, errorHandler);
         return enqueueRequest(req, REQUEST_TAG_UPCOMING);
     }
 
@@ -176,7 +177,7 @@ public class GamesAPI extends BaseAPI<Game> {
 
         Log.i(TAG, "Fetching recent games released from " + oneYearAgo + " to " + now + " ...");
 
-        final String url = newListResourceURL()
+        final Uri uri = newListResourceURL()
                 .addParam("filter", ORIGINAL_RELEASE_DATE + ":" + oneYearAgo + "|" + now)
                 .setFieldList(ID, NAME, PLATFORMS, IMAGE_URLS, DECK, ORIGINAL_RELEASE_DATE)
                 .setSortOrder(SORT_BY_LATEST_RELEASES)
@@ -198,75 +199,74 @@ public class GamesAPI extends BaseAPI<Game> {
             }
         };
 
-        GameListJsonRequest req = new GameListJsonRequest(url, successHandlerWrapper, errorHandler);
+        GameListJsonRequest req = new GameListJsonRequest(uri, successHandlerWrapper, errorHandler);
         return enqueueRequest(req, REQUEST_TAG_RECENT);
     }
 
     @Override
     @NotNull
-    Game itemFromJson(@NotNull JSONObject gameJsonWrapper, @NotNull Game game)
-            throws GiantBombException {
-        try {
-            JSONObject gameJson = gameJsonWrapper.getJSONObject(RESULTS);
+    Game itemFromJson(@NotNull JSONObject gameJson, @NotNull Game game)
+            throws JSONException {
+        parseEssentialGameInfoFromJson(gameJson, game);
 
-            parseEssentialGameInfoFromJson(gameJson, game);
-
-            // genres
-            if (! gameJson.isNull(GENRES)) {
-                JSONPropertyIterator<String> nameIterator
-                        = new JSONPropertyIterator<String>(gameJson.getJSONArray(GENRES), NAME);
-                while (nameIterator.hasNext()) {
-                    game.addGenre(nameIterator.next());
-                }
+        // genres
+        if (! gameJson.isNull(GENRES)) {
+            JSONPropertyIterator<String> nameIterator
+                    = new JSONPropertyIterator<String>(gameJson.getJSONArray(GENRES), NAME);
+            while (nameIterator.hasNext()) {
+                game.addGenre(nameIterator.next());
             }
-
-            // franchises
-            if (! gameJson.isNull(FRANCHISES)) {
-                JSONPropertyIterator<String> nameIterator
-                        = new JSONPropertyIterator<String>(gameJson.getJSONArray(FRANCHISES), NAME);
-                while (nameIterator.hasNext()) {
-                    game.addFranchise(nameIterator.next());
-                }
-            }
-
-            // videos
-            if (! gameJson.isNull(VIDEOS)) {
-                JSONPropertyIterator<Integer> idIterator
-                        = new JSONPropertyIterator<Integer>(gameJson.getJSONArray(VIDEOS), ID);
-                while (idIterator.hasNext()) {
-                    Video video = new Video();
-                    video.setGiantBombId(idIterator.next());
-                    game.addVideo(video);
-                }
-            }
-
-            return game;
-        } catch (JSONException e) {
-            Log.e(TAG, Log.getStackTraceString(e));
-            throw new GiantBombException("error parsing game json");
         }
+
+        // franchises
+        if (! gameJson.isNull(FRANCHISES)) {
+            JSONPropertyIterator<String> nameIterator
+                    = new JSONPropertyIterator<String>(gameJson.getJSONArray(FRANCHISES), NAME);
+            while (nameIterator.hasNext()) {
+                game.addFranchise(nameIterator.next());
+            }
+        }
+
+        // videos
+        if (! gameJson.isNull(VIDEOS)) {
+            JSONPropertyIterator<Integer> idIterator
+                    = new JSONPropertyIterator<Integer>(gameJson.getJSONArray(VIDEOS), ID);
+            while (idIterator.hasNext()) {
+                Video video = new Video();
+                video.setGiantBombId(idIterator.next());
+                game.addVideo(video);
+            }
+        }
+
+        // reviews
+        if (! gameJson.isNull(REVIEWS)) {
+            JSONPropertyIterator<Integer> idIterator
+                    = new JSONPropertyIterator<Integer>(gameJson.getJSONArray(REVIEWS), ID);
+            while (idIterator.hasNext()) {
+                Review review = new Review();
+                review.setGiantBombId(idIterator.next());
+                game.addReview(review);
+            }
+        }
+
+        return game;
     }
 
     @Override
     @NotNull
-    List<Game> itemListFromJson(@NotNull JSONObject gamesJsonWrapper, @NotNull List<Game> gameList) {
-        JSONArray gamesArray;
-        try {
-            gamesArray = gamesJsonWrapper.getJSONArray(RESULTS);
-        } catch (JSONException e) {
-            Log.e(TAG, Log.getStackTraceString(e));
-            return gameList;
-        }
-        Log.i(TAG, "Got " + gamesArray.length() + " games");
+    List<Game> itemListFromJson(@NotNull JSONArray jsonArray) {
+        Log.i(TAG, "Got " + jsonArray.length() + " games");
 
-        for (int i = 0; i < gamesArray.length(); ++i) {
-            try {
-                Game game = new Game();
-                JSONObject gameJson = gamesArray.getJSONObject(i);
-                parseEssentialGameInfoFromJson(gameJson, game);
-                gameList.add(game);
-            } catch (JSONException e) {
-                Log.e(TAG, Log.getStackTraceString(e));
+        JSONArrayIterator jsonIterator = new JSONArrayIterator(jsonArray);
+        List<Game> gameList = new GameList(jsonArray.length());
+        while (jsonIterator.hasNext()) {
+            JSONObject jsonObject = jsonIterator.next();
+            if (jsonObject != null) {
+                try {
+                    gameList.add(itemFromJson(jsonObject, new Game()));
+                } catch (JSONException e) {
+                    Log.e(TAG, Log.getStackTraceString(e));
+                }
             }
         }
 
@@ -332,49 +332,51 @@ public class GamesAPI extends BaseAPI<Game> {
      */
     private class GameJsonRequest extends JsonRequest<Game> {
 
-        public GameJsonRequest(String url, Response.Listener<Game> listener,
+        /**
+         * @param uri               the URL to query
+         * @param listener          handler to invoke if request succeeds
+         * @param errorListener     handler to invoke if request fails
+         */
+        public GameJsonRequest(Uri uri, Response.Listener<Game> listener,
                                Response.ErrorListener errorListener) {
-            super(Method.GET, url, null, listener, errorListener);
+            super(Method.GET, uri.toString(), null, listener, errorListener);
         }
 
         @Override
         protected Response<Game> parseNetworkResponse(NetworkResponse response) {
             try {
                 String jsonString = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
-                Game game = itemFromJson(new JSONObject(jsonString), new Game());
+                Game game = itemFromJson(new JSONObject(jsonString).getJSONObject(RESULTS), new Game());
                 return Response.success(game, HttpHeaderParser.parseCacheHeaders(response));
             } catch (UnsupportedEncodingException e) {
                 return Response.error(new ParseError(e));
             } catch (JSONException je) {
                 return Response.error(new ParseError(je));
-            } catch (GiantBombException e) {
-                return Response.error(new VolleyError(e));
             }
         }
 
     }
 
     /**
-     * A JSON request for retrieving a <code>{@link java.util.List}<{@link io.github.vickychijwani.giantbomb.item.Game}></code>
-     * from a given URL.
+     * A JSON request for retrieving a {@link GameList} from a given URL.
      */
     private class GameListJsonRequest extends JsonRequest<GameList> {
 
         /**
-         * @param url               the URL to query
+         * @param uri               the URL to query
          * @param listener          handler to invoke if request succeeds
          * @param errorListener     handler to invoke if request fails
          */
-        public GameListJsonRequest(String url, Response.Listener<GameList> listener,
+        public GameListJsonRequest(Uri uri, Response.Listener<GameList> listener,
                                    Response.ErrorListener errorListener) {
-            super(Method.GET, url, null, listener, errorListener);
+            super(Method.GET, uri.toString(), null, listener, errorListener);
         }
 
         @Override
         protected Response<GameList> parseNetworkResponse(NetworkResponse response) {
             try {
                 String jsonString = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
-                GameList games = (GameList) itemListFromJson(new JSONObject(jsonString), new GameList());
+                GameList games = (GameList) itemListFromJson(new JSONObject(jsonString).getJSONArray(RESULTS));
 
                 return Response.success(games, HttpHeaderParser.parseCacheHeaders(response));
             } catch (UnsupportedEncodingException e) {

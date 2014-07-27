@@ -1,12 +1,9 @@
 package io.github.vickychijwani.giantbomb.api;
 
+import android.net.Uri;
 import android.util.Log;
 
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.RequestFuture;
-
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,7 +11,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -34,43 +30,19 @@ public class PlatformsAPI extends BaseAPI<Platform> {
 
     /**
      * Fetch all platforms listed by the GiantBomb API in a <i>synchronous</i> manner.
-     * <p/>
-     * NOTE: never call this from the UI thread!
      *
-     * @return  a list of all platforms listed by the GiantBomb API
+     * @return  a {@link ResourceList} of all platforms supported by the GiantBomb API
      */
-    @Nullable
-    public List<Platform> fetchAll() {
+    @NotNull
+    public ResourceList<Platform> fetchAll() {
         Log.i(TAG, "Fetching all platforms...");
 
-        String url = newListResourceURL()
+        Uri uri = newListResourceURL()
                 .setFieldList(new String[] { ID, NAME, ALIASES, ABBREVIATION })
                 .build();
+        assert uri != null;
 
-        RequestFuture<JSONObject> future = RequestFuture.newFuture();
-        JsonObjectRequest req = new JsonObjectRequest(url, null, future, future);
-        enqueueRequest(req);
-
-        try {
-            JSONArray platformsJson = future.get().getJSONArray(RESULTS);
-            JSONArrayIterator platformsJsonIterator = new JSONArrayIterator(platformsJson);
-            List<Platform> platforms = new ArrayList<Platform>(platformsJson.length());
-            while (platformsJsonIterator.hasNext()) {
-                JSONObject platformJson = platformsJsonIterator.next();
-                if (platformJson != null) {
-                    platforms.add(itemFromJson(platformJson, new Platform()));
-                }
-            }
-            return platforms;
-        } catch (InterruptedException e) {
-            Log.e(TAG, Log.getStackTraceString(e));
-        } catch (ExecutionException e) {
-            Log.e(TAG, Log.getStackTraceString(e));
-        } catch (JSONException e) {
-            Log.e(TAG, Log.getStackTraceString(e));
-        }
-
-        return null;
+        return new ResourceList<Platform>(this, uri);
     }
 
     @NotNull
@@ -91,6 +63,20 @@ public class PlatformsAPI extends BaseAPI<Platform> {
             Log.e(TAG, Log.getStackTraceString(e));
         }
         return platform;
+    }
+
+    @NotNull
+    @Override
+    List<Platform> itemListFromJson(@NotNull JSONArray jsonArray) {
+        JSONArrayIterator jsonIterator = new JSONArrayIterator(jsonArray);
+        List<Platform> platforms = new ArrayList<Platform>(jsonArray.length());
+        while (jsonIterator.hasNext()) {
+            JSONObject jsonObject = jsonIterator.next();
+            if (jsonObject != null) {
+                platforms.add(itemFromJson(jsonObject, new Platform()));
+            }
+        }
+        return platforms;
     }
 
 }

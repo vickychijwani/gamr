@@ -1,5 +1,6 @@
 package io.github.vickychijwani.giantbomb.api;
 
+import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -62,14 +63,15 @@ public class VideosAPI extends BaseAPI<Video> {
             return game;
         }
 
-        String url = newListResourceURL()
+        Uri uri = newListResourceURL()
                 .addParam("filter", ID + ":" + videoIds)
                 .build();
+        assert uri != null;
 
-        Log.i(TAG, "Fetching videos from " + url);
+        Log.i(TAG, "Fetching videos from " + uri);
 
         RequestFuture<JSONObject> future = RequestFuture.newFuture();
-        JsonObjectRequest req = new JsonObjectRequest(url, null, future, future);
+        JsonObjectRequest req = new JsonObjectRequest(uri.toString(), null, future, future);
         enqueueRequest(req);
 
         try {

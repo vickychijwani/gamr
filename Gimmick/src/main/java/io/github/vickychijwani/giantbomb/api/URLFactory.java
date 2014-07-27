@@ -68,13 +68,13 @@ class URLFactory {
         }
 
         @Nullable
-        public String build() {
+        public Uri build() {
             Uri uri = mBuilder.build();
             if (uri == null) {
                 Log.e(TAG, "Could not build Uri");
                 return null;
             }
-            return uri.toString();
+            return uri;
         }
 
         private String joinPathSegments(String... segments) {

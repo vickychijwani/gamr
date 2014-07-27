@@ -129,4 +129,10 @@
         <item name="pstsUnderlineColor">?attr/colorAccent</item>
     </style>
 
+    <style name="HoloRatingBar" parent="@android:style/Widget.Holo.RatingBar.Small">
+        <item name="android:progressDrawable">@drawable/holo_rating_bar</item>
+        <item name="android:minHeight">24dip</item>
+        <item name="android:maxHeight">24dip</item>
+    </style>
+
 </resources>

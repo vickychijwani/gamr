@@ -9,6 +9,7 @@ import android.widget.Toast;
 import java.util.LinkedList;
 
 import io.github.vickychijwani.giantbomb.api.GamesAPI;
+import io.github.vickychijwani.giantbomb.api.ReviewsAPI;
 import io.github.vickychijwani.giantbomb.api.VideosAPI;
 import io.github.vickychijwani.giantbomb.item.Game;
 import io.github.vickychijwani.giantbomb.item.GameList;
@@ -23,6 +24,7 @@ public class AddGameTask extends AsyncTask<Void, AddGameTask.Result, Void> {
     private final LinkedList<Game> mAddQueue = new LinkedList<Game>();
     private final GamesAPI mGamesAPI;
     private final VideosAPI mVideosAPI;
+    private final ReviewsAPI mReviewsAPI;
     private final MetacriticAPI mMetacriticAPI;
 
     private boolean mIsFinishedAddingGames = false;
@@ -50,13 +52,14 @@ public class AddGameTask extends AsyncTask<Void, AddGameTask.Result, Void> {
 
     private static final String TAG = "AddGameTask";
 
-    public AddGameTask(Context context, GameList games,
-                       GamesAPI gamesAPI, VideosAPI videosAPI, MetacriticAPI metacriticAPI) {
+    public AddGameTask(Context context, GameList games, GamesAPI gamesAPI, VideosAPI videosAPI,
+                       ReviewsAPI reviewsAPI, MetacriticAPI metacriticAPI) {
         // use an activity-independent context
         mContext = context.getApplicationContext();
         mAddQueue.addAll(games);
         mGamesAPI = gamesAPI;
         mVideosAPI = videosAPI;
+        mReviewsAPI = reviewsAPI;
         mMetacriticAPI = metacriticAPI;
     }
 
@@ -122,6 +125,7 @@ public class AddGameTask extends AsyncTask<Void, AddGameTask.Result, Void> {
 
                     try {
                         mVideosAPI.fetchAllForGame(fullGame); // videos are required when adding games
+                        mReviewsAPI.fetchAllForGame(fullGame);  // reviews are required when adding games
                         if (GamrProvider.addGame(fullGame)) {
                             result = new Result(StatusCode.SUCCESS, game.name);
                         } else {

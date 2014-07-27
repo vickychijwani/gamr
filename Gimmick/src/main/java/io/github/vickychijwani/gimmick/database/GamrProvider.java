@@ -23,11 +23,13 @@ import java.util.Iterator;
 
 import io.github.vickychijwani.giantbomb.item.Game;
 import io.github.vickychijwani.giantbomb.item.Platform;
+import io.github.vickychijwani.giantbomb.item.Review;
 import io.github.vickychijwani.giantbomb.item.Video;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.GameListTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.GamePlatformMappingTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.GameTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.PlatformTable;
+import io.github.vickychijwani.gimmick.database.DatabaseContract.ReviewTable;
 import io.github.vickychijwani.gimmick.database.DatabaseContract.VideoTable;
 
 public class GamrProvider extends ContentProvider {
@@ -42,6 +44,7 @@ public class GamrProvider extends ContentProvider {
     private static final int GAMES = 100;
     private static final int GAMES_ID = 101;
     private static final int GAMES_VIDEOS = 102;
+    private static final int GAMES_REVIEWS = 103;
 
     private static final int LISTS = 200;
     private static final int LISTS_METADATA = 201;
@@ -53,6 +56,8 @@ public class GamrProvider extends ContentProvider {
     private static final int GAME_PLATFORM_MAPPINGS = 400;
 
     private static final int VIDEOS = 500;
+
+    private static final int REVIEWS = 600;
 
     @Override
     public boolean onCreate() {
@@ -115,6 +120,9 @@ public class GamrProvider extends ContentProvider {
             case GAMES_VIDEOS:
                 cursor = DBHelper.getVideosForGame(ContentUris.parseId(uri));
                 break;
+            case GAMES_REVIEWS:
+                cursor = DBHelper.getReviewsForGame(ContentUris.parseId(uri));
+                break;
             case LISTS_GAMES:
                 cursor = DBHelper.getGamesInList(ContentUris.parseId(uri));
                 break;
@@ -167,6 +175,12 @@ public class GamrProvider extends ContentProvider {
                 insertedId = DBHelper.addVideo(values);
                 if (insertedId >= 0) {
                     insertedUri = ContentUris.withAppendedId(VideoTable.CONTENT_URI_LIST, insertedId);
+                }
+                break;
+            case REVIEWS:
+                insertedId = DBHelper.addReview(values);
+                if (insertedId >= 0) {
+                    insertedUri = ContentUris.withAppendedId(ReviewTable.CONTENT_URI_LIST, insertedId);
                 }
                 break;
             default:
@@ -241,6 +255,11 @@ public class GamrProvider extends ContentProvider {
         Iterator<Video> videos = game.getVideos();
         while (videos.hasNext()) {
             ops.add(buildVideoOp(videos.next(), isNew));
+        }
+
+        Iterator<Review> reviews = game.getReviews();
+        while (reviews.hasNext()) {
+            ops.add(buildReviewOp(reviews.next(), isNew));
         }
 
         try {
@@ -319,10 +338,21 @@ public class GamrProvider extends ContentProvider {
         if (isNew) {
             opBuilder = ContentProviderOperation.newInsert(VideoTable.CONTENT_URI_INSERT);
         } else {
-            Uri videoUri = ContentUris.withAppendedId(GameTable.CONTENT_URI_INSERT, video.getGiantBombId());
+            Uri videoUri = ContentUris.withAppendedId(VideoTable.CONTENT_URI_INSERT, video.getGiantBombId());
             opBuilder = ContentProviderOperation.newUpdate(videoUri).withExpectedCount(1);
         }
         return opBuilder.withValues(VideoTable.contentValuesFor(video)).build();
+    }
+
+    private static ContentProviderOperation buildReviewOp(Review review, boolean isNew) {
+        ContentProviderOperation.Builder opBuilder;
+        if (isNew) {
+            opBuilder = ContentProviderOperation.newInsert(ReviewTable.CONTENT_URI_INSERT);
+        } else {
+            Uri reviewUri = ContentUris.withAppendedId(ReviewTable.CONTENT_URI_INSERT, review.getGiantBombId());
+            opBuilder = ContentProviderOperation.newUpdate(reviewUri).withExpectedCount(1);
+        }
+        return opBuilder.withValues(ReviewTable.contentValuesFor(review)).build();
     }
 
     @Override
@@ -335,6 +365,8 @@ public class GamrProvider extends ContentProvider {
                 return GameTable.CONTENT_ITEM_TYPE;
             case GAMES_VIDEOS:
                 return VideoTable.CONTENT_TYPE;
+            case GAMES_REVIEWS:
+                return ReviewTable.CONTENT_TYPE;
             case LISTS:
                 return GameListTable.CONTENT_TYPE;
             case LISTS_METADATA:
@@ -349,6 +381,8 @@ public class GamrProvider extends ContentProvider {
                 return GamePlatformMappingTable.CONTENT_TYPE;
             case VIDEOS:
                 return VideoTable.CONTENT_TYPE;
+            case REVIEWS:
+                return ReviewTable.CONTENT_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -366,6 +400,7 @@ public class GamrProvider extends ContentProvider {
         matcher.addURI(authority, GameTable.TABLE_NAME, GAMES);
         matcher.addURI(authority, GameTable.TABLE_NAME + "/#", GAMES_ID);
         matcher.addURI(authority, GameTable.TABLE_NAME + "/" + VideoTable.TABLE_NAME + "/#", GAMES_VIDEOS);
+        matcher.addURI(authority, GameTable.TABLE_NAME + "/" + ReviewTable.TABLE_NAME + "/#", GAMES_REVIEWS);
 
         // Lists
         matcher.addURI(authority, GameListTable.TABLE_NAME, LISTS);
@@ -381,6 +416,9 @@ public class GamrProvider extends ContentProvider {
 
         // Videos
         matcher.addURI(authority, VideoTable.TABLE_NAME, VIDEOS);
+
+        // Reviews
+        matcher.addURI(authority, ReviewTable.TABLE_NAME, REVIEWS);
 
         return matcher;
     }
