@@ -53,6 +53,7 @@ public class TaskManager {
                                             final boolean isSilent) {
         // add the show(s) to a running add task or create a new one
         boolean isRequiringNewTask;
+        //noinspection SimplifiableIfStatement
         if (! isAddTaskRunning()) {
             isRequiringNewTask = true;
         } else {

@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <integer name="shadow_offset">1</integer>
-    <integer name="shadow_radius">2</integer>
-
 </resources>

@@ -34,7 +34,7 @@ public class Platform implements Comparable<Platform> {
     }
 
     @Override
-    public int compareTo(Platform another) {
+    public int compareTo(@NotNull Platform another) {
         // newer platforms tend to have larger IDs
         return -((Integer) this.mGiantBombId).compareTo(another.mGiantBombId);
     }

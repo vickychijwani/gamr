@@ -1,5 +1,6 @@
 package io.github.vickychijwani.gimmick.view;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -104,6 +105,7 @@ public class VideosFragment extends DataFragment<List<Video>,VideoListAdapter> {
         }
     };
 
+    @SuppressLint("ValidFragment")
     private class PlayVideoDialogFragment extends DialogFragment {
 
         private final Video mVideo;

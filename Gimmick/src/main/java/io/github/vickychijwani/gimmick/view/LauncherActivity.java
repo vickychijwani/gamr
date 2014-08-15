@@ -1,5 +1,6 @@
 package io.github.vickychijwani.gimmick.view;
 
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Dialog;
 import android.os.Bundle;
@@ -50,6 +51,7 @@ public abstract class LauncherActivity extends BaseActivity {
         }
     }
 
+    @SuppressLint("ValidFragment")
     private class FirstRunDialog extends DialogFragment {
 
         @Nullable
@@ -58,6 +60,7 @@ public abstract class LauncherActivity extends BaseActivity {
             return inflater.inflate(R.layout.fragment_first_run, container, false);
         }
 
+        @NotNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             Dialog dialog = super.onCreateDialog(savedInstanceState);

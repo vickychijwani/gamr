@@ -42,6 +42,7 @@ public class SearchGamesFragment extends AddGamesFragment {
                     return false;
 
                 if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                    //noinspection ConstantConditions
                     DeviceUtils.hideSoftKeyboard(getActivity(), getView().getWindowToken());
                     initiateRequest();
                     return true;

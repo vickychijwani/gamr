@@ -141,6 +141,7 @@ abstract class BaseDBHelper extends SQLiteOpenHelper {
 
         @NotNull
         public String buildQuery() {
+            //noinspection ConstantConditions
             if (mProjection == null || mTableName == null) {
                 throw new IllegalStateException("Query not completely built");
             }

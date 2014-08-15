@@ -5,12 +5,8 @@ import android.app.Application;
 import android.content.Context;
 import android.os.StrictMode;
 
-import java.util.Map;
-
 import dagger.ObjectGraph;
 import io.github.vickychijwani.giantbomb.api.GiantBombAPIModule;
-import io.github.vickychijwani.giantbomb.item.ResourceType;
-import io.github.vickychijwani.gimmick.database.GamrProvider;
 import io.github.vickychijwani.metacritic.api.MetacriticAPIModule;
 import io.github.vickychijwani.utility.DeviceUtils;
 
