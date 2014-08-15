@@ -6,6 +6,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
+import android.util.Log;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -155,8 +156,12 @@ public class DBHelper extends BaseDBHelper {
         SQLiteDatabase db = getInstance().getWritableDatabase();
         assert db != null;
 
-        return db.insertWithOnConflict(tableName, null,
-                values, SQLiteDatabase.CONFLICT_IGNORE);
+        try {
+            return db.insertOrThrow(tableName, null, values);
+        } catch (Exception e) {
+            Log.e(TAG, Log.getStackTraceString(e));
+        }
+        return -1;
     }
 
     @NotNull
