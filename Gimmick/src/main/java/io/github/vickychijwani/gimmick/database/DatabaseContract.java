@@ -298,6 +298,14 @@ public abstract class DatabaseContract {
         /** Content URI for inserting a new video */
         public static final Uri CONTENT_URI_INSERT = CONTENT_URI_LIST;
 
+        /** Giantbomb ID of video
+         * Not using _ID for this because the games <=> videos relation is supposed to be
+         * many-to-many, but I don't want to go to that much trouble for a case so rare as this.
+         * In the event that multiple games in the library share a video, I will simply store
+         * multiple copies of the video in the database.
+         */
+        public static final String COL_GB_ID = "giantbomb_id";
+
         /** Video name */
         public static final String COL_NAME = "name";
 
@@ -333,7 +341,8 @@ public abstract class DatabaseContract {
 
         public static String createTable() {
             return SQL.CREATE_TABLE(TABLE_NAME,
-                    SQL.DEF_PRIMARY_KEY(_ID, SQL.Type.INTEGER),
+                    SQL.DEF_PRIMARY_KEY_AUTOINCREMENT(_ID, SQL.Type.INTEGER),
+                    SQL.DEF_COL(COL_GB_ID, SQL.Type.INTEGER, SQL.Constraint.NOT_NULL),
                     SQL.DEF_COL(COL_NAME, SQL.Type.TEXT, SQL.Constraint.NOT_NULL, SQL.Constraint.DEFAULT("\"\"")),
                     SQL.DEF_FOREIGN_KEY_NOT_NULL(COL_GAME_ID, GameTable.TABLE_NAME, GameTable._ID),
                     SQL.DEF_COL(COL_BLURB, SQL.Type.TEXT, SQL.Constraint.DEFAULT("\"\"")),
@@ -351,7 +360,8 @@ public abstract class DatabaseContract {
         @NotNull
         public static ContentValues contentValuesFor(@NotNull Video video) {
             ContentValues values = new ContentValues();
-            values.put(_ID, video.getGiantBombId());
+            // _ID is auto-increment, hence is not added here
+            values.put(COL_GB_ID, video.getGiantBombId());
             values.put(COL_NAME, video.getName());
             values.put(COL_GAME_ID, video.getGameId());
             values.put(COL_BLURB, video.getBlurb());

@@ -3,6 +3,8 @@ package io.github.vickychijwani.giantbomb.item;
 import android.database.Cursor;
 import android.util.Log;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.text.ParseException;
 import java.util.Date;
 
@@ -13,6 +15,7 @@ public class Video implements Comparable<Video> {
 
     private static final String TAG = "Video";
 
+    private int mId;    // not the same as giantbomb id; see comment on COL_GB_ID in DatabaseContract.VideoTable
     private String mName = "";
     private int mGameId = -1;
     private String mBlurb = "";
@@ -29,10 +32,11 @@ public class Video implements Comparable<Video> {
     public Video() { }
 
     public Video(Cursor cursor) {
+        mId = cursor.getInt(cursor.getColumnIndexOrThrow(VideoTable._ID));
         mName = cursor.getString(cursor.getColumnIndexOrThrow(VideoTable.COL_NAME));
         mGameId = cursor.getInt(cursor.getColumnIndexOrThrow(VideoTable.COL_GAME_ID));
         mBlurb = cursor.getString(cursor.getColumnIndexOrThrow(VideoTable.COL_BLURB));
-        mGiantBombId = cursor.getInt(cursor.getColumnIndexOrThrow(VideoTable._ID));
+        mGiantBombId = cursor.getInt(cursor.getColumnIndexOrThrow(VideoTable.COL_GB_ID));
         mLowUrl = cursor.getString(cursor.getColumnIndexOrThrow(VideoTable.COL_LOW_URL));
         mHighUrl = cursor.getString(cursor.getColumnIndexOrThrow(VideoTable.COL_HIGH_URL));
         mDuration = cursor.getInt(cursor.getColumnIndexOrThrow(VideoTable.COL_DURATION));
@@ -48,7 +52,7 @@ public class Video implements Comparable<Video> {
     }
 
     @Override
-    public int compareTo(Video another) {
+    public int compareTo(@NotNull Video another) {
         if (this.mPublishDate != null && another.mPublishDate != null) {
             return this.mPublishDate.compareTo(another.mPublishDate);
         }
@@ -56,6 +60,14 @@ public class Video implements Comparable<Video> {
     }
 
     // getters / setters
+    public int getId() {
+        return mId;
+    }
+
+    public void setId(int id) {
+        mId = id;
+    }
+
     public String getName() {
         return mName;
     }
