@@ -166,7 +166,7 @@ public abstract class DatabaseContract {
         @NotNull
         public static String[] essentialColumns() {
             return new String[] {
-                    qualify(_ID), qualify(COL_NAME), COL_POSTER_URL,
+                    qualify(_ID), qualify(COL_NAME), COL_POSTER_URL, COL_SMALL_POSTER_URL,
                     COL_RELEASE_DAY, COL_RELEASE_MONTH, COL_RELEASE_QUARTER, COL_RELEASE_YEAR,
                     SQL.groupConcat(PlatformTable.qualify(PlatformTable._ID), COL_PSEUDO_PLATFORMS)
             };

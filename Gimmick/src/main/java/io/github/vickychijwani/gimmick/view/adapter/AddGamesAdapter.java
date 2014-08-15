@@ -26,6 +26,11 @@ public class AddGamesAdapter extends GameListAdapter {
     }
 
     @Override
+    protected boolean useHighResPosters() {
+        return false;
+    }
+
+    @Override
     protected void onGetViewFinished(final GameViewHolder viewHolder, final Game item) {
         // hide add button if already added that show
         viewHolder.addbutton.setVisibility(item.isAdded ? View.INVISIBLE : View.VISIBLE);

@@ -40,6 +40,10 @@ public class GameListAdapter extends ArrayAdapter<Game> {
         mDetailsButtonListener = detailsButtonListener;
     }
 
+    protected boolean useHighResPosters() {
+        return true;
+    }
+
     @NotNull
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -62,7 +66,7 @@ public class GameListAdapter extends ArrayAdapter<Game> {
             viewHolder = (GameViewHolder) convertView.getTag();
         }
 
-        Utils.loadImage(item.posterUrl, viewHolder.poster);
+        Utils.loadImage(useHighResPosters() ? item.smallPosterUrl : item.posterUrl, viewHolder.poster);
         viewHolder.title.setText(item.name);
         viewHolder.releaseDate.setText(item.releaseDate.toString());
         viewHolder.platforms.setText(item.getPlatformsDisplayString());
