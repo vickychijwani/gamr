@@ -21,7 +21,9 @@ public class SQL {
         public static final String PRIMARY_KEY_AUTOINCREMENT = PRIMARY_KEY + " AUTOINCREMENT";
         public static final String NOT_NULL = "NOT NULL";
         public static final String UNIQUE = "UNIQUE";
-        public static       String FOREIGN_KEY(String tableName, String colName) { return "REFERENCES " + tableName + "(" + colName + ")"; }
+        public static       String FOREIGN_KEY(String tableName, String colName, boolean cascadeDelete) {
+            return "REFERENCES " + tableName + "(" + colName + ")" + (cascadeDelete ? " ON DELETE CASCADE" : "");
+        }
         public static       String DEFAULT(String value) { return "DEFAULT " + value; }
         public static       String DEFAULT(int value) { return "DEFAULT " + value; }
         public static       String DEFAULT(double value) { return "DEFAULT " + value; }
@@ -43,8 +45,8 @@ public class SQL {
         return DEF_COL(colName, colType, Constraint.PRIMARY_KEY_AUTOINCREMENT);
     }
 
-    public static String DEF_FOREIGN_KEY_NOT_NULL(String sourceColName, String targetTableName, String targetColName) {
-        return DEF_COL(sourceColName, Type.INTEGER, Constraint.NOT_NULL, Constraint.FOREIGN_KEY(targetTableName, targetColName));
+    public static String DEF_FOREIGN_KEY_NOT_NULL(String sourceColName, String targetTableName, String targetColName, boolean cascadeDelete) {
+        return DEF_COL(sourceColName, Type.INTEGER, Constraint.NOT_NULL, Constraint.FOREIGN_KEY(targetTableName, targetColName, cascadeDelete));
     }
 
     public static String DEF_COMPOSITE_KEY(String... colNames) {

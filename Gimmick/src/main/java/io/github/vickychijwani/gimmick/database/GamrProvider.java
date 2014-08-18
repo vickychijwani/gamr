@@ -197,7 +197,28 @@ public class GamrProvider extends ContentProvider {
     /** {@inheritDoc} */
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        return 0;
+        Log.i(TAG, "[delete] uri: " + uri);
+        final int match = sUriMatcher.match(uri);
+        final long id = ContentUris.parseId(uri);
+        int deletedCount;
+        assert getContext() != null;
+
+        switch (match) {
+            case GAMES_ID:
+                deletedCount = DBHelper.deleteGame(id);
+                if (deletedCount > 0) {
+                    getContext().getContentResolver().notifyChange(GameListTable.CONTENT_URI_LIST_GAMES, null);
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("[delete] uri unknown or operation not supported for this uri: " + uri);
+        }
+
+        if (deletedCount > 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+
+        return deletedCount;
     }
 
     /** {@inheritDoc} */
@@ -353,6 +374,26 @@ public class GamrProvider extends ContentProvider {
             opBuilder = ContentProviderOperation.newUpdate(reviewUri).withExpectedCount(1);
         }
         return opBuilder.withValues(ReviewTable.contentValuesFor(review)).build();
+    }
+
+    public static boolean removeGame(int gameId) {
+        ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
+
+        ContentProviderOperation deleteGameOp = ContentProviderOperation
+                .newDelete(ContentUris.withAppendedId(GameTable.CONTENT_URI_LIST, gameId))
+                .withExpectedCount(1)
+                .build();
+        ops.add(deleteGameOp);
+
+        // only need to delete the game, the rest is taken care of by SQLite's cascade delete
+
+        try {
+            sInstance.applyBatch(ops);
+            return true;
+        } catch (OperationApplicationException e) {
+            Log.e(TAG, "Could not delete game: " + Log.getStackTraceString(e));
+            return false;
+        }
     }
 
     @Override

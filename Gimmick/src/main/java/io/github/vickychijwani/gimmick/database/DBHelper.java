@@ -66,6 +66,11 @@ public class DBHelper extends BaseDBHelper {
 
     @Override
     public void onOpen(SQLiteDatabase db) {
+        // enable foreign key constraints (for JellyBean upwards, this is done in onConfigure)
+        if (! DeviceUtils.isJellyBeanOrHigher() && ! db.isReadOnly()) {
+            db.execSQL("PRAGMA foreign_keys=ON;");
+        }
+
         validateInitialState(db);
     }
 
@@ -183,6 +188,22 @@ public class DBHelper extends BaseDBHelper {
                 .where(new SQL.Eq(PlatformTable.COL_NAME, "'" + values.getAsString(PlatformTable.COL_NAME) + "'"))
                 .execute();
     }
+
+
+    public static int deleteGame(final long gameId) {
+        try {
+            return executeOperation(new Operation<Integer>() {
+                @Override
+                public Integer run(@NotNull SQLiteDatabase db) throws Exception {
+                    return db.delete(GameTable.TABLE_NAME, GameTable._ID + "=" + gameId, null);
+                }
+            });
+        } catch (Exception e) {
+            Log.e(TAG, "Error deleting game with id " + gameId + ": " + Log.getStackTraceString(e));
+        }
+        return 0;
+    }
+
 
     /**
      * Execute an operation on the database.

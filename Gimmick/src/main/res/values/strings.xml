@@ -24,6 +24,10 @@
     <string name="metacritic">Metacritic</string>
     <string name="no_rating">n/a</string>
     <string name="metascore_range">/100</string>
+    <string name="remove_from_library">Remove from library</string>
+    <string name="remove_from_library_confirmation">Remove %1$s from your library?</string>
+    <string name="remove_yes">Remove</string>
+    <string name="remove_no">Don\'t remove</string>
 
     <!-- Videos -->
     <string name="videos">Videos</string>

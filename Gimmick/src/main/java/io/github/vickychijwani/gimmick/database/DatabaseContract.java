@@ -137,7 +137,7 @@ public abstract class DatabaseContract {
                     SQL.DEF_COL(COL_RELEASE_QUARTER, SQL.Type.INTEGER, SQL.Constraint.NOT_NULL),
                     SQL.DEF_COL(COL_RELEASE_YEAR, SQL.Type.INTEGER, SQL.Constraint.NOT_NULL),
                     SQL.DEF_COL(COL_BLURB, SQL.Type.TEXT, SQL.Constraint.DEFAULT("\"\"")),
-                    SQL.DEF_FOREIGN_KEY_NOT_NULL(COL_GAME_LIST_ID, GameListTable.TABLE_NAME, GameListTable._ID),
+                    SQL.DEF_FOREIGN_KEY_NOT_NULL(COL_GAME_LIST_ID, GameListTable.TABLE_NAME, GameListTable._ID, false),
                     SQL.DEF_COL(COL_METASCORE, SQL.Type.INTEGER, SQL.Constraint.NOT_NULL, SQL.Constraint.DEFAULT(-1)),
                     SQL.DEF_COL(COL_GENRES, SQL.Type.TEXT, SQL.Constraint.DEFAULT("\"\"")),
                     SQL.DEF_COL(COL_FRANCHISES, SQL.Type.TEXT, SQL.Constraint.DEFAULT("\"\""))
@@ -266,8 +266,8 @@ public abstract class DatabaseContract {
 
         public static String createTable() {
             return SQL.CREATE_TABLE(TABLE_NAME,
-                    SQL.DEF_FOREIGN_KEY_NOT_NULL(COL_GAME_ID, GameTable.TABLE_NAME, GameTable._ID),
-                    SQL.DEF_FOREIGN_KEY_NOT_NULL(COL_PLATFORM_ID, PlatformTable.TABLE_NAME, PlatformTable._ID),
+                    SQL.DEF_FOREIGN_KEY_NOT_NULL(COL_GAME_ID, GameTable.TABLE_NAME, GameTable._ID, true),
+                    SQL.DEF_FOREIGN_KEY_NOT_NULL(COL_PLATFORM_ID, PlatformTable.TABLE_NAME, PlatformTable._ID, true),
                     SQL.DEF_COMPOSITE_KEY(COL_GAME_ID, COL_PLATFORM_ID));
         }
 
@@ -344,7 +344,7 @@ public abstract class DatabaseContract {
                     SQL.DEF_PRIMARY_KEY_AUTOINCREMENT(_ID, SQL.Type.INTEGER),
                     SQL.DEF_COL(COL_GB_ID, SQL.Type.INTEGER, SQL.Constraint.NOT_NULL),
                     SQL.DEF_COL(COL_NAME, SQL.Type.TEXT, SQL.Constraint.NOT_NULL, SQL.Constraint.DEFAULT("\"\"")),
-                    SQL.DEF_FOREIGN_KEY_NOT_NULL(COL_GAME_ID, GameTable.TABLE_NAME, GameTable._ID),
+                    SQL.DEF_FOREIGN_KEY_NOT_NULL(COL_GAME_ID, GameTable.TABLE_NAME, GameTable._ID, true),
                     SQL.DEF_COL(COL_BLURB, SQL.Type.TEXT, SQL.Constraint.DEFAULT("\"\"")),
                     SQL.DEF_COL(COL_LOW_URL, SQL.Type.TEXT, SQL.Constraint.DEFAULT("\"\"")),
                     SQL.DEF_COL(COL_HIGH_URL, SQL.Type.TEXT, SQL.Constraint.DEFAULT("\"\"")),
@@ -423,7 +423,7 @@ public abstract class DatabaseContract {
             return SQL.CREATE_TABLE(TABLE_NAME,
                     SQL.DEF_PRIMARY_KEY(_ID, SQL.Type.INTEGER),
                     SQL.DEF_COL(COL_REVIEWER, SQL.Type.TEXT, SQL.Constraint.NOT_NULL, SQL.Constraint.DEFAULT("\"\"")),
-                    SQL.DEF_FOREIGN_KEY_NOT_NULL(COL_GAME_ID, GameTable.TABLE_NAME, GameTable._ID),
+                    SQL.DEF_FOREIGN_KEY_NOT_NULL(COL_GAME_ID, GameTable.TABLE_NAME, GameTable._ID, true),
                     SQL.DEF_COL(COL_TITLE, SQL.Type.TEXT, SQL.Constraint.DEFAULT("\"\"")),
                     SQL.DEF_COL(COL_SCORE, SQL.Type.REAL, SQL.Constraint.NOT_NULL, SQL.Constraint.DEFAULT(-1.0)),
                     SQL.DEF_COL(COL_PUBLISH_DATE, SQL.Type.TEXT, SQL.Constraint.NOT_NULL, SQL.Constraint.DEFAULT("\"" + DateTimeUtils.getEarliestDateString() + "\"")),

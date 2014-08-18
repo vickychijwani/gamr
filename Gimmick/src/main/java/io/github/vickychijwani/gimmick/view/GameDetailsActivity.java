@@ -1,14 +1,21 @@
 package io.github.vickychijwani.gimmick.view;
 
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ContentUris;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -22,12 +29,14 @@ import io.github.vickychijwani.giantbomb.item.Video;
 import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.constants.LoaderId;
 import io.github.vickychijwani.gimmick.database.DatabaseContract;
+import io.github.vickychijwani.gimmick.database.GamrProvider;
 
 public class GameDetailsActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String TAG = "GameDetailsActivity";
 
     private int mGiantBombId;
+    private Game mGame = null;
 
     private GameOverviewFragment    mGameOverviewFragment;
     private VideosFragment          mGameVideosFragment;
@@ -96,6 +105,23 @@ public class GameDetailsActivity extends BaseActivity implements LoaderManager.L
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.game_details, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_remove:
+                new ConfirmRemoveDialogFragment().show(getSupportFragmentManager(), null);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
     public void onAttachFragment(Fragment fragment) {
         if (fragment instanceof GameOverviewFragment) {
             mGameOverviewFragment = (GameOverviewFragment) fragment;
@@ -131,10 +157,14 @@ public class GameDetailsActivity extends BaseActivity implements LoaderManager.L
         // Swap the new data set in (the loader will take care of closing the old cursor)
         switch (loader.getId()) {
             case LoaderId.GAME_OVERVIEW:
+                if (cursor.getCount() == 0) {
+                    finish();   // game deleted
+                    return;
+                }
                 cursor.moveToFirst();
-                Game game = new Game(cursor);
-                getActionBar().setTitle(game.name);
-                mGameOverviewFragment.onDataLoaded(new Game(cursor));
+                mGame = new Game(cursor);
+                getActionBar().setTitle(mGame.name);
+                mGameOverviewFragment.onDataLoaded(mGame);
                 return;
             case LoaderId.GAME_VIDEOS:
                 List<Video> videoList = new ArrayList<Video>(cursor.getCount());
@@ -159,7 +189,28 @@ public class GameDetailsActivity extends BaseActivity implements LoaderManager.L
 
     @Override
     public void onLoaderReset(Loader loader) {
-        // this should never happen
+        Log.d(TAG, "Resetting loader for game " + mGiantBombId + "!");
+    }
+
+
+    @SuppressLint("ValidFragment")
+    private class ConfirmRemoveDialogFragment extends DialogFragment {
+
+        @NotNull
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            return new AlertDialog.Builder(getActivity())
+                    .setMessage(getString(R.string.remove_from_library_confirmation, (mGame != null) ? mGame.name : "this game"))
+                    .setPositiveButton(R.string.remove_yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            GamrProvider.removeGame(mGiantBombId);
+                        }
+                    })
+                    .setNegativeButton(R.string.remove_no, null)
+                    .create();
+        }
+
     }
 
 }
