@@ -12,7 +12,7 @@
     <content url="file://$USER_HOME$/Dropbox/Private/Documents/Android/gamr">
       <excludeFolder url="file://$USER_HOME$/Dropbox/Private/Documents/Android/gamr/.gradle" />
     </content>
-    <orderEntry type="jdk" jdkName="JDK" jdkType="JavaSDK" />
+    <orderEntry type="jdk" jdkName="1.6" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
