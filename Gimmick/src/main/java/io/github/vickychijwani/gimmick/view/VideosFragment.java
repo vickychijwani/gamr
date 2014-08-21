@@ -18,6 +18,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -56,6 +58,12 @@ public class VideosFragment extends DataFragment<List<Video>,VideoListAdapter> {
 
     @Override
     void onDataLoaded(List<Video> videoList) {
+        Collections.sort(videoList, new Comparator<Video>() {
+            @Override
+            public int compare(Video lhs, Video rhs) {
+                return -lhs.compareTo(rhs);
+            }
+        });
         mVideoList = videoList;
         bindDataToView(mVideoList, mAdapter);
     }
