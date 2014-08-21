@@ -1,12 +1,9 @@
 package io.github.vickychijwani.gimmick.view;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -73,33 +70,6 @@ public class VideosFragment extends DataFragment<List<Video>,VideoListAdapter> {
         AppUtils.changeAdapterDataSet(adapter, data);
     }
 
-    private void playVideo(Video video, int choice) {
-        if (AppUtils.showErrorIfOffline(getActivity())) {
-            return;
-        }
-
-        String videoUrl;
-        switch (choice) {
-            case UserPrefs.VIDEO_RES_LOW:
-                videoUrl = video.getLowUrl();
-                break;
-            case UserPrefs.VIDEO_RES_HIGH:
-                videoUrl = video.getHighUrl();
-                break;
-            default:
-                throw new IllegalArgumentException("invalid video resolution choice " + choice + "!");
-        }
-
-        Log.i(TAG, "Playing " + ((choice == UserPrefs.VIDEO_RES_LOW) ? "low-res" : "high-res") + " video from " + videoUrl);
-        Intent playIntent = new Intent(Intent.ACTION_VIEW);
-        playIntent.setDataAndType(Uri.parse(videoUrl), "video/*");
-        if (AppUtils.isIntentResolvable(getActivity(), playIntent)) {
-            startActivity(playIntent);
-        } else {
-            // TODO no video player! show error and link to Play Store!
-        }
-    }
-
     private final View.OnClickListener mItemClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -110,61 +80,80 @@ public class VideosFragment extends DataFragment<List<Video>,VideoListAdapter> {
             int position = mVideoListView.getPositionForView(v);
             Video video = mAdapter.getItem(position);
             BaseActivity activity = (BaseActivity) getActivity();
-            int preferredVideoRes = activity.getUserPrefs().getInteger(UserPrefs.Key.VIDEO_RES);
-            if (preferredVideoRes != UserPrefs.VIDEO_RES_ASK) {
-                playVideo(video, preferredVideoRes);
+            int preferredResolution = activity.getUserPrefs().getInteger(UserPrefs.Key.VIDEO_RES);
+            if (preferredResolution != UserPrefs.VIDEO_RES_ASK) {
+                // can't call PlayVideoDialogFragment.playVideo() because that only works after it is attached to an activity
+                String videoUrl = (preferredResolution == UserPrefs.VIDEO_RES_LOW) ? video.getLowUrl() : video.getHighUrl();
+                Log.i(TAG, "Playing " + ((preferredResolution == UserPrefs.VIDEO_RES_LOW) ? "low-res" : "high-res") + " video from " + videoUrl);
+                AppUtils.playVideoFromUrl(activity, videoUrl);
             } else {
-                new PlayVideoDialogFragment(video).show(activity.getFragmentManager(), null);
+                PlayVideoDialogFragment playFragment = PlayVideoDialogFragment.newInstance(video);
+                playFragment.show(activity.getFragmentManager(), null);
             }
         }
     };
 
 
 
-    @SuppressLint("ValidFragment")
-    private class PlayVideoDialogFragment extends DialogFragment {
+    // public because the OS can re-create the fragment by itself, e.g., on orientation change
+    // static to avoid leaking the outer class instance by holding a reference to it
+    // see http://stackoverflow.com/a/14011878
+    public static class PlayVideoDialogFragment extends DialogFragment {
 
-        private final Video mVideo;
-        private int mChoice;
+        private static final String ARG_LOW_URL = "low_url";
+        private static final String ARG_HIGH_URL = "high_url";
 
-        public PlayVideoDialogFragment(@NotNull Video video) {
-            mVideo = video;
+        private int mChoice = UserPrefs.VIDEO_RES_ASK;
+
+        // static function newInstance() instead of parameterized constructor to allow Android to
+        // destroy and re-create this fragment at will (Android saves the Bundle arguments on
+        // destruction and passes them along to the new instance on re-creation)
+        // see http://developer.android.com/reference/android/app/DialogFragment.html#AlertDialog
+        public static PlayVideoDialogFragment newInstance(@NotNull Video video) {
+            PlayVideoDialogFragment fragment = new PlayVideoDialogFragment();
+            Bundle args = new Bundle();
+            args.putString(ARG_LOW_URL, video.getLowUrl());
+            args.putString(ARG_HIGH_URL, video.getHighUrl());
+            fragment.setArguments(args);
+            return fragment;
         }
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             final BaseActivity activity = (BaseActivity) getActivity();
-            if (activity == null) {
-                Log.e(TAG, "getActivity() returned null!");
-                return null;
-            }
-
             mChoice = activity.getAppState().getInteger(AppState.Key.VIDEO_RES_LAST_SELECTED);
+
             return new AlertDialog.Builder(activity)
                     .setTitle(R.string.play_which_version)
                     .setSingleChoiceItems(R.array.video_resolutions, mChoice, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             mChoice = which;
+                            activity.getAppState().setInteger(AppState.Key.VIDEO_RES_LAST_SELECTED, mChoice);
                         }
                     })
                     .setPositiveButton(R.string.just_once, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            activity.getAppState().setInteger(AppState.Key.VIDEO_RES_LAST_SELECTED, mChoice);
-                            playVideo(mVideo, mChoice);
+                            playVideo();
                         }
                     })
                     .setNegativeButton(R.string.always, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            activity.getAppState().setInteger(AppState.Key.VIDEO_RES_LAST_SELECTED, mChoice);
                             activity.getUserPrefs().setInteger(UserPrefs.Key.VIDEO_RES, mChoice);
-                            playVideo(mVideo, mChoice);
+                            playVideo();
                         }
                     })
                     .create();
         }
+
+        private void playVideo() {
+            String videoUrl = getArguments().getString((mChoice == UserPrefs.VIDEO_RES_LOW) ? ARG_LOW_URL : ARG_HIGH_URL);
+            Log.i(TAG, "Playing " + ((mChoice == UserPrefs.VIDEO_RES_LOW) ? "low-res" : "high-res") + " video from " + videoUrl);
+            AppUtils.playVideoFromUrl(getActivity(), videoUrl);
+        }
+
     }
 
 }

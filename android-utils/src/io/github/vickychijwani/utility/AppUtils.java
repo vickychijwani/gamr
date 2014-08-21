@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
@@ -48,6 +49,27 @@ public class AppUtils {
         List<ResolveInfo> resolvedList = pm.queryIntentActivities(intent,
                 PackageManager.MATCH_DEFAULT_ONLY);
         return resolvedList.size() > 0;
+    }
+
+    /**
+     * Play a video in an external video player if a network connection is available, else display
+     * an error.
+     *
+     * @param context   used to invoke the play intent
+     * @param url       the web address of the video to be played
+     */
+    public static void playVideoFromUrl(@NotNull Context context, @NotNull String url) {
+        if (showErrorIfOffline(context)) {
+            return;
+        }
+
+        Intent playIntent = new Intent(Intent.ACTION_VIEW);
+        playIntent.setDataAndType(Uri.parse(url), "video/*");
+        if (isIntentResolvable(context, playIntent)) {
+            context.startActivity(playIntent);
+        } else {
+            // TODO no video player! show error and link to Play Store!
+        }
     }
 
     /**
