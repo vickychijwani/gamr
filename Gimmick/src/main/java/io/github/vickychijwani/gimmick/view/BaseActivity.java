@@ -22,6 +22,7 @@ import javax.inject.Inject;
 import io.github.vickychijwani.gimmick.GamrApplication;
 import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.pref.AppState;
+import io.github.vickychijwani.gimmick.pref.UserPrefs;
 import io.github.vickychijwani.gimmick.view.adapter.BaseFragmentPagerAdapter;
 import io.github.vickychijwani.utility.DeviceUtils;
 
@@ -30,6 +31,7 @@ public abstract class BaseActivity extends FragmentActivity {
     private Object mEventHandler;
 
     @Inject AppState mAppState;
+    @Inject UserPrefs mUserPrefs;
     @Inject Bus mEventBus;
 
     @Override
@@ -63,6 +65,11 @@ public abstract class BaseActivity extends FragmentActivity {
     @NotNull
     protected final AppState getAppState() {
         return mAppState;
+    }
+
+    @NotNull
+    protected final UserPrefs getUserPrefs() {
+        return mUserPrefs;
     }
 
     /**

@@ -42,4 +42,14 @@ abstract class Prefs<K extends BaseKey> {
         mPrefs.edit().putBoolean(key.toString(), value).apply();
     }
 
+    public final int getInteger(K key) {
+        checkKey(key, Integer.class);
+        return mPrefs.getInt(key.toString(), (Integer) key.getDefaultValue());
+    }
+
+    public final void setInteger(K key, int value) {
+        checkKey(key, Integer.class);
+        mPrefs.edit().putInt(key.toString(), value).apply();
+    }
+
 }

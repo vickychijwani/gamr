@@ -18,8 +18,15 @@ public class UserPrefs extends Prefs<UserPrefs.Key> {
 
     private static final String PREFS_FILE_NAME = ".user_prefs";
 
+    // public constants
+    public static final int VIDEO_RES_ASK = -1;
+    public static final int VIDEO_RES_LOW = 0;
+    public static final int VIDEO_RES_HIGH = 1;
+
     // keys
     public static class Key extends BaseKey {
+
+        public static final Key VIDEO_RES = new Key("video_res", Integer.class, VIDEO_RES_ASK);
 
         protected Key(String str, Class type, Object defaultValue) {
             super(str, type, defaultValue);

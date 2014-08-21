@@ -26,14 +26,13 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import io.github.vickychijwani.giantbomb.item.Video;
 import io.github.vickychijwani.gimmick.R;
+import io.github.vickychijwani.gimmick.pref.UserPrefs;
 import io.github.vickychijwani.gimmick.view.adapter.VideoListAdapter;
 import io.github.vickychijwani.utility.AppUtils;
 
 public class VideosFragment extends DataFragment<List<Video>,VideoListAdapter> {
 
     private static final String TAG = "VideosFragment";
-    private static final int LOW_RES = 0;
-    private static final int HIGH_RES = 1;
 
     private VideoListAdapter mAdapter;
     private List<Video> mVideoList;
@@ -80,17 +79,17 @@ public class VideosFragment extends DataFragment<List<Video>,VideoListAdapter> {
 
         String videoUrl;
         switch (choice) {
-            case LOW_RES:
+            case UserPrefs.VIDEO_RES_LOW:
                 videoUrl = video.getLowUrl();
                 break;
-            case HIGH_RES:
+            case UserPrefs.VIDEO_RES_HIGH:
                 videoUrl = video.getHighUrl();
                 break;
             default:
-                throw new IllegalArgumentException("invalid video resolution choice!");
+                throw new IllegalArgumentException("invalid video resolution choice " + choice + "!");
         }
 
-        Log.i(TAG, "Playing " + ((choice == LOW_RES) ? "low-res" : "high-res") + " video from " + videoUrl);
+        Log.i(TAG, "Playing " + ((choice == UserPrefs.VIDEO_RES_LOW) ? "low-res" : "high-res") + " video from " + videoUrl);
         Intent playIntent = new Intent(Intent.ACTION_VIEW);
         playIntent.setDataAndType(Uri.parse(videoUrl), "video/*");
         if (AppUtils.isIntentResolvable(getActivity(), playIntent)) {
@@ -109,15 +108,23 @@ public class VideosFragment extends DataFragment<List<Video>,VideoListAdapter> {
 
             int position = mVideoListView.getPositionForView(v);
             Video video = mAdapter.getItem(position);
-            new PlayVideoDialogFragment(video).show(getActivity().getFragmentManager(), null);
+            BaseActivity activity = (BaseActivity) getActivity();
+            int preferredVideoRes = activity.getUserPrefs().getInteger(UserPrefs.Key.VIDEO_RES);
+            if (preferredVideoRes != UserPrefs.VIDEO_RES_ASK) {
+                playVideo(video, preferredVideoRes);
+            } else {
+                new PlayVideoDialogFragment(video).show(activity.getFragmentManager(), null);
+            }
         }
     };
+
+
 
     @SuppressLint("ValidFragment")
     private class PlayVideoDialogFragment extends DialogFragment {
 
         private final Video mVideo;
-        private int mChoice = LOW_RES;          // default to low-res
+        private int mChoice = UserPrefs.VIDEO_RES_LOW;          // default to low-res
 
         public PlayVideoDialogFragment(@NotNull Video video) {
             mVideo = video;
@@ -125,12 +132,13 @@ public class VideosFragment extends DataFragment<List<Video>,VideoListAdapter> {
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            if (getActivity() == null) {
+            final BaseActivity activity = (BaseActivity) getActivity();
+            if (activity == null) {
                 Log.e(TAG, "getActivity() returned null!");
                 return null;
             }
 
-            return new AlertDialog.Builder(getActivity())
+            return new AlertDialog.Builder(activity)
                     .setTitle(R.string.play_which_version)
                     .setSingleChoiceItems(R.array.video_resolutions, mChoice, new DialogInterface.OnClickListener() {
                         @Override
@@ -147,7 +155,8 @@ public class VideosFragment extends DataFragment<List<Video>,VideoListAdapter> {
                     .setNegativeButton(R.string.always, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            // TODO remember this preference!
+                            activity.getUserPrefs().setInteger(UserPrefs.Key.VIDEO_RES, mChoice);
+                            playVideo(mVideo, mChoice);
                         }
                     })
                     .create();
