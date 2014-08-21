@@ -23,6 +23,10 @@ public class AppState extends Prefs<AppState.Key> {
 
         public static final Key FIRST_RUN = new Key("first_run", Boolean.class, true);
 
+        // remember the video resolution preference that was selected last time
+        // useful for users who *want* to be asked for that preference every time
+        public static final Key VIDEO_RES_LAST_SELECTED = new Key("video_res_last_selected", Integer.class, UserPrefs.VIDEO_RES_LOW);
+
         protected Key(String str, Class type, Object defaultValue) {
             super(str, type, defaultValue);
         }

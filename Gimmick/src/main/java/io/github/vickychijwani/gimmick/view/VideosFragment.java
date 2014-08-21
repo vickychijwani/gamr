@@ -26,6 +26,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import io.github.vickychijwani.giantbomb.item.Video;
 import io.github.vickychijwani.gimmick.R;
+import io.github.vickychijwani.gimmick.pref.AppState;
 import io.github.vickychijwani.gimmick.pref.UserPrefs;
 import io.github.vickychijwani.gimmick.view.adapter.VideoListAdapter;
 import io.github.vickychijwani.utility.AppUtils;
@@ -124,7 +125,7 @@ public class VideosFragment extends DataFragment<List<Video>,VideoListAdapter> {
     private class PlayVideoDialogFragment extends DialogFragment {
 
         private final Video mVideo;
-        private int mChoice = UserPrefs.VIDEO_RES_LOW;          // default to low-res
+        private int mChoice;
 
         public PlayVideoDialogFragment(@NotNull Video video) {
             mVideo = video;
@@ -138,6 +139,7 @@ public class VideosFragment extends DataFragment<List<Video>,VideoListAdapter> {
                 return null;
             }
 
+            mChoice = activity.getAppState().getInteger(AppState.Key.VIDEO_RES_LAST_SELECTED);
             return new AlertDialog.Builder(activity)
                     .setTitle(R.string.play_which_version)
                     .setSingleChoiceItems(R.array.video_resolutions, mChoice, new DialogInterface.OnClickListener() {
@@ -149,12 +151,14 @@ public class VideosFragment extends DataFragment<List<Video>,VideoListAdapter> {
                     .setPositiveButton(R.string.just_once, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            activity.getAppState().setInteger(AppState.Key.VIDEO_RES_LAST_SELECTED, mChoice);
                             playVideo(mVideo, mChoice);
                         }
                     })
                     .setNegativeButton(R.string.always, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            activity.getAppState().setInteger(AppState.Key.VIDEO_RES_LAST_SELECTED, mChoice);
                             activity.getUserPrefs().setInteger(UserPrefs.Key.VIDEO_RES, mChoice);
                             playVideo(mVideo, mChoice);
                         }
