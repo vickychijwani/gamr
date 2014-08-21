@@ -1,6 +1,5 @@
 package io.github.vickychijwani.gimmick.view;
 
-import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -20,7 +19,6 @@ import android.view.MenuItem;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import io.github.vickychijwani.giantbomb.item.Game;
@@ -65,34 +63,25 @@ public class GameDetailsActivity extends BaseActivity implements LoaderManager.L
         Log.i(TAG, "Displaying details for game ID = " + mGiantBombId);
 
         // setup fragments
-        List<Fragment> fragments;
+        // if savedInstanceState is not null, Android would have re-created the fragments for us, in
+        // which case we would have already saved references to them in onAttachFragment()
         if (savedInstanceState == null) {
             mGameOverviewFragment = new GameOverviewFragment();
             mGameVideosFragment = new VideosFragment();
             mGameReviewsFragment = new ReviewsFragment();
-
-            fragments = Arrays.asList(new Fragment[] {
-                    mGameOverviewFragment,
-                    mGameVideosFragment,
-                    mGameReviewsFragment,
-            });
-        } else {
-            /**
-             * Get all active fragments for setting up the tabs + view pager, when the activity is
-             * re-created, e.g., on screen rotation.
-             *
-             * {@link android.support.v4.app.FragmentManager#getFragments()} is hidden from the
-             * SDK docs, and is present only in the support library! I wish there was a better
-             * solution to this!
-             */
-            fragments = getSupportFragmentManager().getFragments();
         }
 
-        setupTabsAndViewPager(fragments, new String[] {
+        Fragment[] fragments = new Fragment[] {
+                mGameOverviewFragment,
+                mGameVideosFragment,
+                mGameReviewsFragment,
+        };
+        String[] tabTitles = new String[] {
                 getString(R.string.overview),
                 getString(R.string.videos),
                 getString(R.string.reviews),
-        }, 2);
+        };
+        setupTabsAndViewPager(fragments, tabTitles, 2);     // cache 2 tabs each on either side of the current one
 
         getSupportLoaderManager().initLoader(LoaderId.GAME_OVERVIEW, null, this);
         getSupportLoaderManager().initLoader(LoaderId.GAME_VIDEOS, null, this);
@@ -114,7 +103,9 @@ public class GameDetailsActivity extends BaseActivity implements LoaderManager.L
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_remove:
-                new ConfirmRemoveDialogFragment().show(getSupportFragmentManager(), null);
+                String name = (mGame != null) ? mGame.name : "this game";
+                DialogFragment removeDialog = ConfirmRemoveDialogFragment.newInstance(mGiantBombId, name);
+                removeDialog.show(getSupportFragmentManager(), null);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -193,18 +184,32 @@ public class GameDetailsActivity extends BaseActivity implements LoaderManager.L
     }
 
 
-    @SuppressLint("ValidFragment")
-    private class ConfirmRemoveDialogFragment extends DialogFragment {
+    public static class ConfirmRemoveDialogFragment extends DialogFragment {
+
+        private static final String ARG_GIANT_BOMB_ID = "giant_bomb_id";
+        private static final String ARG_NAME = "name";
+
+        public static ConfirmRemoveDialogFragment newInstance(int giantBombId, @NotNull String name) {
+            ConfirmRemoveDialogFragment fragment = new ConfirmRemoveDialogFragment();
+            Bundle args = new Bundle();
+            args.putInt(ARG_GIANT_BOMB_ID, giantBombId);
+            args.putString(ARG_NAME, name);
+            fragment.setArguments(args);
+            return fragment;
+        }
 
         @NotNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
+            Bundle args = getArguments();
+            final int giantBombId = args.getInt(ARG_GIANT_BOMB_ID);
+            String name = args.getString(ARG_NAME);
             return new AlertDialog.Builder(getActivity())
-                    .setMessage(getString(R.string.remove_from_library_confirmation, (mGame != null) ? mGame.name : "this game"))
+                    .setMessage(getString(R.string.remove_from_library_confirmation, name))
                     .setPositiveButton(R.string.remove_yes, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            GamrProvider.removeGame(mGiantBombId);
+                            GamrProvider.removeGame(giantBombId);
                         }
                     })
                     .setNegativeButton(R.string.remove_no, null)

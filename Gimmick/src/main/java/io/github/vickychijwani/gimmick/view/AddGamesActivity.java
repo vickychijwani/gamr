@@ -27,7 +27,7 @@ public class AddGamesActivity extends BaseActivity {
                 getString(R.string.search)
         };
 
-        setupTabsAndViewPager(fragments, tabTitles, 2);
+        setupTabsAndViewPager(fragments, tabTitles, 2);     // cache 2 tabs each on either side of the current one
     }
 
     @Override
