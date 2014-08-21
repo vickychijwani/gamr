@@ -121,6 +121,11 @@
         <item name="android:lineSpacingMultiplier">1.2</item>
     </style>
 
+    <!-- action bar -->
+    <style name="ActionBar" parent="@android:style/Widget.Holo.ActionBar.Solid">
+        <!--<item name="android:background">@android:color/darker_gray</item>-->
+    </style>
+
     <!-- tabs -->
     <style name="TabStrip">
         <item name="android:textColor">?attr/colorTabStripText</item>
@@ -129,6 +134,7 @@
         <item name="pstsUnderlineColor">?attr/colorAccent</item>
     </style>
 
+    <!-- rating bar -->
     <style name="HoloRatingBar" parent="@android:style/Widget.Holo.RatingBar.Small">
         <item name="android:progressDrawable">@drawable/holo_rating_bar</item>
         <item name="android:minHeight">24dip</item>
