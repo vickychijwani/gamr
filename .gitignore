@@ -1,9 +1,9 @@
 .gradle
 /local.properties
-/.idea/workspace.xml
-/.idea/tasks.xml
+/.idea/*
 .DS_Store
 icons/*
 glide/samples/
 *.db
 build/
+**/*.iml
