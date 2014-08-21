@@ -25,8 +25,11 @@ public class GameOverviewFragment extends DataFragment<Game,View> {
     @InjectView(R.id.release_date)      TextView mReleaseDateView;
     @InjectView(R.id.platforms)         TextView mPlatformsView;
     @InjectView(R.id.blurb)             TextView mBlurbView;
+    @InjectView(R.id.rating_bar)        ViewGroup mRatingBarView;
     @InjectView(R.id.metascore_value)   TextView mMetascoreView;
+    @InjectView(R.id.genres_header)     TextView mGenresHeaderView;
     @InjectView(R.id.genres)            TextView mGenresView;
+    @InjectView(R.id.franchises_header) TextView mFranchisesHeaderView;
     @InjectView(R.id.franchises)        TextView mFranchisesView;
 
     @Nullable
@@ -55,18 +58,19 @@ public class GameOverviewFragment extends DataFragment<Game,View> {
         mPlatformsView.setText(game.getPlatformsDisplayString());
         mBlurbView.setText(game.blurb);
 
-        if (game.metascore > 0) {
-            mMetascoreView.setText(String.valueOf(game.metascore));
-        }
-        bindTextOrHide(game.getGenresDisplayString(), mGenresView, view.findViewById(R.id.genres_header));
-        bindTextOrHide(game.getFranchisesDisplayString(), mFranchisesView, view.findViewById(R.id.franchises_header));
+        String metascoreString = (game.metascore > 0) ? String.valueOf(game.metascore) : "";
+        bindTextOrHide(metascoreString, mMetascoreView, mRatingBarView);
+        bindTextOrHide(game.getGenresDisplayString(), mGenresView, mGenresHeaderView);
+        bindTextOrHide(game.getFranchisesDisplayString(), mFranchisesView, mFranchisesHeaderView);
     }
 
-    private void bindTextOrHide(@Nullable String text, @NotNull TextView textView, @NotNull View headerView) {
+    private void bindTextOrHide(@Nullable String text, @NotNull TextView textView, @NotNull View associatedView) {
         if (TextUtils.isEmpty(text)) {
             textView.setVisibility(View.GONE);
-            headerView.setVisibility(View.GONE);
+            associatedView.setVisibility(View.GONE);
         } else {
+            textView.setVisibility(View.VISIBLE);
+            associatedView.setVisibility(View.VISIBLE);
             textView.setText(text);
         }
     }
