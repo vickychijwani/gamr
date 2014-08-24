@@ -22,6 +22,7 @@ import dagger.Lazy;
 import io.github.vickychijwani.gimmick.GamrApplication;
 import io.github.vickychijwani.gimmick.R;
 import io.github.vickychijwani.gimmick.pref.AppState;
+import io.github.vickychijwani.gimmick.sync.AccountUtils;
 import io.github.vickychijwani.gimmick.task.FirstRunTask;
 import io.github.vickychijwani.gimmick.utility.event.FirstRunTaskDoneEvent;
 
@@ -33,8 +34,19 @@ public abstract class LauncherActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // start Crashlytics for automated crash reporting
         Crashlytics.start(this);
+
+        // create account for sync adapter
+        if (! AccountUtils.isAccountExists(this)) {
+            AccountUtils.createAccount(this);
+        }
+
+        // inject this activity into the Dagger object graph
         GamrApplication.getApp(this).inject(this);
+
+        // fetch initial data on first-run
         checkFirstRun();
     }
 
@@ -86,4 +98,5 @@ public abstract class LauncherActivity extends BaseActivity {
             }
         };
     }
+
 }
