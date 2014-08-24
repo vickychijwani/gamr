@@ -6,6 +6,8 @@ import dagger.Module;
 import dagger.Provides;
 import io.github.vickychijwani.giantbomb.api.GiantBombAPIModule;
 import io.github.vickychijwani.gimmick.dagger.ApplicationContext;
+import io.github.vickychijwani.gimmick.sync.SyncModule;
+import io.github.vickychijwani.gimmick.sync.SyncService;
 import io.github.vickychijwani.gimmick.utility.UtilityModule;
 import io.github.vickychijwani.gimmick.view.AddGamesActivity;
 import io.github.vickychijwani.gimmick.view.AddGamesFragment;
@@ -25,7 +27,8 @@ import io.github.vickychijwani.network.NetworkModule;
                 UtilityModule.class,
                 NetworkModule.class,
                 GiantBombAPIModule.class,
-                MetacriticAPIModule.class
+                MetacriticAPIModule.class,
+                SyncModule.class
         },
         injects = {
                 AddGamesFragment.class,
@@ -39,7 +42,9 @@ import io.github.vickychijwani.network.NetworkModule;
                 GameDetailsActivity.class,
                 AddGamesActivity.class,
 
-                AddGamesAdapter.class
+                AddGamesAdapter.class,
+
+                SyncService.class
         }
 )
 public class GamrModule {
